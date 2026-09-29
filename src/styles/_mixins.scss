@@ -1,0 +1,4 @@
+@mixin content-width {
+    width: min($content-width, calc(100% - 40px));
+    margin-inline: auto;
+}

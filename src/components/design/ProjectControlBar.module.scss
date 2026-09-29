@@ -1,0 +1,71 @@
+.scope {
+    isolation: isolate;
+}
+
+:global {
+    /* 반투명 유리 느낌의 바 */
+    .project-control, .project-view-toggle {
+        background: rgba(120, 130, 145, .55);
+        box-shadow: 0 .6vw 1.8vw rgba(40, 40, 60, .18);
+        backdrop-filter: blur(10px);
+    }
+    .project-control {
+        display: flex;
+        align-items: center;
+        gap: clamp(6px, .5vw, 10px);
+        padding: clamp(6px, .45vw, 10px);
+        border-radius: 8px;
+        font-family: 'Inter', 'Noto Sans KR', sans-serif;
+    }
+    .project-control button {
+        border: 0;
+        color: #fff;
+        background: none;
+    }
+    .project-control-current {
+        display: flex;
+        align-items: center;
+        gap: clamp(10px, 1vw, 18px);
+        min-width: clamp(170px, 12vw, 260px);
+        padding: 0 clamp(8px, .8vw, 16px) 0 0;
+    }
+    .project-control-current img, .project-control-current .is-empty {
+        width: clamp(34px, 2.6vw, 52px);
+        height: clamp(34px, 2.6vw, 52px);
+        border-radius: 50%;
+        object-fit: cover;
+    }
+    .project-control-current .is-empty {
+        background: #fff5f5;
+    }
+    .project-control-current strong {
+        font-size: clamp(.75rem, .85vw, 1.05rem);
+        font-weight: 700;
+        letter-spacing: .02em;
+        white-space: nowrap;
+        animation: project-control-title .35s ease both;
+    }
+    .project-control-arrow {
+        width: clamp(28px, 2vw, 40px);
+        height: clamp(22px, 1.5vw, 30px);
+        border-radius: 999px;
+        padding: 0;
+        background: rgba(255, 255, 255, .18) !important;
+        font-size: clamp(.8rem, .85vw, 1rem);
+        transition: background .2s ease;
+    }
+    .project-control button:hover, .project-control button:focus-visible {
+        color: #fff;
+        background: none;
+    }
+    .project-control-arrow:hover, .project-control-arrow:focus-visible {
+        background: rgba(255, 255, 255, .35) !important;
+    }
+
+    @keyframes :global(project-control-title) {
+        from {
+            opacity: 0;
+            transform: translateY(6px);
+        }
+    }
+}

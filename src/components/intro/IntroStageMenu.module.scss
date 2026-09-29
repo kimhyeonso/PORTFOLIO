@@ -1,0 +1,27 @@
+.scope {
+    isolation: isolate;
+}
+
+:global {
+    .intro-stage-menu button {
+        border: 0;
+        padding: 0;
+        color: inherit;
+        background: none;
+        font: inherit;
+        letter-spacing: inherit;
+        text-align: inherit;
+        text-shadow: inherit;
+        transition: color .2s ease, transform .2s ease;
+    }
+    .intro-stage-menu button:hover, .intro-stage-menu button:focus-visible {
+        color: #ffe47b;
+        background: none;
+        transform: translateX(-6px);
+    }
+    .intro-stage-menu button.is-current span {
+        text-decoration: underline;
+        text-decoration-thickness: 2px;
+        text-underline-offset: 6px;
+    }
+}

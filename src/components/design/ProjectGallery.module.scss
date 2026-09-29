@@ -1,0 +1,171 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Noto+Sans+KR:wght@400;500;700&family=Noto+Serif+KR:wght@400&family=Playfair+Display:wght@400&display=swap');
+
+.scope {
+    isolation: isolate;
+}
+
+:global {
+    /* index.css의 main 기본 레이아웃(최대 폭, 패딩)을 덮어 전체 화면으로 쓴다 */
+    .project-gallery {
+        --card-width: 81.5vw;
+        --card-gap: 1.4vw;
+        /* 현재 카드를 화면 가운데에 두어 양옆 카드가 살짝 보이게 */
+        --card-left: calc((100vw - var(--card-width)) / 2);
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: clamp(20px, 4.5vh, 64px);
+        width: 100%;
+        max-width: none;
+        height: 100dvh;
+        min-height: 560px;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        background: #efe3d3 var(--gallery-bg) center / cover no-repeat;
+        animation: project-gallery-in .7s ease-out both;
+    }
+
+    .project-gallery-tabs {
+        display: flex;
+        align-items: baseline;
+        gap: clamp(12px, 1.2vw, 28px);
+        font-family: 'Inter', 'Noto Sans KR', sans-serif;
+    }
+    .project-gallery-tabs button {
+        border: 0;
+        padding: 0;
+        color: rgba(80, 60, 45, .55);
+        background: none;
+        font-family: inherit;
+        font-size: clamp(.8rem, .95vw, 1.2rem);
+        transition: color .25s ease, font-size .25s ease;
+    }
+    .project-gallery-tabs button.is-active {
+        color: #111;
+        font-size: clamp(1rem, 1.25vw, 1.6rem);
+    }
+    .project-gallery-tabs button:hover, .project-gallery-tabs button:focus-visible {
+        color: #111;
+        background: none;
+    }
+
+    /* 카드 한 장 너비 + 간격만큼 트랙을 밀어 현재 카드를 왼쪽 기준 위치에 둔다 */
+    .project-gallery-viewport {
+        width: 100%;
+    }
+    .project-gallery-track {
+        display: flex;
+        gap: var(--card-gap);
+        padding-left: var(--card-left);
+        transform: translateX(calc(var(--index) * (var(--card-width) + var(--card-gap)) * -1 + var(--drag, 0) * 1px));
+        transition: transform .6s cubic-bezier(.2, .75, .25, 1);
+    }
+
+    .project-gallery.is-empty {
+        justify-content: flex-start;
+        padding-top: clamp(60px, 7vw, 120px);
+    }
+    .project-gallery-empty {
+        margin: auto 0;
+        color: rgba(60, 45, 30, .55);
+        font-family: 'Playfair Display', serif;
+        font-size: clamp(2rem, 5vw, 5.5rem);
+        letter-spacing: .08em;
+    }
+
+    /* 보기 전환 시 스테이지 전체를 부드럽게 교체 */
+    .project-gallery-stage {
+        width: 100%;
+        /* 가로 드래그는 갤러리가, 세로 스크롤은 브라우저가 처리 */
+        touch-action: pan-y;
+        cursor: grab;
+        animation: project-gallery-swap .6s ease both;
+    }
+    .project-gallery.is-ring .project-gallery-stage {
+        /* 원통 보기는 화면 아래쪽에 조금 더 가깝게 */
+        margin-top: clamp(24px, 4.5vw, 110px);
+        margin-bottom: clamp(12px, 2vw, 48px);
+    }
+
+    /* 이미지를 끌면 브라우저 기본 이미지 드래그 대신 갤러리가 넘어가도록 */
+    .project-gallery img {
+        -webkit-user-drag: none;
+        user-select: none;
+    }
+    /* 끄는 동안에는 애니메이션 없이 손을 바로 따라온다 */
+    .project-gallery.is-dragging .project-ring-spin, .project-gallery.is-dragging .project-gallery-track {
+        transition: none;
+    }
+    .project-gallery.is-dragging, .project-gallery.is-dragging * {
+        cursor: grabbing !important;
+        user-select: none;
+    }
+
+    .project-gallery-bottom {
+        display: flex;
+        align-items: center;
+        gap: clamp(8px, .6vw, 12px);
+    }
+    .project-view-toggle {
+        display: grid;
+        place-items: center;
+        width: clamp(44px, 3.4vw, 64px);
+        height: clamp(44px, 3.4vw, 64px);
+        border: 0;
+        border-radius: 50%;
+        padding: 0;
+        color: #fff;
+        transition: transform .2s ease;
+    }
+    .project-view-toggle:hover, .project-view-toggle:focus-visible {
+        background: rgba(120, 130, 145, .7);
+        transform: scale(1.06);
+    }
+    .project-view-toggle .icon-ring {
+        width: 42%;
+        height: 42%;
+        border: 2px dashed #fff;
+        border-radius: 50%;
+    }
+    .project-view-toggle .icon-lines {
+        display: grid;
+        gap: 3px;
+        width: 38%;
+    }
+    .project-view-toggle .icon-lines i {
+        display: block;
+        height: 2px;
+        background: #fff;
+    }
+    .project-view-toggle .icon-lines i:nth-child(2) {
+        width: 70%;
+        margin-left: 30%;
+    }
+
+    @keyframes :global(project-gallery-swap) {
+        from {
+            opacity: 0;
+            transform: scale(.97);
+        }
+    }
+    @keyframes :global(project-gallery-in) {
+        from {
+            opacity: 0;
+        }
+    }
+
+    @media (max-width: 900px) {
+        .project-gallery {
+            --card-width: 86vw;
+            --card-gap: 2.5vw;
+            --card-left: calc((100vw - var(--card-width)) / 2);
+            justify-content: flex-start;
+            padding-top: 90px;
+            overflow-x: hidden;
+            overflow-y: auto;
+        }
+    }
+}

@@ -1,0 +1,53 @@
+.scope {
+    isolation: isolate;
+}
+
+:global {
+    /* 밝은 썸네일 위에서도 잘 보이도록 진한 단색 배경 + 흰 글씨 */
+    .work-badge {
+        --badge-bg: #3b2a1c;
+        --badge-dot: #f0c27a;
+        position: absolute;
+        z-index: 2;
+        top: clamp(8px, .9vw, 18px);
+        left: clamp(8px, .9vw, 18px);
+        display: inline-flex;
+        align-items: center;
+        gap: .5em;
+        padding: .6em 1em;
+        border-radius: 999px;
+        color: #fff;
+        background: var(--badge-bg);
+        box-shadow: 0 .25vw 1vw rgba(40, 25, 10, .35);
+        font-family: 'Inter', sans-serif;
+        font-size: clamp(.6rem, .68vw, .85rem);
+        font-weight: 700;
+        letter-spacing: .12em;
+        line-height: 1;
+        white-space: nowrap;
+        pointer-events: none;
+    }
+    .work-badge::before {
+        width: .55em;
+        height: .55em;
+        border-radius: 50%;
+        content: '';
+        background: var(--badge-dot);
+        box-shadow: 0 0 .5em var(--badge-dot);
+    }
+    /* CLIENT WORK: 진한 브라운 + 골드 점 */
+    .work-badge.is-client {
+        --badge-bg: #3b2a1c;
+        --badge-dot: #f0c27a;
+    }
+    /* IN-HOUSE: 딥 네이비 + 하늘색 점 */
+    .work-badge.is-in-house {
+        --badge-bg: #1f3350;
+        --badge-dot: #8fc4ff;
+    }
+    /* PROPOSAL: 골드 배경 + 크림 점 */
+    .work-badge.is-proposal {
+        --badge-bg: #a8742f;
+        --badge-dot: #fff3d6;
+    }
+}

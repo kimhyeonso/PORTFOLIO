@@ -1,0 +1,43 @@
+.scope {
+    isolation: isolate;
+}
+
+:global {
+    .project-thumbs {
+        display: flex;
+        gap: .6vw;
+        max-width: 90vw;
+        overflow-x: auto;
+        padding: .5vw;
+        background: rgba(255, 255, 255, .9);
+        scrollbar-width: none;
+    }
+    .project-thumbs::-webkit-scrollbar {
+        display: none;
+    }
+    .project-thumbs button {
+        flex: 0 0 auto;
+        border: 2px solid transparent;
+        padding: 0;
+        background: none;
+        opacity: .75;
+        transition: opacity .2s ease, border-color .2s ease;
+    }
+    .project-thumbs button.is-active {
+        border-color: #111;
+        opacity: 1;
+    }
+    .project-thumbs button:hover, .project-thumbs button:focus-visible {
+        background: none;
+        opacity: 1;
+    }
+    .project-thumbs img, .project-thumbs .is-empty {
+        display: block;
+        width: clamp(56px, 3.9vw, 90px);
+        aspect-ratio: 885 / 606;
+        object-fit: cover;
+    }
+    .project-thumbs .is-empty {
+        background: #fff5f5;
+    }
+}

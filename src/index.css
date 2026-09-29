@@ -1,0 +1,56 @@
+:root {
+    font-family: Arial, sans-serif;
+    color: #151515;
+    background: #f6f5f2;
+}
+* {
+    box-sizing: border-box;
+}
+body {
+    margin: 0;
+}
+button {
+    font: inherit;
+    cursor: pointer;
+}
+header, main, footer {
+    width: min(1200px, calc(100% - 40px));
+    margin: 0 auto;
+}
+header, footer {
+    padding: 20px 0;
+}
+header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+}
+nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+main {
+    min-height: calc(100vh - 140px);
+    padding: 72px 0;
+}
+section {
+    margin: 32px 0;
+}
+h1 {
+    font-size: clamp(2.5rem, 8vw, 6rem);
+    margin: 0 0 16px;
+}
+h2 {
+    margin: 0 0 8px;
+}
+button {
+    border: 1px solid currentColor;
+    background: transparent;
+    padding: 10px 14px;
+}
+button:hover {
+    background: #151515;
+    color: #fff;
+}

@@ -1,0 +1,46 @@
+.scope {
+    isolation: isolate;
+    animation: intro-enter-pop 700ms both, intro-enter-blink 1.1s steps(2) infinite 700ms;
+}
+
+@keyframes intro-enter-pop {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -35%) scale(.8);
+    }
+    to {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+    }
+}
+
+@keyframes intro-enter-blink {
+    50% {
+        opacity: .55;
+        transform: translateX(-50%) scale(.98);
+    }
+}
+:global {
+    .intro-enter {
+        position: absolute;
+        z-index: 8;
+        bottom: clamp(40px, 7vh, 92px);
+        left: 50%;
+        transform: translateX(-50%);
+        min-width: clamp(220px, 20vw, 410px);
+        border: 0;
+        border-radius: 18px;
+        padding: clamp(17px, 1.9vw, 31px) 28px;
+        color: #1f3045;
+        background: #fff;
+        box-shadow: 0 12px 0 rgba(7, 34, 61, .25);
+        font-family: 'Press Start 2P', monospace;
+        font-size: clamp(.82rem, 1.45vw, 1.55rem);
+        line-height: 1.25;
+    }
+    .intro-enter:hover, .intro-enter:focus-visible {
+        color: #fff;
+        background: #274e77;
+        outline: 3px solid #ffe47b;
+    }
+}

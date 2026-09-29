@@ -1,0 +1,38 @@
+.scope {
+    isolation: isolate;
+}
+
+:global {
+    .menu-button {
+        position: absolute;
+        z-index: 10;
+        top: clamp(22px, 4vw, 56px);
+        right: clamp(18px, 3.2vw, 64px);
+        display: grid;
+        gap: clamp(5px, .5vw, 8px);
+        width: clamp(34px, 2.6vw, 50px);
+        border: 0;
+        padding: 6px 0;
+        background: none;
+    }
+    .menu-button span {
+        display: block;
+        height: clamp(3px, .25vw, 5px);
+        transition: transform .2s ease;
+    }
+    .menu-button.is-light {
+        filter: drop-shadow(2px 2px 0 rgba(60, 40, 20, .35));
+    }
+    .menu-button.is-light span {
+        background: #fff;
+    }
+    .menu-button.is-dark span {
+        background: #1a1a1a;
+    }
+    .menu-button:hover, .menu-button:focus-visible {
+        background: none;
+    }
+    .menu-button:hover span:nth-child(2) {
+        transform: translateX(-20%);
+    }
+}

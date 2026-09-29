@@ -1,0 +1,150 @@
+.scope {
+    isolation: isolate;
+}
+
+:global {
+    /*
+     * 원통 반지름 = 카드 너비 / (2 × tan(180° / 개수))
+     * 띠 너비 = 2 × 반지름 × tan(한 칸 각도 / 2 / 띠 수) — 띠끼리 틈 없이 맞물리도록 1px 겹친다.
+     * 앞면이 원래 크기로 보이게 원통 전체를 반지름만큼 뒤로 민다.
+     */
+    .project-ring {
+        --panel-width: 30vw;
+        --panel-height: calc(var(--panel-width) * 1.02);
+        --radius: calc(var(--panel-width) / (2 * tan(180deg / var(--count))));
+        --strip-width: calc(2 * var(--radius) * tan(180deg / var(--count) / var(--strips)) + 1px);
+        position: relative;
+        width: 100%;
+        height: var(--panel-height);
+        perspective: 110vw;
+        perspective-origin: 50% 25%;
+        /* 아래쪽 물 반사 (Chrome, Edge, Safari) */
+        -webkit-box-reflect: below 1.2vw linear-gradient(transparent 72%, rgba(255, 255, 255, .32));
+    }
+    /* 넘길 때 시소 움직임 레이어: 화면 가운데(앞면 중앙)를 축으로 기운다 */
+    .project-ring-kick {
+        position: absolute;
+        inset: 0;
+        transform-style: preserve-3d;
+        transform-origin: 50% 50% 0;
+    }
+    .project-ring-spin {
+        position: absolute;
+        inset: 0;
+        transform-style: preserve-3d;
+        /* --drag: 끄는 중인 거리(px 숫자), --drag-deg: 1px당 회전 각도 — 갤러리가 드래그 중에 직접 바꾼다 */
+        transform: translateZ(calc(var(--radius) * -1)) rotateY(calc(var(--rotation) + var(--drag, 0) * var(--drag-deg, 0deg)));
+        /* 처음부터 빠르게 움직이고 끝에서 부드럽게 멈추는 곡선 */
+        transition: transform .75s cubic-bezier(.2, .75, .25, 1);
+    }
+
+    /* 처음 들어올 때: 3바퀴 반을 빠르게 돌다가 점점 느려지며 01(회전 0°)에서 멈춘다 */
+    .project-ring.is-intro .project-ring-spin {
+        animation: project-ring-intro 2.6s cubic-bezier(.12, .55, .18, 1) both;
+    }
+    .project-ring.is-intro {
+        pointer-events: none;
+    }
+    @keyframes :global(project-ring-intro) {
+        from {
+            transform: translateZ(calc(var(--radius) * -1)) rotateY(1260deg);
+        }
+        to {
+            transform: translateZ(calc(var(--radius) * -1)) rotateY(0deg);
+        }
+    }
+
+    .project-ring-strip {
+        position: absolute;
+        top: 0;
+        left: 50%;
+        width: var(--strip-width);
+        height: 100%;
+        margin-left: calc(var(--strip-width) / -2);
+        overflow: hidden;
+        background: #fffdf9;
+        transform: rotateY(var(--angle)) translateZ(var(--radius));
+        backface-visibility: hidden;
+        cursor: pointer;
+        /* 앞면이 아닌 카드는 아주 살짝만 톤다운 (회색으로 탁해지지 않게 밝기만 조금) */
+        filter: brightness(.975);
+        transition: filter .4s ease;
+    }
+    .project-ring-strip.is-active {
+        filter: none;
+    }
+
+    /* 띠마다 카드 전체를 넣고, 띠 순서만큼 왼쪽으로 밀어 해당 부분만 보이게 한다 */
+    .project-ring-face {
+        display: flex;
+        flex-direction: column;
+        gap: 1.4vw;
+        width: var(--panel-width);
+        height: 100%;
+        box-sizing: border-box;
+        padding: 2vw 1.8vw 1.8vw;
+        color: #2b2520;
+        /* 위는 밝은 크림, 아래로 갈수록 따뜻한 베이지 — 배경 홀의 햇살 톤과 맞춤 */
+        background: linear-gradient(180deg, #fffefb 0%, #fdf8f0 55%, #f7eee2 100%);
+        transform: translateX(calc(var(--panel-width) / var(--strips) * var(--s) * -1));
+        user-select: none;
+    }
+    .project-ring-info {
+        /* 제목 크기를 이 칸의 너비(100cqi) 기준으로 계산하기 위해 */
+        container-type: inline-size;
+        display: grid;
+        gap: .55vw;
+    }
+    .project-ring-number {
+        width: fit-content;
+        padding-bottom: .3vw;
+        border-bottom: 1px solid currentColor;
+        font-family: 'Inter', sans-serif;
+        font-size: clamp(.7rem, .85vw, 1.1rem);
+    }
+    .project-ring-info strong {
+        margin-top: .4vw;
+        overflow: hidden;
+        /* 카드 보기 제목(.project-card-info h2)과 같은 글씨체 */
+        color: #111;
+        font-family: 'Inter', 'Noto Sans KR', sans-serif;
+        /* 긴 제목은 칸 너비 ÷ 제목 너비(--title-em)로 줄여 잘리지 않고 한 줄에 들어가게 */
+        font-size: min(clamp(1.2rem, 1.9vw, 2.6rem), 100cqi / var(--title-em, 1));
+        font-weight: 700;
+        letter-spacing: -.01em;
+        line-height: 1.1;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+    .project-ring-type {
+        color: #6d6258;
+        font-family: 'Inter', 'Noto Sans KR', sans-serif;
+        font-size: clamp(.6rem, .72vw, .95rem);
+    }
+    /* 썸네일 영역: 남은 높이를 채우고, 실무 뱃지를 왼쪽 위에 올린다 */
+    .project-ring-media {
+        position: relative;
+        flex: 1;
+        min-height: 0;
+    }
+    .project-ring-media img, .project-ring-empty {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    .project-ring-empty {
+        background: linear-gradient(180deg, #fdf3ec, #f8e9e0);
+    }
+
+    @media (max-width: 900px) {
+        .project-ring {
+            --panel-width: 58vw;
+            perspective: 180vw;
+        }
+        .project-ring-face {
+            gap: 12px;
+            padding: 18px 16px 16px;
+        }
+    }
+}

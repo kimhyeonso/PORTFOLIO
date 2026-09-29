@@ -1,0 +1,140 @@
+.scope {
+    isolation: isolate;
+}
+
+:global {
+    .project-card {
+        display: grid;
+        flex: 0 0 var(--card-width);
+        grid-template-columns: 54% 1fr;
+        gap: 5%;
+        align-items: center;
+        box-sizing: border-box;
+        padding: 1.6vw 2.6vw;
+        color: #111;
+        background: #fff;
+        box-shadow: 0 1.2vw 3vw rgba(90, 60, 30, .12);
+        transition: opacity .5s ease, transform .5s ease;
+    }
+    .project-card:not(.is-active) {
+        cursor: pointer;
+    }
+    .project-card-media {
+        position: relative;
+    }
+    .project-card-thumb {
+        display: block;
+        width: 100%;
+        aspect-ratio: 885 / 606;
+        object-fit: contain;
+    }
+    .project-card-thumb.is-empty {
+        background: #fff5f5;
+    }
+    .project-card-tools {
+        position: absolute;
+        right: 3%;
+        bottom: 4%;
+        display: flex;
+        gap: .8vw;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+    }
+    .project-card-tools img {
+        display: block;
+        width: clamp(34px, 3.4vw, 72px);
+        height: clamp(34px, 3.4vw, 72px);
+        border-radius: 18%;
+        box-shadow: 0 .3vw .8vw rgba(0, 0, 0, .18);
+    }
+    .project-card-tools a {
+        display: block;
+        transition: transform .2s ease;
+    }
+    .project-card-tools a:hover, .project-card-tools a:focus-visible {
+        transform: translateY(-3px);
+    }
+
+    .project-card-info {
+        /* 제목 크기를 이 칸의 너비(100cqi) 기준으로 계산하기 위해 */
+        container-type: inline-size;
+        font-family: 'Inter', 'Noto Sans KR', sans-serif;
+    }
+    .project-card-info p, .project-card-info h2 {
+        margin: 0;
+    }
+    .project-card-number {
+        font-size: calc(clamp(1rem, 1.55vw, 2rem) - 1px);
+        font-weight: 400;
+    }
+    .project-card-info h2 {
+        margin-top: clamp(16px, 2.6vw, 56px);
+        /* 기본 크기로 한 줄에 안 들어가는 긴 제목만 칸 너비 ÷ 제목 너비(--title-em)로 줄여 한 줄에 맞춘다 */
+        font-size: min(calc(clamp(1.8rem, 2.9vw, 3.8rem) - 1px), 100cqi / var(--title-em, 1));
+        white-space: nowrap;
+        font-weight: 700;
+        letter-spacing: -.01em;
+        line-height: 1.1;
+    }
+    .project-card-type {
+        margin-top: .6vw !important;
+        color: #555;
+        font-size: calc(clamp(1rem, 1.35vw, 1.8rem) - 1px);
+    }
+    .project-card-meta {
+        display: grid;
+        gap: .5vw;
+        margin-top: clamp(14px, 2.4vw, 52px);
+        color: #666;
+        font-size: calc(clamp(.8rem, 1.05vw, 1.35rem) - 1px);
+    }
+    .project-card-description {
+        margin-top: clamp(14px, 2.6vw, 56px) !important;
+        color: #222;
+        font-size: calc(clamp(.9rem, 1.25vw, 1.6rem) - 1px);
+        line-height: 1.35;
+        word-break: keep-all;
+    }
+    .project-card-actions {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: baseline;
+        gap: clamp(16px, 2vw, 40px);
+        margin-top: clamp(14px, 2.6vw, 56px);
+    }
+    .project-card-detail {
+        display: inline-block;
+        border: 0;
+        text-decoration: none;
+        border-bottom: 2px solid #111;
+        padding: 0 0 2px;
+        color: #111;
+        background: none;
+        font-family: inherit;
+        font-size: calc(clamp(.8rem, 1.05vw, 1.35rem) - 1px);
+        transition: gap .2s ease;
+    }
+    .project-card-detail span {
+        display: inline-block;
+        transition: transform .2s ease;
+    }
+    .project-card-detail:hover, .project-card-detail:focus-visible {
+        color: #111;
+        background: none;
+    }
+    .project-card-detail:hover span {
+        transform: translateX(4px);
+    }
+    .project-card-detail.is-link:hover span {
+        transform: translate(3px, -3px);
+    }
+
+    @media (max-width: 900px) {
+        .project-card {
+            grid-template-columns: 1fr;
+            gap: 20px;
+            padding: 20px;
+        }
+    }
+}

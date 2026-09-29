@@ -1,0 +1,54 @@
+.scope {
+    isolation: isolate;
+}
+
+:global {
+    .main-character {
+        --x: 50%;
+        --y: 10.5%;
+        --h: 44%;
+        position: absolute;
+        z-index: 4;
+        bottom: var(--y);
+        left: var(--x);
+        height: var(--h);
+        aspect-ratio: 338 / 508;
+        transform: translateX(-50%);
+        transition: left 1s ease-in-out, bottom 1s ease-in, height 1s ease-in;
+        pointer-events: none;
+    }
+    /* 네 방향 이미지를 겹쳐 두고 opacity로 바꿔 전환 깜빡임을 없앤다 */
+    .main-character img {
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        height: 100%;
+        opacity: 0;
+        transform: translateX(-50%);
+        filter: drop-shadow(0 1.2vh 1.2vh rgba(90, 60, 30, .25));
+        transition: opacity .18s ease;
+    }
+    .main-character img.is-active {
+        opacity: 1;
+    }
+    /* back.png는 위쪽 여백이 다른 이미지보다 커서(5% vs 1%) 같은 키로 보이도록 키운다 */
+    .main-character img[data-pose='back'] {
+        height: 105%;
+    }
+    .main-character:not(.is-walking) img.is-active {
+        animation: main-idle 2.4s ease-in-out infinite;
+    }
+    .main-character.is-walking img.is-active {
+        animation: main-walk .34s steps(2) infinite;
+    }
+    @keyframes :global(main-idle) {
+        50% {
+            transform: translateX(-50%) translateY(-.6%);
+        }
+    }
+    @keyframes :global(main-walk) {
+        50% {
+            transform: translateX(-50%) translateY(-3%) rotate(-1.5deg);
+        }
+    }
+}

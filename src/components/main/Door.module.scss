@@ -1,0 +1,47 @@
+.scope {
+    isolation: isolate;
+}
+
+:global {
+    .main-door {
+        position: absolute;
+        z-index: 3;
+        border: 0;
+        padding: 0;
+        background: none;
+        cursor: pointer;
+    }
+    .main-door:hover, .main-door:focus-visible {
+        color: inherit;
+        background: none;
+        outline: none;
+    }
+    /* 버튼 영역 = 위쪽 라벨 + 아치 문. 빛은 아래쪽 아치 부분에만 */
+    .main-door-glow {
+        position: absolute;
+        right: 6%;
+        bottom: 0;
+        left: 6%;
+        height: 78%;
+        border-radius: 50% 50% 0 0 / 28% 28% 0 0;
+        opacity: 0;
+        background: radial-gradient(ellipse at 50% 70%, color-mix(in srgb, var(--glow) 45%, transparent), transparent 70%);
+        box-shadow: 0 0 2.4vh color-mix(in srgb, var(--glow) 80%, transparent), inset 0 0 3vh color-mix(in srgb, var(--glow) 70%, transparent);
+        mix-blend-mode: screen;
+        transition: opacity .3s ease;
+        pointer-events: none;
+    }
+    .main-door.is-active .main-door-glow {
+        opacity: 1;
+        animation: main-door-pulse 1.4s ease-in-out infinite alternate;
+    }
+    .main-door:focus-visible .main-door-glow {
+        outline: 3px solid #ffe47b;
+        outline-offset: 4px;
+    }
+    @keyframes :global(main-door-pulse) {
+        to {
+            filter: brightness(1.35);
+        }
+    }
+}

@@ -1,0 +1,74 @@
+.scope {
+    isolation: isolate;
+}
+
+:global {
+    /* index.css의 main 기본 레이아웃(최대 폭, 패딩)을 덮어 전체 화면으로 쓴다 */
+    .main-hall {
+        position: relative;
+        width: 100%;
+        max-width: none;
+        height: 100dvh;
+        min-height: 0;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        background: #f3e6d2;
+        animation: main-hall-in .8s ease-out both;
+    }
+    .main-viewport {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+    }
+    /* 배경 비율(2074:1167)을 유지하며 화면을 꽉 채우는 박스. 문/캐릭터는 이 박스 기준 %로 배치 */
+    .main-stage {
+        position: relative;
+        top: 50%;
+        left: 50%;
+        width: max(100%, 100dvh * 2074 / 1167);
+        aspect-ratio: 2074 / 1167;
+        background: url('../assets/image/home/background.png') center / 100% 100% no-repeat;
+        transform: translate(-50%, -50%);
+    }
+    .main-hall.is-leaving::after {
+        position: absolute;
+        z-index: 20;
+        inset: 0;
+        content: '';
+        background: #fff8ea;
+        animation: main-hall-out .5s ease-in .6s both;
+    }
+
+    @keyframes :global(main-hall-in) {
+        from {
+            filter: brightness(2) saturate(.4);
+        }
+    }
+    @keyframes :global(main-hall-out) {
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
+    }
+
+    /* 세로 화면: 배경을 화면 높이에 맞추고 가로로 스와이프해 문을 둘러본다 */
+    @media (max-aspect-ratio: 1 / 1) {
+        .main-viewport {
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+        .main-viewport::-webkit-scrollbar {
+            display: none;
+        }
+        .main-stage {
+            top: 0;
+            left: 0;
+            width: auto;
+            height: 100%;
+            transform: none;
+        }
+    }
+}
