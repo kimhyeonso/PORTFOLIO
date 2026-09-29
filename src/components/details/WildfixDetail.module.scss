@@ -1,0 +1,233 @@
+@import url('https://fonts.googleapis.com/css2?family=Yaldevi:wght@300;400;500;600&display=swap');
+
+.scope {
+    isolation: isolate;
+}
+
+:global {
+    /*
+     * 시안(1920 × 18810px) 좌표를 그대로 쓰고, --u(= 컨테이너 너비 / 1920)를 곱해 팝업 너비에 맞게 줄인다.
+     * 요소마다 인라인 --x, --y, --w, --h, --size 값을 받는다.
+     */
+    .wf {
+        --navy: #25414c;
+        --orange: #ed711a;
+        --gray: #555;
+        container-type: inline-size;
+        background: #f9f9f9;
+    }
+    .wf-canvas {
+        --u: calc(100cqw / 1920);
+        position: relative;
+        height: calc(18810 * var(--u));
+        overflow: hidden;
+        color: var(--gray);
+        font-family: 'Noto Sans KR', 'Inter', sans-serif;
+    }
+    .wf-canvas > * {
+        position: absolute;
+        left: calc(var(--x, 0) * var(--u));
+        top: calc(var(--y, 0) * var(--u));
+        margin: 0;
+    }
+
+    .wf-pic {
+        display: block;
+        width: calc(var(--w) * var(--u));
+        height: auto;
+        user-select: none;
+    }
+    .wf-pic.is-blur {
+        filter: blur(calc(3 * var(--u)));
+    }
+    .wf-svg {
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+    }
+
+    /* 글자 (y는 글줄의 세로 가운데) */
+    .wf-text {
+        font-size: calc(var(--size) * var(--u));
+        line-height: 1.2;
+        white-space: nowrap;
+        transform: translateY(-50%);
+    }
+    .wf-text.is-center {
+        transform: translate(-50%, -50%);
+    }
+    .wf-text.is-right {
+        transform: translate(-100%, -50%);
+    }
+    .wf-text.is-white {
+        color: #fff;
+    }
+    .wf-text.is-dark {
+        color: #2e3a40;
+    }
+    .wf-strong {
+        font-family: 'Inter', 'Noto Sans KR', sans-serif;
+        font-weight: 700;
+    }
+    .wf-strong.is-dark {
+        color: var(--navy);
+    }
+    .wf-number {
+        color: var(--navy);
+        font-family: 'Inter', sans-serif;
+        font-weight: 700;
+        line-height: 1;
+    }
+    .wf-font {
+        font-family: 'Yaldevi', sans-serif;
+    }
+    .wf-font.is-300 {
+        font-weight: 300;
+    }
+    .wf-font.is-400 {
+        font-weight: 400;
+    }
+    .wf-font.is-500 {
+        font-weight: 500;
+    }
+    .wf-font.is-600 {
+        color: #444;
+        font-weight: 600;
+    }
+
+    /* 가운데 섹션 제목 · 왼쪽 큰 제목 */
+    .wf-heading, .wf-title {
+        color: var(--navy);
+        font-family: 'Inter', 'Noto Sans KR', sans-serif;
+        line-height: 1.2;
+        white-space: nowrap;
+    }
+    .wf-heading {
+        font-size: calc(28 * var(--u));
+        font-weight: 700;
+        transform: translate(-50%, -50%);
+    }
+    .wf-title {
+        font-size: calc(32 * var(--u));
+        font-weight: 400;
+        transform: translateY(-50%);
+    }
+
+    /* 상자들 */
+    .wf-box {
+        box-sizing: border-box;
+        width: calc(var(--w) * var(--u));
+        height: calc(var(--h) * var(--u));
+    }
+    .wf-fill {
+        background: var(--navy);
+    }
+    .wf-line {
+        background: var(--orange);
+    }
+    .wf-design-box, .wf-pill, .wf-node {
+        display: grid;
+        place-items: center;
+        white-space: nowrap;
+    }
+    .wf-design-box {
+        color: #fff;
+        background: var(--navy);
+        font-family: 'Inter', sans-serif;
+        font-size: calc(34 * var(--u));
+        font-weight: 700;
+    }
+    .wf-pill {
+        border: calc(1.5 * var(--u)) solid var(--navy);
+        border-radius: 999px;
+        font-size: calc(22 * var(--u));
+    }
+    .wf-pill.is-filled {
+        color: #fff;
+        background: var(--navy);
+        font-size: calc(30 * var(--u));
+        font-weight: 700;
+    }
+    .wf-node {
+        border-radius: 999px;
+        color: #fff;
+        background: var(--navy);
+        font-family: 'Inter', 'Noto Sans KR', sans-serif;
+        font-size: calc(28 * var(--u));
+    }
+    .wf-paragraph {
+        font-size: calc(22 * var(--u));
+        line-height: 1.64;
+        word-break: keep-all;
+    }
+    /* 로고 뒤 모눈 */
+    .wf-grid {
+        border: calc(1 * var(--u)) solid #ececec;
+        background:
+            linear-gradient(#ececec calc(1 * var(--u)), transparent 0) 0 0 / calc(24 * var(--u)) calc(24 * var(--u)),
+            linear-gradient(90deg, #ececec calc(1 * var(--u)), transparent 0) 0 0 / calc(24 * var(--u)) calc(24 * var(--u));
+    }
+    /* 상품 상세 설명 영역 테두리 */
+    .wf-frame {
+        border: calc(3 * var(--u)) solid var(--navy);
+    }
+
+    /* 로그인 화면 옆 확대 설명 상자 */
+    .wf-callout {
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        border-radius: calc(8 * var(--u)) calc(8 * var(--u)) 0 0;
+        background: #fff;
+        color: #555;
+        font-size: calc(11 * var(--u));
+        text-align: center;
+    }
+    .wf-callout > span {
+        display: flex;
+        flex: 1;
+        align-items: center;
+        justify-content: center;
+        gap: .3em;
+        border-bottom: calc(1 * var(--u)) solid #eee;
+    }
+    .wf-callout .is-head {
+        background: #dcdcdc;
+        color: #333;
+    }
+    .wf-callout .is-red {
+        color: #e0312f;
+    }
+    .wf-callout .is-bar {
+        flex: none;
+        justify-content: flex-start;
+        height: calc(22 * var(--u));
+        padding-left: calc(6 * var(--u));
+        background: #dcdcdc;
+        font-family: 'Yaldevi', serif;
+        font-size: calc(9 * var(--u));
+        font-weight: 600;
+    }
+    .wf-callout .is-alert {
+        display: block;
+        flex: none;
+        margin-top: calc(18 * var(--u));
+        border: 0;
+        color: #222;
+        font-size: calc(10 * var(--u));
+        line-height: 1.7;
+    }
+    .wf-callout .is-button {
+        flex: none;
+        align-self: center;
+        width: calc(42 * var(--u));
+        height: calc(14 * var(--u));
+        margin: calc(10 * var(--u)) auto 0;
+        border: 0;
+        border-radius: 999px;
+        color: #fff;
+        background: var(--navy);
+        font-size: calc(8 * var(--u));
+    }
+}

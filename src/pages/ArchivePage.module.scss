@@ -1,1 +1,109 @@
+.scope {
+    isolation: isolate;
+}
 
+:global {
+    .work-page {
+        --work-accent: #9d8fe3;
+        --bar-height: clamp(96px, 9vw, 170px);
+        position: relative;
+        /* 전역 main의 폭 제한·여백을 풀고 화면 전체를 쓴다 */
+        width: 100%;
+        max-width: none;
+        min-height: 100vh;
+        margin: 0;
+        padding: var(--bar-height) clamp(20px, 5vw, 110px) clamp(60px, 8vw, 160px);
+        color: #1d1b19;
+        background: #efe3d3;
+    }
+    /* Design/Frontend와 같은 홀 배경을 화면에 고정하고, 글이 잘 읽히도록 크림빛을 옅게 덮는다 */
+    .work-page::before, .work-page::after {
+        content: '';
+        position: fixed;
+        z-index: -1;
+        inset: 0;
+        pointer-events: none;
+    }
+    .work-page::before {
+        background: var(--gallery-bg) center / cover no-repeat;
+    }
+    .work-page::after {
+        background: linear-gradient(rgba(246, 239, 229, .72), rgba(246, 239, 229, .82));
+    }
+
+    /* 위쪽 고정 막대: 왼쪽 홈 버튼 · 가운데 회사 탭 · 오른쪽 메뉴 버튼 (버튼 위치는 갤러리 페이지와 같다) */
+    .work-page-bar {
+        position: fixed;
+        z-index: 20;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: var(--bar-height);
+        /* 스크롤하는 내용이 막대 아래로 부드럽게 사라지게 */
+        background: linear-gradient(rgba(246, 239, 229, .98) 72%, rgba(246, 239, 229, 0));
+        pointer-events: none;
+    }
+    .work-page-bar > * {
+        pointer-events: auto;
+    }
+
+    /* Design/Frontend 탭(.project-gallery-tabs)과 같은 모양 */
+    .work-page-tabs {
+        position: absolute;
+        top: clamp(26px, 4.4vw, 66px);
+        left: 50%;
+        display: flex;
+        align-items: baseline;
+        gap: clamp(12px, 1.2vw, 28px);
+        transform: translateX(-50%);
+        font-family: 'Inter', 'Noto Sans KR', sans-serif;
+    }
+    .work-page-tabs button {
+        border: 0;
+        padding: 0;
+        color: rgba(80, 60, 45, .55);
+        background: none;
+        font-family: inherit;
+        font-size: clamp(.8rem, .95vw, 1.2rem);
+        transition: color .25s ease, font-size .25s ease;
+    }
+    .work-page-tabs button.is-active {
+        color: #111;
+        font-size: clamp(1rem, 1.25vw, 1.6rem);
+    }
+    .work-page-tabs button:hover, .work-page-tabs button:focus-visible {
+        color: #111;
+        background: none;
+    }
+
+    .work-page-company {
+        margin: 0;
+        /* 탭으로 이동했을 때 위쪽 막대에 가리지 않게 */
+        scroll-margin-top: calc(var(--bar-height) - 40px);
+    }
+    /* 회사 이름은 탭이 대신 보여주므로 화면에서는 숨기고 스크린리더에만 읽힌다 */
+    .work-page-company-title {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip-path: inset(50%);
+        white-space: nowrap;
+    }
+    /* 회사 묶음 사이 구분선 */
+    .work-page-company + .work-page-company {
+        margin-top: clamp(30px, 4vw, 80px);
+        border-top: 1px solid rgba(80, 60, 45, .16);
+    }
+
+    /* 화면에 들어오면 아래에서 떠오른다 */
+    .work-page-reveal {
+        opacity: 0;
+        transform: translateY(48px);
+        transition: opacity .9s ease, transform .9s cubic-bezier(.2, .75, .25, 1);
+    }
+    .work-page-reveal.is-visible {
+        opacity: 1;
+        transform: none;
+    }
+}

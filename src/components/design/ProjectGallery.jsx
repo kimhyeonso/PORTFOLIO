@@ -1,7 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
+import ExitButton from '../common/ExitButton.jsx'
 import MenuButton from '../common/MenuButton.jsx'
 import ProjectCard from './ProjectCard.jsx'
 import ProjectControlBar from './ProjectControlBar.jsx'
+import ProjectModal from './ProjectModal.jsx'
 import ProjectRing from './ProjectRing.jsx'
 import styles from './ProjectGallery.module.scss'
 
@@ -20,10 +22,13 @@ function stepWidth(mode) {
  * 디자인/프론트엔드 공용 갤러리. 두 가지 보기를 오른쪽 아래 버튼으로 전환한다.
  *   ring: 썸네일을 원통에 둘러 붙여 돌려 보는 보기 (기본)
  *   card: 정보가 들어간 카드를 가로로 넘겨 보는 보기
+ * imageOnly: 원통 보기 카드에서 글자를 빼고 썸네일만 보여준다.
+ * onExit: 넘기면 왼쪽 위에 홈으로 나가는 문 버튼을 띄운다.
+ * 카드의 [세부정보](또는 카드 보기에서 아래 조작 바 제목)를 누르면 새 페이지 대신 ProjectModal 팝업(이미지만)이 열린다.
  * 탭은 해당 분류의 첫 카드로 이동하고, 현재 카드의 분류가 탭에 표시된다.
  * 이동: 탭 · 아래 조작 바 · 옆 카드 클릭 · ←/→ 키 · 마우스 휠 · 클릭 드래그 / 터치 스와이프
  */
-export default function ProjectGallery({ projects, tabs, background, label, onOpen, onMenuToggle }) {
+export default function ProjectGallery({ projects, tabs, background, label, onMenuToggle, imageOnly = false, onExit }) {
     const count = projects.length
     // 원통이 짧은 방향으로 돌도록 index 대신 끝없이 늘어나는 회전 칸 수를 기억한다
     const [position, setPosition] = useState(0)
@@ -40,6 +45,10 @@ export default function ProjectGallery({ projects, tabs, background, label, onOp
     const draggedRef = useRef(false)
     const galleryRef = useRef(null)
     const index = ((position % count) + count) % count
+    // 팝업으로 보고 있는 프로젝트 (없으면 null)
+    const [detail, setDetail] = useState(null)
+    // detail: false인 프로젝트는 세부정보 팝업이 없다
+    const openDetail = (project) => project.detail !== false && setDetail(project)
     const activeCategory = projects[index]?.category
 
     const go = (target) => {
@@ -64,6 +73,8 @@ export default function ProjectGallery({ projects, tabs, background, label, onOp
 
     useEffect(() => {
         const onKeyDown = (event) => {
+            // 팝업이 열려 있으면 뒤 갤러리는 넘기지 않는다
+            if (detail) return
             if (event.key === 'ArrowRight') step(1)
             if (event.key === 'ArrowLeft') step(-1)
         }
@@ -131,6 +142,7 @@ export default function ProjectGallery({ projects, tabs, background, label, onOp
     if (count === 0) {
         return (
             <main className={`${styles.scope} project-gallery is-empty`} style={{ '--gallery-bg': `url(${background})` }} aria-label={label}>
+                {onExit && <ExitButton onClick={onExit} tone="dark" />}
                 <MenuButton onClick={onMenuToggle} tone="dark" />
                 <nav className="project-gallery-tabs" aria-label={`${label} 분류`}>
                     {tabs.map((tab, tabIndex) => <button className={tabIndex === 0 ? 'is-active' : ''} type="button" key={tab.key}>{tab.label}</button>)}
@@ -141,38 +153,43 @@ export default function ProjectGallery({ projects, tabs, background, label, onOp
     }
 
     return (
-        <main className={`${styles.scope} project-gallery is-${mode}`} ref={galleryRef} style={{ '--gallery-bg': `url(${background})` }} aria-label={label} onWheel={handleWheel} onPointerDown={handlePointerDown} onPointerMove={handlePointerMove} onPointerUp={handlePointerUp} onPointerCancel={handlePointerUp} onClickCapture={handleClickCapture}>
-            <MenuButton onClick={onMenuToggle} tone="dark" />
+        <>
+            <main className={`${styles.scope} project-gallery is-${mode}`} ref={galleryRef} style={{ '--gallery-bg': `url(${background})` }} aria-label={label} onWheel={handleWheel} onPointerDown={handlePointerDown} onPointerMove={handlePointerMove} onPointerUp={handlePointerUp} onPointerCancel={handlePointerUp} onClickCapture={handleClickCapture}>
+                {onExit && <ExitButton onClick={onExit} tone="dark" />}
+                <MenuButton onClick={onMenuToggle} tone="dark" />
 
-            <nav className="project-gallery-tabs" aria-label={`${label} 분류`}>
-                {tabs.map((tab) => (
-                    <button className={tab.key === activeCategory ? 'is-active' : ''} type="button" key={tab.key} onClick={() => selectTab(tab.key)} aria-current={tab.key === activeCategory ? 'true' : undefined}>
-                        {tab.label}
-                    </button>
-                ))}
-            </nav>
+                <nav className="project-gallery-tabs" aria-label={`${label} 분류`}>
+                    {tabs.map((tab) => (
+                        <button className={tab.key === activeCategory ? 'is-active' : ''} type="button" key={tab.key} onClick={() => selectTab(tab.key)} aria-current={tab.key === activeCategory ? 'true' : undefined}>
+                            {tab.label}
+                        </button>
+                    ))}
+                </nav>
 
-            <div className="project-gallery-stage" aria-live="polite" key={mode}>
-                {mode === 'ring' ? (
-                    <ProjectRing projects={projects} position={position} activeIndex={index} onSelect={go} onOpenActive={() => changeMode('card')} intro={intro} onIntroEnd={() => setIntro(false)} />
-                ) : (
-                    <div className="project-gallery-viewport">
-                        <div className="project-gallery-track" style={{ '--index': index }}>
-                            {projects.map((project, cardIndex) => (
-                                <ProjectCard key={project.slug} project={project} isActive={cardIndex === index} onSelect={() => go(cardIndex)} onOpen={() => onOpen(project)} />
-                            ))}
+                <div className="project-gallery-stage" aria-live="polite" key={mode}>
+                    {mode === 'ring' ? (
+                        <ProjectRing projects={projects} position={position} activeIndex={index} onOpen={(target) => { go(target); changeMode('card') }} intro={intro} onIntroEnd={() => setIntro(false)} imageOnly={imageOnly} />
+                    ) : (
+                        <div className="project-gallery-viewport">
+                            <div className="project-gallery-track" style={{ '--index': index }}>
+                                {projects.map((project, cardIndex) => (
+                                    <ProjectCard key={project.slug} project={project} isActive={cardIndex === index} onSelect={() => go(cardIndex)} onOpen={() => openDetail(project)} />
+                                ))}
+                            </div>
                         </div>
-                    </div>
-                )}
-            </div>
+                    )}
+                </div>
 
-            <div className="project-gallery-bottom">
-                {/* 두 보기 공통 조작 바. 제목을 누르면 원통 보기에선 카드 보기로, 카드 보기에선 상세 페이지로 */}
-                <ProjectControlBar project={projects[index]} onPrev={() => step(-1)} onNext={() => step(1)} onOpen={() => (mode === 'ring' ? changeMode('card') : onOpen(projects[index]))} />
-                <button className="project-view-toggle" type="button" onClick={() => changeMode(mode === 'ring' ? 'card' : 'ring')} aria-label={mode === 'ring' ? '카드 보기로 전환' : '원통 보기로 전환'}>
-                    {mode === 'ring' ? <span className="icon-lines" aria-hidden="true"><i /><i /><i /></span> : <span className="icon-ring" aria-hidden="true" />}
-                </button>
-            </div>
-        </main>
+                <div className="project-gallery-bottom">
+                    {/* 두 보기 공통 조작 바. 제목을 누르면 원통 보기에선 카드 보기로, 카드 보기에선 세부정보 팝업으로 */}
+                    <ProjectControlBar project={projects[index]} onPrev={() => step(-1)} onNext={() => step(1)} onOpen={() => (mode === 'ring' ? changeMode('card') : openDetail(projects[index]))} />
+                    <button className="project-view-toggle" type="button" onClick={() => changeMode(mode === 'ring' ? 'card' : 'ring')} aria-label={mode === 'ring' ? '카드 보기로 전환' : '원통 보기로 전환'}>
+                        {mode === 'ring' ? <span className="icon-lines" aria-hidden="true"><i /><i /><i /></span> : <span className="icon-ring" aria-hidden="true" />}
+                    </button>
+                </div>
+            </main>
+            {/* 갤러리의 휠·드래그 처리에 걸리지 않도록 main 바깥에 띄운다 */}
+            {detail && <ProjectModal project={detail} onClose={() => setDetail(null)} />}
+        </>
     )
 }

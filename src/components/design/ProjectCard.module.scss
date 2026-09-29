@@ -33,6 +33,7 @@
     }
     .project-card-tools {
         position: absolute;
+        z-index: 2; /* 호버 오버레이 위에 */
         right: 3%;
         bottom: 4%;
         display: flex;
@@ -56,6 +57,72 @@
         transform: translateY(-3px);
     }
 
+    /*
+     * 썸네일 호버 오버레이: 이미지가 어두워지며 가운데에 흰 테두리 버튼이 나타난다 (앞에 있는 카드만)
+     * 키보드로 버튼에 포커스해도 나타난다
+     */
+    .project-card-overlay {
+        position: absolute;
+        z-index: 1;
+        inset: 0;
+        display: flex;
+        flex-wrap: wrap;
+        align-content: center;
+        justify-content: center;
+        gap: clamp(10px, 1.1vw, 18px);
+        padding: 6%;
+        background: rgba(12, 12, 12, .72);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity .3s ease;
+    }
+    .project-card.is-active .project-card-media:hover .project-card-overlay,
+    .project-card.is-active .project-card-overlay:focus-within {
+        opacity: 1;
+        pointer-events: auto;
+    }
+    .project-card-action {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: clamp(96px, 8vw, 150px);
+        box-sizing: border-box;
+        border: 1.5px solid #fff;
+        border-radius: 4px;
+        padding: clamp(9px, .8vw, 14px) clamp(16px, 1.4vw, 26px);
+        color: #fff;
+        background: transparent;
+        font-family: 'Noto Sans KR', 'Inter', sans-serif;
+        font-size: clamp(.85rem, 1vw, 1.2rem);
+        font-weight: 700;
+        letter-spacing: .12em;
+        line-height: 1;
+        text-decoration: none;
+        white-space: nowrap;
+        cursor: pointer;
+        transform: translateY(8px);
+        transition: color .2s ease, background .2s ease, transform .35s ease;
+    }
+    .project-card-media:hover .project-card-action, .project-card-overlay:focus-within .project-card-action {
+        transform: none;
+    }
+    .project-card-action:hover, .project-card-action:focus-visible {
+        color: #111;
+        background: #fff;
+    }
+    /* 호버가 없는 터치 기기에선 앞 카드의 버튼을 이미지 아래쪽에 항상 보여준다 */
+    @media (hover: none) {
+        .project-card.is-active .project-card-overlay {
+            align-content: flex-end;
+            background: linear-gradient(transparent 55%, rgba(12, 12, 12, .6));
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .project-card-action {
+            transform: none;
+        }
+    }
+
     .project-card-info {
         /* 제목 크기를 이 칸의 너비(100cqi) 기준으로 계산하기 위해 */
         container-type: inline-size;
@@ -65,13 +132,16 @@
         margin: 0;
     }
     .project-card-number {
-        font-size: calc(clamp(1rem, 1.55vw, 2rem) - 1px);
+        font-size: calc(clamp(1rem, 1.55vw, 2rem) - 4px);
         font-weight: 400;
     }
     .project-card-info h2 {
         margin-top: clamp(16px, 2.6vw, 56px);
-        /* 기본 크기로 한 줄에 안 들어가는 긴 제목만 칸 너비 ÷ 제목 너비(--title-em)로 줄여 한 줄에 맞춘다 */
-        font-size: min(calc(clamp(1.8rem, 2.9vw, 3.8rem) - 1px), 100cqi / var(--title-em, 1));
+        /*
+         * 모든 제목을 기준 제목(ADVERTISING BANNER, --title-ref-em)이 칸 너비에 맞는 크기로 통일하고,
+         * 그보다 긴 제목만 칸 너비 ÷ 제목 너비(--title-em)로 더 줄여 한 줄에 맞춘다
+         */
+        font-size: min(calc(clamp(1.8rem, 2.9vw, 3.8rem) - 4px), 100cqi / var(--title-ref-em, 1), 100cqi / var(--title-em, 1));
         white-space: nowrap;
         font-weight: 700;
         letter-spacing: -.01em;
@@ -92,44 +162,10 @@
     .project-card-description {
         margin-top: clamp(14px, 2.6vw, 56px) !important;
         color: #222;
-        font-size: calc(clamp(.9rem, 1.25vw, 1.6rem) - 1px);
+        font-size: calc(clamp(.9rem, 1.25vw, 1.6rem) - 3px);
         line-height: 1.35;
         word-break: keep-all;
     }
-    .project-card-actions {
-        display: flex;
-        flex-wrap: wrap;
-        align-items: baseline;
-        gap: clamp(16px, 2vw, 40px);
-        margin-top: clamp(14px, 2.6vw, 56px);
-    }
-    .project-card-detail {
-        display: inline-block;
-        border: 0;
-        text-decoration: none;
-        border-bottom: 2px solid #111;
-        padding: 0 0 2px;
-        color: #111;
-        background: none;
-        font-family: inherit;
-        font-size: calc(clamp(.8rem, 1.05vw, 1.35rem) - 1px);
-        transition: gap .2s ease;
-    }
-    .project-card-detail span {
-        display: inline-block;
-        transition: transform .2s ease;
-    }
-    .project-card-detail:hover, .project-card-detail:focus-visible {
-        color: #111;
-        background: none;
-    }
-    .project-card-detail:hover span {
-        transform: translateX(4px);
-    }
-    .project-card-detail.is-link:hover span {
-        transform: translate(3px, -3px);
-    }
-
     @media (max-width: 900px) {
         .project-card {
             grid-template-columns: 1fr;

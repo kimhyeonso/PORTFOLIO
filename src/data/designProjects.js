@@ -3,8 +3,6 @@ import wildFixThumbnail from '../assets/image/project/WILDFIX/Thumnail.png'
 import diveToursThumbnail from '../assets/image/project/DIVETOURS/Thumnail.png'
 import homepageThumbnail from '../assets/image/project/HOMEPAGE/Thumnail.png'
 import mountainThumbnail from '../assets/image/project/MOUNTAIN EQUIMENT/Thumnail.png'
-import mountainMockup01 from '../assets/image/project/MOUNTAIN EQUIMENT/Mokup01.png'
-import mountainMockup02 from '../assets/image/project/MOUNTAIN EQUIMENT/Mokup02.png'
 import bannerThumbnail from '../assets/image/project/ADVERTISING BANNER/Thumnail.png'
 import gFoundationThumbnail from '../assets/image/project/G-FOUNDATION/Thumnail.png'
 import universeThumbnail from '../assets/image/project/UNIVERSE/Thumnail.png'
@@ -24,10 +22,12 @@ import hanwooThumbnail from '../assets/image/project/HANWOO/Thumnail.png'
  *   description  따옴표 설명           "공간의 흐름 ..."
  *   thumbnail    왼쪽 큰 이미지 (아직 없으면 null → 빈 배경으로 표시)
  *   tools        이미지 오른쪽 아래 아이콘 (skillIcons.js의 키 이름)
- *   link         VIEW DETAIL 옆 링크 버튼 (없으면 빈 문자열)
- *                  주소 하나        'https://...'                          → LINK ↗
- *                  여러 개          { '버튼 이름': 'https://...', … }     → 버튼 이름 ↗ (이름마다 하나씩)
- *   VIEW DETAIL  slug로 상세 페이지 이동 (/design/project/{slug})
+ *   link         이미지 호버 시 [세부정보] 옆 링크 버튼 (없으면 빈 문자열)
+ *                  주소 하나        'https://...'                          → [홈페이지]
+ *                  여러 개          { '버튼 이름': 'https://...', … }     → [버튼 이름] (이름마다 하나씩)
+ *   세부정보      이미지 호버 시 [세부정보] → 팝업(ProjectModal): 썸네일 없이 images(상세페이지)만
+ *   detail       false면 [세부정보] 버튼을 숨긴다 (세부정보 팝업이 없는 프로젝트)
+ *   images       세부정보 팝업에 바로 보일 상세 이미지들 (위에서부터 이어 붙음, 없으면 썸네일이 대신 보임)
  *   category     상단 탭 필터 (web-ui | editorial | proposal)
  *   work         실무 작업 뱃지 (썸네일 왼쪽 위)  'client' → CLIENT WORK, 'in-house' → IN-HOUSE, 'proposal' → PROPOSAL   ※ 개인·학습 작업은 생략
  */
@@ -35,6 +35,7 @@ export const designProjects = [
   {
     id: '01',
     slug: 'sony-piece', // 영문 소문자-하이픈, 프로젝트마다 겹치지 않게
+    detail: false, // 세부정보 버튼 없음
     category: 'web-ui',
     title: 'SONY PIECE',
     type: 'Web Design',
@@ -45,7 +46,7 @@ export const designProjects = [
     thumbnail: sonyPieceThumbnail,
     tools: ['Figma', 'Cinema 4D', 'Behands'],
     link: 'https://www.behance.net/gallery/159965505/SONY-PIECE-Play-Small-Excitement-in-Everyday-Life',
-    images: [], // 상세 페이지용 추가 이미지 (Mokup01.png 등 import해서 넣기)
+    images: [], // 세부정보 팝업에 보일 상세 이미지 (Mokup01.png 등 import해서 넣기)
   },
   {
     id: '02',
@@ -60,11 +61,12 @@ export const designProjects = [
     thumbnail: wildFixThumbnail,
     tools: ['Photoshop', 'Figma'],
     link: '',
-    images: [],
+    images: [], // 세부정보 팝업은 components/details/WildfixDetail.jsx (코드로 만든 상세페이지)
   },
   {
     id: '03',
     slug: 'ricota-homepage',
+    detail: false, // 세부정보 버튼 없음
     category: 'web-ui',
     title: '회사 홈 페이지',
     work: 'in-house',
@@ -110,7 +112,7 @@ export const designProjects = [
     thumbnail: mountainThumbnail,
     tools: ['Photoshop', 'InDesign'],
     link: '',
-    images: [mountainMockup01, mountainMockup02],
+    images: [], // 세부정보 팝업은 components/details/MountainDetail.jsx (코드로 만든 상세페이지)
   },
   {
     id: '06',

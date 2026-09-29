@@ -1,0 +1,59 @@
+.scope {
+    isolation: isolate;
+}
+
+:global {
+    /* MenuButton(오른쪽 위)과 같은 높이·여백으로 왼쪽 위에 둔다 */
+    .exit-button {
+        position: absolute;
+        z-index: 10;
+        top: clamp(16px, calc(4vw - 8px), 48px);
+        left: clamp(14px, calc(3.2vw - 6px), 58px);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        border: 0;
+        padding: 6px;
+        background: none;
+        cursor: pointer;
+    }
+    .exit-button.is-dark {
+        color: #1a1a1a;
+    }
+    .exit-button.is-light {
+        color: #fff;
+        filter: drop-shadow(2px 2px 0 rgba(60, 40, 20, .35));
+    }
+    .exit-button-icon {
+        width: clamp(34px, 2.6vw, 50px);
+        height: clamp(34px, 2.6vw, 50px);
+    }
+    .exit-button-arrow {
+        transition: transform .25s ease;
+    }
+    /* 호버하면 화살표가 문 안으로 한 걸음 들어가고, HOME 글자가 옆으로 나타난다 */
+    .exit-button-label {
+        font-family: 'Inter', sans-serif;
+        font-size: clamp(.7rem, .75vw, .9rem);
+        font-weight: 700;
+        letter-spacing: .14em;
+        opacity: 0;
+        transform: translateX(-6px);
+        transition: opacity .25s ease, transform .25s ease;
+    }
+    .exit-button:hover, .exit-button:focus-visible {
+        background: none;
+    }
+    .exit-button:hover .exit-button-arrow, .exit-button:focus-visible .exit-button-arrow {
+        transform: translateX(1.5px);
+    }
+    .exit-button:hover .exit-button-label, .exit-button:focus-visible .exit-button-label {
+        opacity: 1;
+        transform: none;
+    }
+    @media (hover: none) {
+        .exit-button-label {
+            display: none;
+        }
+    }
+}

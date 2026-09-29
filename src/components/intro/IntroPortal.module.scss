@@ -1,0 +1,127 @@
+.scope {
+    isolation: isolate;
+}
+
+:global {
+    /* 인트로·메인 위를 모두 덮는 전환 화면 */
+    .intro-portal {
+        position: fixed;
+        z-index: 9999;
+        inset: 0;
+        display: grid;
+        place-items: center;
+        overflow: hidden;
+    }
+    .intro-portal > * {
+        grid-area: 1 / 1;
+    }
+
+    /* 인트로 위로 차오르는 짙은 바다색 (인트로 배경 #0e4775에서 이어지게) */
+    .intro-portal-veil {
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(circle at 50% 50%, #0e4775 0%, #0b3558 55%, #071f36 100%);
+        opacity: 0;
+    }
+    /* 떠날 때 화면을 채우는 크림빛 (메인 홀 색으로 이어지게) */
+    .intro-portal-glow {
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(circle at 50% 50%, #fffaf0 0%, #fff3e0 50%, #f3e6d2 100%);
+        opacity: 0;
+        pointer-events: none;
+    }
+
+    /* 링: 화면 가운데에 겹쳐 두고 gsap이 크기·회전·투명도를 바꾼다 */
+    .intro-portal-rings {
+        position: relative;
+        width: 40vmin;
+        height: 40vmin;
+        pointer-events: none;
+    }
+    .intro-portal-ring {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        box-sizing: border-box;
+        width: var(--ring-size, 100%);
+        height: var(--ring-size, 100%);
+        margin: calc(var(--ring-size, 40vmin) / -2) 0 0 calc(var(--ring-size, 40vmin) / -2);
+        border: 2px solid var(--ring-color);
+        /* 한쪽이 살짝 끊긴 원이라 회전이 눈에 보인다 */
+        border-top-color: transparent;
+        border-radius: 50%;
+        box-shadow: 0 0 12px var(--ring-color), inset 0 0 12px var(--ring-color);
+        opacity: 0;
+    }
+    /* 질문 화면 뒤에서 천천히 도는 큰 링은 은은하게 */
+    .intro-portal-rings.is-idle .intro-portal-ring {
+        border-width: 1px;
+        box-shadow: 0 0 18px color-mix(in srgb, var(--ring-color) 45%, transparent);
+        filter: opacity(.35);
+    }
+
+    .intro-portal-question {
+        position: relative;
+        z-index: 1;
+        display: grid;
+        justify-items: center;
+        gap: clamp(18px, 2.6vw, 36px);
+        padding: 0 16px;
+        color: #fff;
+        text-align: center;
+    }
+    .intro-portal-label {
+        margin: 0;
+        color: #ffe47b;
+        font-family: 'Press Start 2P', monospace;
+        font-size: clamp(.62rem, 1vw, .95rem);
+        letter-spacing: .2em;
+    }
+    .intro-portal-question h2 {
+        margin: 0;
+        /* 한글은 Noto Sans KR, STAGE만 인트로의 픽셀 글꼴 (픽셀 글꼴의 띄어쓰기는 너무 넓어서 한글엔 쓰지 않는다) */
+        font-family: 'Noto Sans KR', sans-serif;
+        font-size: clamp(1.7rem, 4vw, 3.6rem);
+        font-weight: 700;
+        letter-spacing: -.02em;
+        line-height: 1.35;
+        text-shadow: 0 4px 0 rgba(7, 34, 61, .45), 0 0 28px rgba(143, 208, 255, .45);
+        word-break: keep-all;
+    }
+    .intro-portal-question h2 .is-pixel {
+        color: #ffe47b;
+        font-family: 'Press Start 2P', monospace;
+        font-size: .82em;
+        font-weight: 400;
+        letter-spacing: 0;
+    }
+    /* 인트로의 PRESS START / ENTER 버튼과 같은 모양 */
+    .intro-portal-enter {
+        min-width: clamp(220px, 22vw, 420px);
+        margin-top: clamp(6px, 1vw, 16px);
+        border: 0;
+        border-radius: 18px;
+        padding: clamp(17px, 1.9vw, 28px) 28px;
+        color: #1f3045;
+        background: #fff;
+        box-shadow: 0 12px 0 rgba(7, 34, 61, .35);
+        font-family: 'Noto Sans KR', sans-serif;
+        font-size: clamp(1rem, 1.4vw, 1.4rem);
+        font-weight: 700;
+        line-height: 1.25;
+        cursor: pointer;
+        transition: transform .2s ease, box-shadow .2s ease;
+    }
+    .intro-portal-enter:hover, .intro-portal-enter:focus-visible {
+        color: #fff;
+        background: #274e77;
+        outline: 3px solid #ffe47b;
+        transform: translateY(-3px);
+        box-shadow: 0 15px 0 rgba(7, 34, 61, .35);
+    }
+    .intro-portal-enter:active {
+        transform: translateY(6px);
+        box-shadow: 0 6px 0 rgba(7, 34, 61, .35);
+    }
+}

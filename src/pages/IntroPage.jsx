@@ -8,8 +8,8 @@ import styles from './IntroPage.module.scss'
 
 const stageComponents = { stage01: IntroStage01, stage02: IntroStage02, stage03: IntroStage03, stage04: IntroStage04 }
 
-export default function IntroPage({ onNavigate }) {
-    const engine = useIntroEngine({ onNavigate })
+export default function IntroPage({ onEnterMain }) {
+    const engine = useIntroEngine({ onEnterMain })
     const Stage = stageComponents[engine.phase]
 
     return (

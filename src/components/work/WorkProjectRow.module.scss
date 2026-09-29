@@ -1,0 +1,194 @@
+.scope {
+    isolation: isolate;
+}
+
+:global {
+    /* 왼쪽 이미지 · 가운데 카드 · 오른쪽 설명 */
+    .work-row {
+        display: grid;
+        grid-template-columns: minmax(0, 1.25fr) minmax(220px, .62fr) minmax(0, 1.2fr);
+        grid-template-areas: "media card detail";
+        gap: clamp(28px, 4.4vw, 88px);
+        align-items: center;
+        padding: clamp(40px, 5vw, 96px) 0;
+    }
+    /* 짝수 번째 줄: 왼쪽에 카드와 그 아래 설명, 오른쪽에 더 큰 이미지 */
+    .work-row.is-reverse {
+        grid-template-columns: minmax(240px, .6fr) minmax(0, 1.9fr);
+        grid-template-areas: "card media" "detail media";
+        row-gap: clamp(28px, 2.6vw, 48px);
+        align-items: end;
+    }
+    .work-row.is-reverse .work-row-detail {
+        align-self: start;
+    }
+    .work-row-media {
+        position: relative;
+        grid-area: media;
+    }
+    .work-row-card {
+        grid-area: card;
+    }
+    .work-row-detail {
+        grid-area: detail;
+    }
+
+    /* 이미지는 원래 비율 그대로 (호버 오버레이가 이미지와 딱 맞게 덮이도록 고정 비율 상자를 쓰지 않는다) */
+    .work-row-media img, .work-row-empty {
+        display: block;
+        width: 100%;
+        height: auto;
+        filter: drop-shadow(0 1.6vw 2.4vw rgba(60, 45, 30, .16));
+    }
+    .work-row-empty {
+        aspect-ratio: 885 / 606;
+        background: #e6e1da;
+    }
+
+    /* 가운데 정보 카드 */
+    .work-row-card {
+        position: relative;
+        display: grid;
+        align-content: start;
+        min-height: clamp(280px, 22vw, 400px);
+        padding: clamp(30px, 2.6vw, 44px) clamp(24px, 2.2vw, 40px);
+        color: #1d1b19;
+        /* 장식 없이 흰 바탕 80%만 */
+        background: rgba(255, 255, 255, .8);
+    }
+    .work-row-code {
+        margin: 0;
+        color: var(--work-accent);
+        font-family: 'Inter', sans-serif;
+        font-size: clamp(.85rem, 1vw, 1.1rem);
+        letter-spacing: .08em;
+    }
+    .work-row-card h3 {
+        margin: clamp(10px, 1vw, 16px) 0 0;
+        font-family: 'Inter', 'Noto Sans KR', sans-serif;
+        font-size: clamp(1.25rem, 1.6vw, 1.9rem);
+        /* Design/Frontend 카드 제목과 같은 굵기 */
+        font-weight: 700;
+        letter-spacing: -.01em;
+        line-height: 1.25;
+        word-break: keep-all;
+    }
+    .work-row-date {
+        margin: 4px 0 0;
+        font-family: 'Inter', sans-serif;
+        font-size: clamp(.9rem, 1vw, 1.1rem);
+        letter-spacing: .04em;
+    }
+    .work-row-meta {
+        display: grid;
+        gap: 2px;
+        margin: clamp(18px, 1.8vw, 30px) 0 0;
+        padding-bottom: clamp(18px, 1.6vw, 26px);
+        border-bottom: 1px solid rgba(29, 27, 25, .14);
+        color: #6b655e;
+        font-family: 'Noto Sans KR', sans-serif;
+        font-size: clamp(.82rem, .9vw, 1rem);
+        letter-spacing: .06em;
+        line-height: 1.45;
+    }
+    .work-row-tools {
+        margin: clamp(14px, 1.3vw, 22px) 0 0;
+        color: #857e76;
+        font-family: 'Inter', sans-serif;
+        font-size: clamp(.82rem, .9vw, 1rem);
+        letter-spacing: .03em;
+    }
+
+    /* 오른쪽 설명 */
+    .work-row-detail .work-row-code {
+        width: fit-content;
+        padding-bottom: clamp(12px, 1.1vw, 18px);
+        margin-bottom: clamp(18px, 1.8vw, 30px);
+        letter-spacing: .12em;
+        /* 머리글 아래 짧은 강조선 */
+        background: linear-gradient(var(--work-accent), var(--work-accent)) left bottom / 40px 2px no-repeat;
+    }
+    .work-row-text {
+        margin: 0;
+        color: #2a2724;
+        font-family: 'Noto Sans KR', sans-serif;
+        font-size: clamp(.95rem, 1.05vw, 1.15rem);
+        line-height: 2.1;
+        word-break: keep-all;
+    }
+    /*
+     * 이미지 호버 오버레이 (Design/Frontend 카드의 .project-card-overlay와 같은 모양):
+     * 이미지가 어두워지며 가운데에 흰 테두리 버튼이 나타난다. 키보드로 버튼에 포커스해도 나타난다
+     */
+    .work-row-overlay {
+        position: absolute;
+        z-index: 1;
+        inset: 0;
+        display: flex;
+        flex-wrap: wrap;
+        align-content: center;
+        justify-content: center;
+        gap: clamp(10px, 1.1vw, 18px);
+        padding: 6%;
+        background: rgba(12, 12, 12, .72);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity .3s ease;
+    }
+    .work-row-media:hover .work-row-overlay, .work-row-overlay:focus-within {
+        opacity: 1;
+        pointer-events: auto;
+    }
+    .work-row-action {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: clamp(96px, 8vw, 150px);
+        box-sizing: border-box;
+        border: 1.5px solid #fff;
+        border-radius: 4px;
+        padding: clamp(9px, .8vw, 14px) clamp(16px, 1.4vw, 26px);
+        color: #fff;
+        background: transparent;
+        font-family: 'Noto Sans KR', 'Inter', sans-serif;
+        font-size: clamp(.85rem, 1vw, 1.2rem);
+        font-weight: 700;
+        letter-spacing: .12em;
+        line-height: 1;
+        text-decoration: none;
+        white-space: nowrap;
+        cursor: pointer;
+        transform: translateY(8px);
+        transition: color .2s ease, background .2s ease, transform .35s ease;
+    }
+    .work-row-media:hover .work-row-action, .work-row-overlay:focus-within .work-row-action {
+        transform: none;
+    }
+    .work-row-action:hover, .work-row-action:focus-visible {
+        color: #111;
+        background: #fff;
+    }
+    /* 호버가 없는 터치 기기에선 버튼을 이미지 아래쪽에 항상 보여준다 */
+    @media (hover: none) {
+        .work-row-overlay {
+            align-content: flex-end;
+            background: linear-gradient(transparent 55%, rgba(12, 12, 12, .6));
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .work-row-action {
+            transform: none;
+        }
+    }
+
+    @media (max-width: 900px) {
+        .work-row, .work-row.is-reverse {
+            grid-template-columns: 1fr;
+            grid-template-areas: "media" "card" "detail";
+            gap: 28px;
+        }
+        .work-row-card {
+            min-height: 0;
+        }
+    }
+}

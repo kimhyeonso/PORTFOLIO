@@ -16,8 +16,9 @@ export default function FrontendPage({ onNavigate, onMenuToggle }) {
       projects={frontendProjects}
       tabs={tabs}
       background={background}
-      onOpen={(project) => onNavigate(`/frontend/project/${project.slug}`)}
+      imageOnly
       onMenuToggle={onMenuToggle}
+      onExit={() => onNavigate('/')}
     />
   )
 }

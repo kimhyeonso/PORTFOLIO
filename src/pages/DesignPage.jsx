@@ -16,8 +16,9 @@ export default function DesignPage({ onNavigate, onMenuToggle }) {
       projects={designProjects}
       tabs={tabs}
       background={background}
-      onOpen={(project) => onNavigate(`/design/project/${project.slug}`)}
+      imageOnly
       onMenuToggle={onMenuToggle}
+      onExit={() => onNavigate('/')}
     />
   )
 }

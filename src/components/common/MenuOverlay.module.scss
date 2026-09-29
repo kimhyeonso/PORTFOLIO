@@ -1,1 +1,254 @@
+// 큰 섹션 제목 글꼴 (인트로 게임과 같은 파일)
+@font-face {
+    font-family: 'Jersey 10';
+    src: url('../../assets/font/Jersey10-Regular.ttf') format('truetype');
+    font-display: swap;
+}
 
+.scope {
+    isolation: isolate;
+}
+
+:global {
+    /*
+     * 글자 크기는 참고 시안의 50% (섹션 제목 약 80px → 40px).
+     * 썸네일 캡션은 50%로 줄이면 8~9px이라 읽을 수 있게 최소 11~12px로 둔다.
+     */
+    .menu-overlay {
+        position: fixed;
+        z-index: 1000;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        color: #fff;
+        background: rgba(12, 13, 16, .9);
+        backdrop-filter: blur(10px);
+        font-family: 'Inter', 'Noto Sans KR', sans-serif;
+        animation: menu-overlay-in .35s ease both;
+    }
+    @keyframes :global(menu-overlay-in) {
+        from {
+            opacity: 0;
+        }
+    }
+
+    /* 오른쪽 위 닫기 */
+    .menu-overlay-close {
+        position: absolute;
+        z-index: 1;
+        top: clamp(28px, 3.2vw, 60px);
+        right: clamp(18px, 2.4vw, 46px);
+        width: clamp(30px, 2vw, 40px);
+        height: clamp(30px, 2vw, 40px);
+        border: 0;
+        padding: 0;
+        background: none;
+        transition: transform .3s ease;
+    }
+    .menu-overlay-close span {
+        position: absolute;
+        top: 50%;
+        left: 0;
+        width: 100%;
+        height: 2px;
+        background: #fff;
+    }
+    .menu-overlay-close span:first-child {
+        transform: rotate(45deg);
+    }
+    .menu-overlay-close span:last-child {
+        transform: rotate(-45deg);
+    }
+    .menu-overlay-close:hover, .menu-overlay-close:focus-visible {
+        background: none;
+        transform: rotate(90deg);
+    }
+
+    /* 섹션 목록 (넘치면 메뉴 안에서 스크롤) */
+    .menu-overlay-body {
+        flex: 1;
+        overflow-y: auto;
+        padding: clamp(64px, 6vw, 116px) clamp(20px, 5.6vw, 110px) clamp(40px, 4vw, 80px);
+    }
+    .menu-overlay-section {
+        margin: 0 0 clamp(26px, 2.6vw, 50px);
+        animation: menu-overlay-rise .5s cubic-bezier(.2, .75, .25, 1) both;
+        animation-delay: calc(var(--i) * 60ms + 80ms);
+    }
+    @keyframes :global(menu-overlay-rise) {
+        from {
+            opacity: 0;
+            transform: translateY(18px);
+        }
+    }
+    .menu-overlay-section h2 {
+        margin: 0;
+    }
+    .menu-overlay-section h2 button {
+        display: inline-flex;
+        align-items: flex-start;
+        gap: clamp(10px, 1vw, 18px);
+        border: 0;
+        padding: 0;
+        color: #fff;
+        background: none;
+        font-family: 'Jersey 10', 'Inter', sans-serif;
+        font-size: clamp(1.6rem, 2.15vw, 2.6rem);
+        font-weight: 400;
+        letter-spacing: .04em;
+        line-height: 1;
+        transition: opacity .2s ease;
+    }
+    .menu-overlay-section h2 button:hover, .menu-overlay-section h2 button:focus-visible {
+        background: none;
+        opacity: .7;
+    }
+    /* ▽ 표시: 속이 빈 역삼각형 */
+    .menu-overlay-mark {
+        flex: none;
+        width: .36em;
+        height: .3em;
+        margin-top: .02em;
+        background: #fff;
+        clip-path: polygon(evenodd, 0 0, 100% 0, 50% 100%, 0 0, 22% 18%, 50% 70%, 78% 18%, 22% 18%);
+    }
+
+    /*
+     * 썸네일 한 줄: 한 화면에 --per-view개(참고 시안처럼 6개)씩 보이고 나머지는 가로로 넘긴다.
+     * 양옆 ‹ › 버튼은 썸네일 세로 가운데에 둔다
+     */
+    .menu-overlay-row {
+        --per-view: 6;
+        --row-gap: clamp(10px, .7vw, 14px);
+        /* 줄 너비(100cqw) 기준이라 화살표 top 계산에도 그대로 쓸 수 있다 */
+        --item-width: calc((100cqw - var(--row-gap) * (var(--per-view) - 1)) / var(--per-view));
+        container-type: inline-size;
+        position: relative;
+        margin: clamp(16px, 1.8vw, 34px) 0 0 calc(clamp(1.6rem, 2.15vw, 2.6rem) * .36 + clamp(10px, 1vw, 18px));
+    }
+    .menu-overlay-grid {
+        display: grid;
+        grid-auto-columns: var(--item-width);
+        grid-auto-flow: column;
+        gap: var(--row-gap);
+        margin: 0;
+        padding: 0;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        scrollbar-width: none;
+        list-style: none;
+        overscroll-behavior-x: contain;
+    }
+    .menu-overlay-grid::-webkit-scrollbar {
+        display: none;
+    }
+    .menu-overlay-grid li {
+        scroll-snap-align: start;
+    }
+    .menu-overlay-arrow {
+        position: absolute;
+        z-index: 1;
+        /* 썸네일(가로:세로 = 259:127) 높이의 가운데 */
+        top: calc(var(--item-width) * 127 / 259 / 2);
+        display: grid;
+        place-items: center;
+        width: clamp(36px, 2.3vw, 46px);
+        height: clamp(36px, 2.3vw, 46px);
+        border: 1px solid rgba(255, 255, 255, .35);
+        border-radius: 50%;
+        padding: 0;
+        color: #fff;
+        background: rgba(12, 13, 16, .72);
+        backdrop-filter: blur(4px);
+        transform: translate(-50%, -50%);
+        transition: opacity .2s ease, background .2s ease, color .2s ease;
+    }
+    .menu-overlay-arrow.is-prev {
+        left: 0;
+    }
+    .menu-overlay-arrow.is-next {
+        left: 100%;
+    }
+    .menu-overlay-arrow svg {
+        width: 45%;
+        height: 45%;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 2.2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+    }
+    .menu-overlay-arrow:hover:not(:disabled), .menu-overlay-arrow:focus-visible {
+        color: #111;
+        background: #fff;
+    }
+    .menu-overlay-arrow:disabled {
+        opacity: 0;
+        pointer-events: none;
+    }
+    .menu-overlay-grid button {
+        display: grid;
+        gap: 4px;
+        width: 100%;
+        border: 0;
+        padding: 0;
+        color: #fff;
+        background: none;
+        text-align: left;
+    }
+    .menu-overlay-grid button:hover, .menu-overlay-grid button:focus-visible {
+        background: none;
+    }
+    .menu-overlay-thumb {
+        display: block;
+        overflow: hidden;
+        margin-bottom: 6px;
+        aspect-ratio: 259 / 127;
+        background: #1c1e22;
+    }
+    .menu-overlay-thumb img, .menu-overlay-thumb-empty {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        filter: brightness(.88);
+        transition: transform .5s ease, filter .3s ease;
+    }
+    .menu-overlay-grid button:hover img, .menu-overlay-grid button:focus-visible img {
+        filter: none;
+        transform: scale(1.05);
+    }
+    .menu-overlay-grid strong {
+        overflow: hidden;
+        font-size: max(12px, .47vw);
+        font-weight: 700;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+    .menu-overlay-grid em {
+        overflow: hidden;
+        color: rgba(255, 255, 255, .55);
+        font-size: max(11px, .34vw);
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    @media (max-width: 1100px) {
+        .menu-overlay-row {
+            --per-view: 4;
+        }
+    }
+    @media (max-width: 700px) {
+        .menu-overlay-row {
+            --per-view: 2;
+            margin-left: 0;
+        }
+        /* 화면 끝에 붙은 화살표가 잘리지 않게 안쪽으로 */
+        .menu-overlay-arrow.is-prev {
+            transform: translate(-30%, -50%);
+        }
+        .menu-overlay-arrow.is-next {
+            transform: translate(-70%, -50%);
+        }
+    }
+}
