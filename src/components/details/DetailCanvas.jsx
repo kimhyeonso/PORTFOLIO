@@ -6,6 +6,7 @@ import styles from './DetailCanvas.module.scss'
  *   <DetailCanvas height={시안 전체 높이}>
  *     <Label y={198} size={26}>&lt;목업&gt;</Label>        가운데 정렬 제목 (x 생략 시 화면 가운데)
  *     <Pic src={이미지} x={323} y={280} w={1275} alt="" />  이미지 (높이는 비율대로)
+ *     <Video src={영상} x={323} y={3140} w={630} label="" />  영상 (높이는 비율대로, 재생 버튼 포함)
  *   </DetailCanvas>
  * 폴더 이미지를 이름으로 꺼내 쓰려면 byName.js의 byName(import.meta.glob(...))을 쓴다.
  */
@@ -13,6 +14,11 @@ const pos = (style) => Object.fromEntries(Object.entries(style).map(([key, value
 
 export function Pic({ src, x, y, w, alt = '' }) {
     return <img className="detail-pic" src={src} alt={alt} loading="lazy" draggable="false" style={pos({ x, y, w })} />
+}
+
+// 영상 (높이는 비율대로). 누르면 재생되고, 재생 전에는 첫 부분 정보만 받아 팝업이 무거워지지 않는다
+export function Video({ src, x, y, w, label = '' }) {
+    return <video className="detail-video" src={src} controls preload="metadata" playsInline aria-label={label} style={pos({ x, y, w })} />
 }
 
 // y는 글줄의 세로 가운데, x는 가운데

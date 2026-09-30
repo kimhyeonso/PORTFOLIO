@@ -7,7 +7,7 @@ import { lazy } from 'react'
  */
 export const projectDetails = {
     wildfix: lazy(() => import('./WildfixDetail.jsx')),
-    divetours: lazy(() => import('./DivetoursDetail.jsx')),
+    'dive-to-earth': lazy(() => import('./DivetoursDetail.jsx')),
     'mountain-equipment': lazy(() => import('./MountainDetail.jsx')),
     'advertising-banner': lazy(() => import('./AdvertisingBannerDetail.jsx')),
 }

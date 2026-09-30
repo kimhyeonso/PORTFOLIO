@@ -26,7 +26,8 @@
         display: block;
         width: 100%;
         aspect-ratio: 885 / 606;
-        object-fit: contain;
+        /* 원본 비율이 조금씩 달라도 모든 카드가 같은 크기로 꽉 차게 */
+        object-fit: cover;
     }
     .project-card-thumb.is-empty {
         background: #fff5f5;
@@ -131,17 +132,12 @@
     .project-card-info p, .project-card-info h2 {
         margin: 0;
     }
-    .project-card-number {
-        font-size: calc(clamp(1rem, 1.55vw, 2rem) - 4px);
-        font-weight: 400;
-    }
     .project-card-info h2 {
-        margin-top: clamp(16px, 2.6vw, 56px);
         /*
          * 모든 제목을 기준 제목(ADVERTISING BANNER, --title-ref-em)이 칸 너비에 맞는 크기로 통일하고,
          * 그보다 긴 제목만 칸 너비 ÷ 제목 너비(--title-em)로 더 줄여 한 줄에 맞춘다
          */
-        font-size: min(calc(clamp(1.8rem, 2.9vw, 3.8rem) - 4px), 100cqi / var(--title-ref-em, 1), 100cqi / var(--title-em, 1));
+        font-size: calc(min(calc(clamp(1.8rem, 2.9vw, 3.8rem) - 4px), 100cqi / var(--title-ref-em, 1), 100cqi / var(--title-em, 1)) - 4px);
         white-space: nowrap;
         font-weight: 700;
         letter-spacing: -.01em;
@@ -150,7 +146,7 @@
     .project-card-type {
         margin-top: .6vw !important;
         color: #555;
-        font-size: calc(clamp(1rem, 1.35vw, 1.8rem) - 1px);
+        font-size: calc(clamp(1rem, 1.35vw, 1.8rem) - 3px);
     }
     .project-card-meta {
         display: grid;
@@ -165,6 +161,183 @@
         font-size: calc(clamp(.9rem, 1.25vw, 1.6rem) - 3px);
         line-height: 1.35;
         word-break: keep-all;
+    }
+    /*
+     * 글 줄이 아래에서 위로 하나씩 떠오른다 (--i: 순서, 0.09초 간격)
+     * 앞 카드가 될 때마다(is-active가 붙을 때) 다시 재생되고, 옆 카드의 글은 숨겨 둔다
+     */
+    .project-card-rise {
+        opacity: 0;
+    }
+    .project-card.is-active .project-card-rise {
+        animation: project-card-rise .6s cubic-bezier(.2, .75, .25, 1) calc(.2s + var(--i, 0) * .09s) both;
+    }
+    @media (prefers-reduced-motion: reduce) {
+        .project-card.is-active .project-card-rise {
+            opacity: 1;
+            animation: none;
+        }
+    }
+    @keyframes :global(project-card-rise) {
+        from {
+            opacity: 0;
+            transform: translateY(24px);
+        }
+        to {
+            opacity: 1;
+            transform: none;
+        }
+    }
+
+    /*
+     * PC: 카드 전체를 썸네일로 채우고 글자를 그 위에 올린다
+     * 글자 쪽(is-text-left | is-text-right)만 어둡게 그라데이션을 깔아 흰 글자가 잘 보이게
+     */
+    @media (min-width: 901px) {
+        .project-card {
+            position: relative;
+            display: block;
+            height: calc(var(--card-width) * .385);
+            padding: 0;
+            overflow: hidden;
+            background: #222;
+        }
+        .project-card-media {
+            position: absolute;
+            inset: 0;
+        }
+        /* 썸네일 PNG 좌우 가장자리의 반투명 그림자는 카드 밖으로 밀어낸다 (원형 메뉴와 같은 값) */
+        .project-card-thumb {
+            position: absolute;
+            top: 0;
+            left: -2.5%;
+            width: 106%;
+            height: 100%;
+            aspect-ratio: auto;
+        }
+        .project-card-media::after {
+            position: absolute;
+            inset: 0;
+            content: '';
+            pointer-events: none;
+        }
+        .project-card.is-text-right .project-card-media::after {
+            background:
+                linear-gradient(to left, rgba(0, 0, 0, .55), rgba(0, 0, 0, .2) 38%, transparent 62%),
+                linear-gradient(transparent 55%, rgba(0, 0, 0, .25));
+        }
+        .project-card.is-text-left .project-card-media::after {
+            background:
+                linear-gradient(to right, rgba(0, 0, 0, .55), rgba(0, 0, 0, .2) 38%, transparent 62%),
+                linear-gradient(transparent 55%, rgba(0, 0, 0, .25));
+        }
+
+        /* 도구 아이콘: 글자 쪽 위 */
+        .project-card-tools {
+            top: 2.2vw;
+            bottom: auto;
+            gap: .5vw;
+        }
+        .project-card.is-text-right .project-card-tools {
+            right: 2.6vw;
+        }
+        .project-card.is-text-left .project-card-tools {
+            right: auto;
+            left: 2.6vw;
+        }
+        .project-card-tools img {
+            width: clamp(30px, 2.4vw, 52px);
+            height: clamp(30px, 2.4vw, 52px);
+        }
+        /* 글자가 왼쪽인 카드는 뱃지를 오른쪽 위로 옮겨 아이콘과 겹치지 않게 */
+        .project-card.is-text-left .work-badge {
+            right: clamp(8px, .9vw, 18px);
+            left: auto;
+        }
+
+        /* 글자: 글자 쪽 아래. 호버 오버레이(z-index 1)가 위를 덮도록 z-index 없이, 마우스는 이미지로 통과 */
+        .project-card-info {
+            position: absolute;
+            bottom: 2.4vw;
+            width: 38%;
+            color: #fff;
+            text-shadow: 0 .1vw .6vw rgba(0, 0, 0, .35);
+            pointer-events: none;
+        }
+        .project-card.is-text-right .project-card-info {
+            right: 2.6vw;
+            text-align: right;
+        }
+        .project-card.is-text-left .project-card-info {
+            left: 2.6vw;
+        }
+        .project-card-type, .project-card-meta {
+            color: rgba(255, 255, 255, .85);
+        }
+        .project-card-meta {
+            margin-top: clamp(12px, 1.6vw, 36px);
+        }
+        .project-card-description {
+            margin-top: clamp(12px, 1.6vw, 36px) !important;
+            color: #fff;
+        }
+
+        /*
+         * 호버: 카드 전체가 어두워지고, 글자 아래에 버튼 줄이 펼쳐지며 글자가 위로 올라간다
+         * 오버레이는 어둡게만 하고(버튼 숨김), 글자 · 버튼은 오버레이 위(z-index 2)에
+         */
+        .project-card-overlay {
+            background: rgba(12, 12, 12, .5);
+        }
+        .project-card-overlay .project-card-action {
+            display: none;
+        }
+        .project-card.is-active:hover .project-card-overlay {
+            opacity: 1;
+        }
+        .project-card-info {
+            z-index: 2;
+        }
+        .project-card-actions {
+            display: grid;
+            grid-template-rows: 0fr;
+            opacity: 0;
+            transition: grid-template-rows .4s ease, opacity .3s ease;
+        }
+        .project-card-actions > div {
+            display: flex;
+            gap: clamp(8px, .7vw, 14px);
+            min-height: 0;
+            overflow: hidden;
+        }
+        .project-card.is-text-right .project-card-actions > div {
+            justify-content: flex-end;
+        }
+        .project-card-actions .project-card-action {
+            margin-top: clamp(14px, 1.6vw, 36px);
+            text-shadow: none;
+            pointer-events: auto;
+        }
+        .project-card.is-active:hover .project-card-actions, .project-card.is-active .project-card-actions:focus-within {
+            grid-template-rows: 1fr;
+            opacity: 1;
+        }
+        .project-card.is-active:hover .project-card-actions .project-card-action, .project-card-actions:focus-within .project-card-action {
+            transform: none;
+        }
+    }
+    /* 호버가 없는 터치 기기(PC 너비)는 버튼 줄을 항상 보여준다 */
+    @media (min-width: 901px) and (hover: none) {
+        .project-card.is-active .project-card-actions {
+            grid-template-rows: 1fr;
+            opacity: 1;
+        }
+    }
+    /* 모바일은 기존처럼 이미지 위 오버레이 버튼만 쓴다 */
+    @media (max-width: 900px) {
+        .project-card-actions {
+            display: none;
+        }
     }
     @media (max-width: 900px) {
         .project-card {

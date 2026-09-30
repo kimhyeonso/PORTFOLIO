@@ -1,5 +1,5 @@
 import amorepacificThumbnail from '../assets/image/project/AMOREPACIFIC/Thumnail.png'
-import { designProjects } from './designProjects.js'
+import { allDesignProjects } from './designProjects.js'
 
 /**
  * Working(실무) 프로젝트 카드 데이터 — designProjects.js와 같은 구조
@@ -14,18 +14,27 @@ import { designProjects } from './designProjects.js'
  * 2) Working에만 넣을 작업
  *    아래 extraProjects 배열에 designProjects.js와 같은 형식으로 추가한다.
  *
- * 카드 번호(id)는 회사 순서(CONCENTRIX → RICOTA)로 정렬한 뒤 01부터 다시 매긴다.
+ * 카드 번호(id)는 아래 workOrder 순서로 정렬한 뒤 01부터 다시 매긴다.
  */
 
-// Design 실무 작업의 slug → 회사 (Design에서 가져오는 실무 작업은 모두 RICOTA에서 한 작업)
-const companyBySlug = {
-  'ricota-homepage': 'ricota',
-  divetours: 'ricota',
-  'advertising-banner': 'ricota',
-  'g-foundation': 'ricota',
-  'kwangwoon-university': 'ricota',
-  hanwoo: 'ricota',
-  teenature: 'ricota',
+/*
+ * 회사(탭)별 프로젝트와 보이는 순서. 위에 적을수록 앞에 나온다 (줄 순서만 바꾸면 순서가 바뀐다).
+ * 회사 순서도 이 객체의 순서를 따른다 (CONCENTRIX → RICOTA).
+ * 여기 없는 실무 작업은 RICOTA 맨 뒤에 붙는다.
+ */
+const workOrder = {
+  concentrix: [
+    'amorepacific',
+  ],
+  ricota: [
+    'hanwoo',
+    'teenature',
+    'kwangwoon-university',
+    'g-foundation',
+    'ricota-homepage',
+    'dive-to-earth',
+    'advertising-banner',
+  ],
 }
 
 // Working에만 넣을 실무 작업 (designProjects.js와 같은 형식 + category)
@@ -46,11 +55,18 @@ const extraProjects = [
   },
 ]
 
-const companyOrder = ['concentrix', 'ricota']
+const companies = Object.keys(workOrder)
+// slug → 회사 (workOrder에서 거꾸로 찾는다)
+const companyOf = (slug) => companies.find((company) => workOrder[company].includes(slug)) || 'ricota'
+// 회사 안에서의 순서 (목록에 없으면 맨 뒤)
+const rankOf = ({ slug, category }) => {
+  const index = workOrder[category]?.indexOf(slug) ?? -1
+  return index < 0 ? Infinity : index
+}
 
 export const workProjects = [
-  ...designProjects.filter((project) => project.work).map((project) => ({ ...project, category: companyBySlug[project.slug] || 'ricota' })),
+  ...allDesignProjects.filter((project) => project.work).map((project) => ({ ...project, category: companyOf(project.slug) })),
   ...extraProjects,
 ]
-  .sort((a, b) => companyOrder.indexOf(a.category) - companyOrder.indexOf(b.category))
+  .sort((a, b) => companies.indexOf(a.category) - companies.indexOf(b.category) || rankOf(a) - rankOf(b))
   .map((project, index) => ({ ...project, id: String(index + 1).padStart(2, '0') }))

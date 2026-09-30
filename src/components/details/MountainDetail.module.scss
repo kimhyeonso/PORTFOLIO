@@ -1,0 +1,42 @@
+.scope {
+    isolation: isolate;
+}
+
+:global {
+    /* MountainDetail 전용: 기획 의도 글과 카드 3장 (좌표 · --u는 DetailCanvas와 같다) */
+    .mt-text {
+        color: #000;
+        font-family: 'Noto Sans KR', sans-serif;
+        font-size: calc(var(--size) * var(--u));
+        font-weight: 400;
+        line-height: 1.2;
+        white-space: nowrap;
+        transform: translate(-50%, -50%);
+    }
+    .mt-text.is-bold {
+        font-weight: 700;
+    }
+    .mt-text.is-title {
+        font-family: 'Inter', 'Noto Sans KR', sans-serif;
+        font-weight: 700;
+        letter-spacing: -.01em;
+    }
+    .mt-card, .mt-connector {
+        box-sizing: border-box;
+        width: calc(var(--w) * var(--u));
+    }
+    .mt-card {
+        height: calc(var(--h) * var(--u));
+        border: calc(1.5 * var(--u)) solid #e6e8eb;
+        border-radius: calc(48 * var(--u));
+        background: #fdfdfd;
+    }
+    .mt-card.is-blue {
+        border-color: #9dc6f4;
+        background: linear-gradient(#cae2fe, #b9d8fc);
+    }
+    .mt-connector {
+        height: calc(2 * var(--u));
+        background: #9fc6ea;
+    }
+}

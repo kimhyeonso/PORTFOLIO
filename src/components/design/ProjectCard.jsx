@@ -22,32 +22,40 @@ function toLinks(link) {
 
 /**
  * 디자인/프론트엔드 공용 프로젝트 카드 (data/designProjects.js 구조)
- * 왼쪽 썸네일 + 오른쪽 아래 도구 아이콘, 오른쪽 번호·제목·정보·설명
+ * PC: 카드 전체가 썸네일, 그 위 한쪽(textSide)에 도구 아이콘(위) · 제목·정보·설명(아래)
+ * 모바일: 위 썸네일 + 오른쪽 아래 도구 아이콘, 아래 제목·정보·설명
  * 썸네일에 마우스를 올리면(또는 키보드로 포커스하면) 어두워지며 [세부정보](상세 페이지) · [홈페이지](외부 링크) 버튼이 나타난다
  */
 export default function ProjectCard({ project, isActive, onOpen, onSelect }) {
-    const { id, title, type, year, period, contribution, role, description, thumbnail, tools = [], link, work } = project
+    const { title, type, year, period, contribution, role, description, thumbnail, tools = [], link, work } = project
     const contributionText = formatContribution(contribution)
     const links = toLinks(link)
+    // 글자 위치: 기본은 왼쪽 (데이터에 textSide: 'right'를 주면 오른쪽)
+    const side = project.textSide ?? 'left'
+
+    // [세부정보] · 링크 버튼. 모바일은 이미지 위 오버레이, PC는 글자 아래 줄에 보인다 (안 쓰는 쪽은 CSS로 숨김)
+    const actions = (
+        <>
+            {project.detail !== false && (
+                <button className="project-card-action" type="button" onClick={isActive ? onOpen : undefined} tabIndex={isActive ? 0 : -1}>
+                    세부정보
+                </button>
+            )}
+            {/* link(Behance·사이트 주소)가 있는 프로젝트만 새 탭으로 여는 버튼 */}
+            {links.map(({ label, url }) => (
+                <a className="project-card-action" key={url} href={url} target="_blank" rel="noreferrer" tabIndex={isActive ? 0 : -1} aria-label={`${title} ${label} 새 탭에서 열기`}>
+                    {label}
+                </a>
+            ))}
+        </>
+    )
 
     return (
-        <article className={`${styles.scope} project-card ${isActive ? 'is-active' : ''}`} aria-hidden={!isActive} onClick={isActive ? undefined : onSelect}>
+        <article className={`${styles.scope} project-card is-text-${side} ${isActive ? 'is-active' : ''}`} aria-hidden={!isActive} onClick={isActive ? undefined : onSelect}>
             <div className="project-card-media">
                 <WorkBadge work={work} />
                 {thumbnail ? <img className="project-card-thumb" src={thumbnail} alt={`${title} 미리보기`} /> : <div className="project-card-thumb is-empty" />}
-                <div className="project-card-overlay">
-                    {project.detail !== false && (
-                        <button className="project-card-action" type="button" onClick={isActive ? onOpen : undefined} tabIndex={isActive ? 0 : -1}>
-                            세부정보
-                        </button>
-                    )}
-                    {/* link(Behance·사이트 주소)가 있는 프로젝트만 새 탭으로 여는 버튼 */}
-                    {links.map(({ label, url }) => (
-                        <a className="project-card-action" key={url} href={url} target="_blank" rel="noreferrer" tabIndex={isActive ? 0 : -1} aria-label={`${title} ${label} 새 탭에서 열기`}>
-                            {label}
-                        </a>
-                    ))}
-                </div>
+                <div className="project-card-overlay">{actions}</div>
                 {tools.length > 0 && (
                     <ul className="project-card-tools" aria-label="사용 도구">
                         {tools.map((tool) => {
@@ -62,16 +70,23 @@ export default function ProjectCard({ project, isActive, onOpen, onSelect }) {
                     </ul>
                 )}
             </div>
+            {/* 글 줄마다 --i(떠오르는 순서)를 주어 앞 카드가 될 때 위에서부터 차례로 떠오르게 한다 */}
             <div className="project-card-info">
-                <p className="project-card-number">{id}</p>
-                <h2 style={{ '--title-em': titleWidthEm(title), '--title-ref-em': TITLE_SIZE_REFERENCE_EM }}>{title}</h2>
-                <p className="project-card-type">{type} / {year}</p>
+                <h2 className="project-card-rise" style={{ '--i': 0, '--title-em': titleWidthEm(title), '--title-ref-em': TITLE_SIZE_REFERENCE_EM }}>{title}</h2>
+                <p className="project-card-type project-card-rise" style={{ '--i': 1 }}>{type} / {year}</p>
                 <div className="project-card-meta">
-                    {period && <p>{period.start} - {period.end} ({period.duration})</p>}
-                    {contributionText && <p>{contributionText}</p>}
-                    {role && <p>역할 : {role}</p>}
+                    {[
+                        period && `${period.start} - ${period.end} (${period.duration})`,
+                        contributionText,
+                        role && `역할 : ${role}`,
+                    ].filter(Boolean).map((line, index) => (
+                        <p className="project-card-rise" key={line} style={{ '--i': 2 + index }}>{line}</p>
+                    ))}
                 </div>
-                <p className="project-card-description">“{description}”</p>
+                <p className="project-card-description project-card-rise" style={{ '--i': 5 }}>“{description}”</p>
+                <div className="project-card-actions">
+                    <div>{actions}</div>
+                </div>
             </div>
         </article>
     )

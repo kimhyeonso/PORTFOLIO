@@ -12,9 +12,9 @@
     .wf {
         --navy: #25414c;
         --orange: #ed711a;
-        --gray: #555;
+        --gray: #606060;
         container-type: inline-size;
-        background: #f9f9f9;
+        background: #fafafa;
     }
     .wf-canvas {
         --u: calc(100cqw / 1920);
@@ -70,15 +70,6 @@
         font-family: 'Inter', 'Noto Sans KR', sans-serif;
         font-weight: 700;
     }
-    .wf-strong.is-dark {
-        color: var(--navy);
-    }
-    .wf-number {
-        color: var(--navy);
-        font-family: 'Inter', sans-serif;
-        font-weight: 700;
-        line-height: 1;
-    }
     .wf-font {
         font-family: 'Yaldevi', sans-serif;
     }
@@ -96,7 +87,7 @@
         font-weight: 600;
     }
 
-    /* 가운데 섹션 제목 · 왼쪽 큰 제목 */
+    /* 섹션 제목(가운데 · 왼쪽) · 왼쪽 큰 제목 */
     .wf-heading, .wf-title {
         color: var(--navy);
         font-family: 'Inter', 'Noto Sans KR', sans-serif;
@@ -106,7 +97,14 @@
     .wf-heading {
         font-size: calc(28 * var(--u));
         font-weight: 700;
+        transform: translateY(-50%);
+    }
+    .wf-heading.is-center {
         transform: translate(-50%, -50%);
+    }
+    /* 검은 배경 위 제목 */
+    .wf-heading.is-muted {
+        color: #6790a0;
     }
     .wf-title {
         font-size: calc(32 * var(--u));
@@ -123,50 +121,33 @@
     .wf-fill {
         background: var(--navy);
     }
+    .wf-black {
+        background: #000;
+    }
+    /* WEB CONCEPT와 TARGET 사이 세로선 */
+    .wf-divider {
+        background: #92a0a5;
+    }
     .wf-line {
         background: var(--orange);
     }
-    .wf-design-box, .wf-pill, .wf-node {
+    .wf-node {
         display: grid;
         place-items: center;
         white-space: nowrap;
-    }
-    .wf-design-box {
-        color: #fff;
-        background: var(--navy);
-        font-family: 'Inter', sans-serif;
-        font-size: calc(34 * var(--u));
-        font-weight: 700;
-    }
-    .wf-pill {
-        border: calc(1.5 * var(--u)) solid var(--navy);
-        border-radius: 999px;
-        font-size: calc(22 * var(--u));
-    }
-    .wf-pill.is-filled {
-        color: #fff;
-        background: var(--navy);
-        font-size: calc(30 * var(--u));
-        font-weight: 700;
-    }
-    .wf-node {
         border-radius: 999px;
         color: #fff;
         background: var(--navy);
         font-family: 'Inter', 'Noto Sans KR', sans-serif;
         font-size: calc(28 * var(--u));
     }
-    .wf-paragraph {
-        font-size: calc(22 * var(--u));
-        line-height: 1.64;
-        word-break: keep-all;
-    }
-    /* 로고 뒤 모눈 */
+    /* 로고 뒤 모눈 (--cw, --ch: 칸 너비 · 높이) */
     .wf-grid {
-        border: calc(1 * var(--u)) solid #ececec;
+        border-top: calc(2 * var(--u)) solid #f2f2f2;
+        border-bottom: calc(2 * var(--u)) solid #f2f2f2;
         background:
-            linear-gradient(#ececec calc(1 * var(--u)), transparent 0) 0 0 / calc(24 * var(--u)) calc(24 * var(--u)),
-            linear-gradient(90deg, #ececec calc(1 * var(--u)), transparent 0) 0 0 / calc(24 * var(--u)) calc(24 * var(--u));
+            linear-gradient(#eae9e8 calc(1 * var(--u)), transparent 0) 0 0 / 100% calc(var(--ch) * var(--u)),
+            linear-gradient(90deg, #eae9e8 calc(1 * var(--u)), transparent 0) 0 0 / calc(var(--cw) * var(--u)) 100%;
     }
     /* 상품 상세 설명 영역 테두리 */
     .wf-frame {

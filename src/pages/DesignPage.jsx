@@ -6,7 +6,6 @@ import { designProjects } from '../data/designProjects.js'
 const tabs = [
   { key: 'web-ui', label: 'WEB/UI' },
   { key: 'editorial', label: 'EDITORIAL' },
-  { key: 'proposal', label: 'PROPOSAL' },
 ]
 
 export default function DesignPage({ onNavigate, onMenuToggle }) {

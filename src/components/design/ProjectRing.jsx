@@ -1,4 +1,5 @@
 import { Suspense, lazy, useEffect, useRef, useState } from 'react'
+import { STRIPS, ringRadius } from './ringGeometry.js'
 import { titleWidthEm } from './titleWidth.js'
 import WorkBadge from './WorkBadge.jsx'
 import styles from './ProjectRing.module.scss'
@@ -6,17 +7,15 @@ import styles from './ProjectRing.module.scss'
 // 3D 제목(Three.js · gsap)은 사진만 보기에서만 쓰므로 필요할 때 따로 불러온다
 const RingTitles3D = lazy(() => import('./RingTitles3D.jsx'))
 
-const STRIPS = 8 // 카드 한 장을 세로 띠 몇 장으로 잘라 곡면처럼 보이게 할지 (많을수록 매끈, 대신 무거움)
 const SPIN_DURATION = 750 // ms, SCSS의 회전 transition과 맞춘다
 const SEESAW_ANGLE = 2.5 // deg, 넘길 때 좌우가 오르내리는 정도
 
-// 원통에 붙는 카드 한 장의 앞면: 번호 · 제목 · 분야/연도 + 썸네일
+// 원통에 붙는 카드 한 장의 앞면: 제목 · 분야/연도 + 썸네일
 // imageOnly면 썸네일만 꽉 채운다 (제목은 RingTitles3D가 3D로 띄운다)
 function RingFace({ project, imageOnly }) {
     return (
         <div className={`project-ring-face ${imageOnly ? 'is-image-only' : ''}`}>
             {!imageOnly && <div className="project-ring-info">
-                <span className="project-ring-number">{project.id}</span>
                 <strong style={{ '--title-em': titleWidthEm(project.title) }}>{project.title}</strong>
                 <span className="project-ring-type">{project.type} · {project.year}</span>
             </div>}
@@ -59,7 +58,7 @@ export default function ProjectRing({ projects, position, activeIndex, onOpen, i
         const rect = ring.getBoundingClientRect()
         const panelWidth = ring.querySelector('.project-ring-face')?.offsetWidth ?? 0
         const distance = parseFloat(getComputedStyle(ring).perspective) || Infinity
-        const radius = panelWidth / (2 * Math.tan(Math.PI / count))
+        const radius = ringRadius(panelWidth, count)
         const offsetX = event.clientX - (rect.left + rect.width / 2)
         const screenX = (theta) => (radius * Math.sin(theta) * distance) / (distance + radius - radius * Math.cos(theta))
         let low = -Math.PI / 2

@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cp ../images/6.png ref/wildfix.png)",
+      "Bash(echo '<!doctype html><body style=\"margin:0\"><img src=\"wildfix.png\" style=\"display:block;width:1920px\">')",
+      "Bash(rm -f ref/r*.png)",
+      "Bash(timeout 110 node crop.mjs \"$\\(pwd\\)/ref/view.html\" ref/r 0 18810 2400 0.5)",
+      "Bash(node -e ' *)",
+      "Bash(echo '<!doctype html><body style='\\\\''margin:0;display:flex;gap:8px;background:#fafafa'\\\\''><img src='\\\\''__TRACKED_VAR__/productThumnail01.png'\\\\'' width=300><img src='\\\\''__TRACKED_VAR__/productThumnail02.png'\\\\'' width=300><img src='\\\\''__TRACKED_VAR__/productThumnail03.png'\\\\'' width=300><img src='\\\\''__TRACKED_VAR__/productThumnail04.png'\\\\'' width=300><img src='\\\\''__TRACKED_VAR__/productThumnail05.png'\\\\'' width=300><img src='\\\\''__TRACKED_VAR__/productThumnail06.jpg'\\\\'' width=300>')",
+      "Bash(node crop.mjs \"$\\(pwd\\)/dv/p.html\" dv/p 0 300 300 1 1850)",
+      "Bash(node -e \"const b=require\\('fs'\\).readFileSync\\('c:/portfolio2026/src/assets/image/project/DIVETOURS/productThumnail06.jpg'\\);for\\(let i=2;i<b.length;\\){if\\(b[i]!==0xff\\){i++;continue}const m=b[i+1];if\\(m>=0xc0&&m<=0xc2\\){console.log\\('jpg',b.readUInt16BE\\(i+7\\),b.readUInt16BE\\(i+5\\)\\);break}i+=2+b.readUInt16BE\\(i+2\\)}\")"
+    ]
+  }
+}

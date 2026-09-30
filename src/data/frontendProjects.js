@@ -13,6 +13,7 @@ export const frontendProjects = [
   {
     id: '01',
     slug: 'kakaobank',
+    detail: false, // 세부정보 버튼 없음
     category: 'copy-site',
     title: 'KAKAOBANK',
     type: 'Copy Site',
@@ -29,6 +30,7 @@ export const frontendProjects = [
   {
     id: '02',
     slug: 'woodin',
+    detail: false, // 세부정보 버튼 없음
     category: 'copy-site',
     title: 'WOODIN',
     type: 'Copy Site',
@@ -45,6 +47,7 @@ export const frontendProjects = [
   {
     id: '03',
     slug: 'souvenir',
+    detail: false, // 세부정보 버튼 없음
     category: 'personal',
     title: 'SOUVENIR',
     type: 'Web Vibe Coding',
@@ -61,6 +64,7 @@ export const frontendProjects = [
   {
     id: '04',
     slug: 'damum',
+    detail: false, // 세부정보 버튼 없음
     category: 'personal',
     title: 'DAMUM',
     type: 'Web Shopping Mall',
@@ -70,13 +74,14 @@ export const frontendProjects = [
     description: '담음은 도자기 그릇에 마음을 담다라는 의미로 도자기 쇼핑몰 사이트 입니다 firebase의 Authentication을 이용하였습니다',
     thumbnail: damumThumbnail,
     tools: ['VS Code', 'React', 'Firebase'],
-    link: '',
-    github: 'https://vercel.com/hyeonsoo2/damum-mqk1',
+    link: 'https://damum-mqk1.vercel.app/',
+    github: '',
     images: [],
   },
   {
     id: '05',
     slug: 'aevora',
+    detail: false, // 세부정보 버튼 없음
     category: 'personal',
     title: 'AEVORA',
     type: 'Web Brand Coding',
@@ -93,6 +98,7 @@ export const frontendProjects = [
   {
     id: '06',
     slug: 'dashboard',
+    detail: false, // 세부정보 버튼 없음
     category: 'personal',
     title: 'DASHBOARD',
     type: 'Admin page Coding',
@@ -109,6 +115,7 @@ export const frontendProjects = [
   {
     id: '07',
     slug: 'guest-book',
+    detail: false, // 세부정보 버튼 없음
     category: 'personal',
     title: 'GUEST BOOK',
     type: 'Admin page Coding',
@@ -160,7 +167,7 @@ export const frontendProjects = [
     description: '어렸을 적 자주보던 만화채널 챔프 + 투니버스를 합쳐 챔버스라는 아동용 만화 OTT 사이트를 제작하였습니다',
     thumbnail: chemverseThumbnail,
     tools: ['Figma', 'VS Code'],
-    link: '',
+    link: 'https://kimhyeonso.github.io/CHAMVERSE/html/intro.html',
     github: '',
     images: [],
   },

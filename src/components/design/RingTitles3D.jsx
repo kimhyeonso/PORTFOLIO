@@ -1,13 +1,14 @@
 import { useEffect, useRef, useState } from 'react'
 import * as THREE from 'three'
 import { gsap } from 'gsap'
+import { ringRadius } from './ringGeometry.js'
 
 const FONT = '700 {px}px "Inter", "Noto Sans KR", sans-serif'
 const FONT_PX = 200 // 글자를 그리는 캔버스 해상도 (화면에 보이는 크기와는 별개)
 const LAYERS = 28 // 두께를 만드는 테두리 판 수 (많을수록 옆면이 매끈)
 // 모든 제목을 이 제목이 카드 너비의 MAX_WIDTH를 채우는 글자 크기로 맞춘다 (이보다 긴 제목만 더 줄어든다)
 const SIZE_REFERENCE = 'MOUNTAIN EQUIPMENT'
-const MAX_WIDTH = 0.9 // 긴 제목은 카드 너비의 이 비율 안에 들어가도록 줄인다
+const MAX_WIDTH = 0.72 // 긴 제목은 카드 너비의 이 비율 안에 들어가도록 줄인다 (글자 크기도 이 값에 비례)
 const DEPTH = 0.24 // 두께 = 글자 크기 × DEPTH
 const TILT = { x: 0.22, y: 0.35 } // rad, 마우스 위치에 따라 기우는 최대 각도
 
@@ -211,7 +212,7 @@ export default function RingTitles3D({ projects, shownIndex, ringRef, kickRef, s
 
             // 원통 회전(시소 · 회전 · 드래그 포함)을 CSS에서 그대로 읽는다
             const panelWidth = face.offsetWidth
-            const radius = panelWidth / (2 * Math.tan(Math.PI / count))
+            const radius = ringRadius(panelWidth, count)
             const ringMatrix = toDOMMatrix(kickRef.current).multiply(toDOMMatrix(spinRef.current))
             tilt.x += (tilt.targetX - tilt.x) * 0.08
             tilt.y += (tilt.targetY - tilt.y) * 0.08

@@ -19,6 +19,25 @@ const IntroPortal = lazy(loadIntroPortal)
 
 const fullscreenPages = [MainPage, DesignPage, FrontendPage, ArchivePage]
 
+/*
+ * 처음 접속(주소 /)하면 인트로부터 보여준다. 주소를 /intro로 바꿔 두고(뒤로 가기 기록은 남기지 않음),
+ * 같은 탭에서 한 번 보여준 뒤에는 새로고침해도 메인이 바로 뜨도록 sessionStorage에 표시한다.
+ */
+const INTRO_SEEN_KEY = 'intro-seen'
+
+function getInitialPath() {
+  const { pathname } = window.location
+  if (pathname !== '/') return pathname
+  try {
+    if (sessionStorage.getItem(INTRO_SEEN_KEY)) return pathname
+    sessionStorage.setItem(INTRO_SEEN_KEY, '1')
+  } catch {
+    // 저장소를 못 쓰는 환경(시크릿 모드 등)에서는 매번 인트로부터
+  }
+  window.history.replaceState({}, '', '/intro')
+  return '/intro'
+}
+
 function getPage(pathname, onNavigate, onEnterMain) {
   if (pathname === '/intro') return <IntroPage onEnterMain={onEnterMain} />
   if (pathname === '/profile') return <ProfilePage />
@@ -33,7 +52,7 @@ function getPage(pathname, onNavigate, onEnterMain) {
 }
 
 export default function AppRoutes() {
-  const [pathname, setPathname] = useState(window.location.pathname)
+  const [pathname, setPathname] = useState(getInitialPath)
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   // 인트로 → 메인 전환 화면이 떠 있는지
   const [isPortal, setIsPortal] = useState(false)

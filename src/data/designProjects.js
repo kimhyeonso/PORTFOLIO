@@ -7,6 +7,7 @@ import bannerThumbnail from '../assets/image/project/ADVERTISING BANNER/Thumnail
 import gFoundationThumbnail from '../assets/image/project/G-FOUNDATION/Thumnail.png'
 import universeThumbnail from '../assets/image/project/UNIVERSE/Thumnail.png'
 import hanwooThumbnail from '../assets/image/project/HANWOO/Thumnail.png'
+import teenatureThumbnail from '../assets/image/project/TEENATURE/Thumnail.png'
 
 /**
  * 디자인 프로젝트 카드 데이터 (Frontend와 같은 구조)
@@ -21,17 +22,19 @@ import hanwooThumbnail from '../assets/image/project/HANWOO/Thumnail.png'
  *                  역할별 목록        [{ role: '기획', value: 70 }, …] → 기획 : 70% 디자인 : 100%
  *   description  따옴표 설명           "공간의 흐름 ..."
  *   thumbnail    왼쪽 큰 이미지 (아직 없으면 null → 빈 배경으로 표시)
- *   tools        이미지 오른쪽 아래 아이콘 (skillIcons.js의 키 이름)
+ *   tools        도구 아이콘 (skillIcons.js의 키 이름)
+ *   textSide     PC 카드에서 이미지 위 글자 위치 'left' | 'right' (생략하면 왼쪽)
  *   link         이미지 호버 시 [세부정보] 옆 링크 버튼 (없으면 빈 문자열)
  *                  주소 하나        'https://...'                          → [홈페이지]
  *                  여러 개          { '버튼 이름': 'https://...', … }     → [버튼 이름] (이름마다 하나씩)
  *   세부정보      이미지 호버 시 [세부정보] → 팝업(ProjectModal): 썸네일 없이 images(상세페이지)만
  *   detail       false면 [세부정보] 버튼을 숨긴다 (세부정보 팝업이 없는 프로젝트)
  *   images       세부정보 팝업에 바로 보일 상세 이미지들 (위에서부터 이어 붙음, 없으면 썸네일이 대신 보임)
- *   category     상단 탭 필터 (web-ui | editorial | proposal)
+ *   category     상단 탭 필터 (web-ui | editorial | proposal)   ※ proposal은 Design에선 숨기고 Working에서만 보여준다
+ *                같은 category끼리 붙어 있어야 탭을 눌렀을 때 그 묶음으로 이동한다
  *   work         실무 작업 뱃지 (썸네일 왼쪽 위)  'client' → CLIENT WORK, 'in-house' → IN-HOUSE, 'proposal' → PROPOSAL   ※ 개인·학습 작업은 생략
  */
-export const designProjects = [
+export const allDesignProjects = [
   {
     id: '01',
     slug: 'sony-piece', // 영문 소문자-하이픈, 프로젝트마다 겹치지 않게
@@ -83,58 +86,8 @@ export const designProjects = [
   },
   {
     id: '04',
-    slug: 'divetours',
-    category: 'editorial',
-    title: 'DIVETOURS',
-    work: 'client',
-    type: 'Product Detail Page (PDP)',
-    year: 2025,
-    contribution: [
-      { role: '기획', value: 70 },
-      { role: '디자인', value: 100 },
-    ],
-    description: '다이브 투어스 스마트 스토어 운영 및 온라인 배너 상세 페이지 제작 하였습니다',
-    thumbnail: diveToursThumbnail,
-    tools: [],
-    link: '',
-    images: [],
-  },
-  {
-    id: '05',
-    slug: 'mountain-equipment',
-    category: 'editorial',
-    title: 'MOUNTAIN EQUIPMENT',
-    type: 'Editorial Design',
-    year: 2023,
-    period: { start: '2023.03', end: '2023.03', duration: '5주' },
-    contribution: 100,
-    description: '아웃도어의 여러가지 상품들을 4개의 주제로 나누어 대표 상품을 통해 브랜트 특성을 소개하는 카탈로그를 제작하였습니다',
-    thumbnail: mountainThumbnail,
-    tools: ['Photoshop', 'InDesign'],
-    link: '',
-    images: [], // 세부정보 팝업은 components/details/MountainDetail.jsx (코드로 만든 상세페이지)
-  },
-  {
-    id: '06',
-    slug: 'advertising-banner',
-    category: 'proposal',
-    title: 'ADVERTISING BANNER',
-    work: 'client',
-    type: 'Advertising Design',
-    year: 2025,
-    contribution: [
-      { role: '디자인', value: 100 },
-    ],
-    description: '리버레이크 송파와 경련전람 홍보에 대한 온 · 오프라인 광고를 기획에 맞춰 디자인 작업을 하였습니다',
-    thumbnail: bannerThumbnail,
-    tools: ['Photoshop', 'Illustrator'],
-    link: '',
-    images: [],
-  },
-  {
-    id: '07',
     slug: 'g-foundation',
-    category: 'proposal',
+    category: 'web-ui',
     title: '지파운데이션',
     work: 'proposal',
     type: 'Proposal Design',
@@ -151,6 +104,56 @@ export const designProjects = [
       'SANITARY PAD': 'https://kimhyeonso.github.io/GFoundation-sanitarypad/',
       'CHILD SPONSOR': 'https://kimhyeonso.github.io/Gfoundation-childsponsorship/',
     },
+    images: [],
+  },
+  {
+    id: '05',
+    slug: 'dive-to-earth',
+    category: 'editorial',
+    title: 'DIVE TO EARTH',
+    work: 'client',
+    type: 'Product Detail Page (PDP)',
+    year: 2025,
+    contribution: [
+      { role: '기획', value: 70 },
+      { role: '디자인', value: 100 },
+    ],
+    description: '다이브 투어스 스마트 스토어 운영 및 온라인 배너 상세 페이지 제작 하였습니다',
+    thumbnail: diveToursThumbnail,
+    tools: [],
+    link: '',
+    images: [],
+  },
+  {
+    id: '06',
+    slug: 'mountain-equipment',
+    category: 'editorial',
+    title: 'MOUNTAIN EQUIPMENT',
+    type: 'Editorial Design',
+    year: 2023,
+    period: { start: '2023.03', end: '2023.03', duration: '5주' },
+    contribution: 100,
+    description: '아웃도어의 여러가지 상품들을 4개의 주제로 나누어 대표 상품을 통해 브랜트 특성을 소개하는 카탈로그를 제작하였습니다',
+    thumbnail: mountainThumbnail,
+    tools: ['Photoshop', 'InDesign'],
+    link: '',
+    images: [], // 세부정보 팝업은 components/details/MountainDetail.jsx (코드로 만든 상세페이지)
+  },
+  {
+    id: '07',
+    slug: 'advertising-banner',
+    category: 'editorial',
+    title: 'ADVERTISING BANNER',
+    work: 'client',
+    type: 'Advertising Design',
+    year: 2025,
+    contribution: [
+      { role: '디자인', value: 100 },
+    ],
+    description: '리버레이크 송파와 경련전람 홍보에 대한 온 · 오프라인 광고를 기획에 맞춰 디자인 작업을 하였습니다',
+    thumbnail: bannerThumbnail,
+    tools: ['Photoshop', 'Illustrator'],
+    link: '',
     images: [],
   },
   {
@@ -205,9 +208,12 @@ export const designProjects = [
       { role: '디자인', value: 100 },
     ],
     description: '청소년 샴푸의 타겟을 청소년과 학부모 2가지를 선정하고 타겟의 맞는 KV과 검색 광고 디자인을 제작하였습니다',
-    thumbnail: null, // TEENATURE 폴더에 Thumnail.png를 넣으면 위에서 import해서 연결
+    thumbnail: teenatureThumbnail,
     tools: ['Photoshop'],
     link: '',
     images: [],
   },
 ]
+
+// Design 페이지 · 메뉴에 보일 프로젝트 (proposal 분류는 Working에서만)
+export const designProjects = allDesignProjects.filter((project) => project.category !== 'proposal')

@@ -22,9 +22,8 @@ function toLinks(link) {
 /**
  * Working 페이지의 프로젝트 한 줄: 왼쪽 큰 이미지(호버 시 세부정보·홈페이지 버튼) · 가운데 정보 카드 · 오른쪽 설명
  * reverse면 반대로: 왼쪽에 카드와 설명, 오른쪽에 더 큰 이미지 (짝수 번째 줄)
- * code는 "C — 01" 같은 회사 머리글자 + 회사 안 번호
  */
-export default function WorkProjectRow({ project, code, onOpen, reverse = false }) {
+export default function WorkProjectRow({ project, onOpen, reverse = false }) {
     const { title, type, year, period, contribution, description = '', thumbnail, tools = [], link, work } = project
     const date = period ? `${period.start} - ${period.end}` : year
     const contributionText = formatContribution(contribution)
@@ -44,7 +43,6 @@ export default function WorkProjectRow({ project, code, onOpen, reverse = false 
             </div>
 
             <div className="work-row-card">
-                <p className="work-row-code">{code}</p>
                 <h3 id={`work-${project.slug}`}>{title}</h3>
                 <p className="work-row-date">{date}</p>
                 <p className="work-row-meta">
@@ -56,7 +54,7 @@ export default function WorkProjectRow({ project, code, onOpen, reverse = false 
             </div>
 
             <div className="work-row-detail">
-                <p className="work-row-code">{code} · DETAIL</p>
+                <p className="work-row-code">DETAIL</p>
                 {/* 설명은 줄바꿈(\n)마다 한 문단 */}
                 {description.split('\n').map((line) => <p className="work-row-text" key={line}>{line}</p>)}
             </div>

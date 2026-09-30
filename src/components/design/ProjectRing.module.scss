@@ -23,15 +23,22 @@
     }
 
     .project-ring {
-        --panel-width: 30vw;
-        --panel-height: calc(var(--panel-width) * 1.02);
-        --radius: calc(var(--panel-width) / (2 * tan(180deg / var(--count))));
-        --strip-width: calc(2 * var(--radius) * tan(180deg / var(--count) / var(--strips)) + 1px);
+        /*
+         * 앞면 카드를 가로로 넓게 두고 원근을 가깝게(perspective 작게) 잡아
+         * 옆 카드는 양 끝에서 얇게 휘어 들어가고, 원통 전체는 화면 안에 들어오게 한다.
+         * 시점을 위쪽(perspective-origin 15%)에 두어 아래쪽 곡선이 더 둥글게 보인다
+         */
+        --panel-width: 66vw;
+        --panel-height: 30vw;
+        /* 띠 너비(현)의 합 = 카드 너비가 되도록 반지름을 잡아 이미지가 띠 경계에서 끊기지 않게 (ringGeometry.js와 같은 식) */
+        --radius: calc(var(--panel-width) / (2 * var(--strips) * tan(180deg / var(--count) / var(--strips))));
+        /* 띠끼리 2px 겹쳐 경계에 가는 줄이 비치지 않게 */
+        --strip-width: calc(var(--panel-width) / var(--strips) + 2px);
         position: relative;
         width: 100%;
         height: var(--panel-height);
-        perspective: 110vw;
-        perspective-origin: 50% 25%;
+        perspective: 42vw;
+        perspective-origin: 50% 15%;
         /* 아래쪽 물 반사 (Chrome, Edge, Safari) */
         -webkit-box-reflect: below 1.2vw linear-gradient(transparent 72%, rgba(255, 255, 255, .32));
     }
@@ -119,15 +126,7 @@
         display: grid;
         gap: .55vw;
     }
-    .project-ring-number {
-        width: fit-content;
-        padding-bottom: .3vw;
-        border-bottom: 1px solid currentColor;
-        font-family: 'Inter', sans-serif;
-        font-size: clamp(.7rem, .85vw, 1.1rem);
-    }
     .project-ring-info strong {
-        margin-top: .4vw;
         overflow: hidden;
         /* 카드 보기 제목(.project-card-info h2)과 같은 글씨체 */
         color: #111;
@@ -151,11 +150,22 @@
         flex: 1;
         min-height: 0;
     }
+    /* 원본 비율과 상관없이 모든 카드가 같은 크기가 되도록 썸네일 영역에 딱 맞춰 고정한다 */
     .project-ring-media img, .project-ring-empty {
+        position: absolute;
+        inset: 0;
         display: block;
         width: 100%;
         height: 100%;
         object-fit: cover;
+    }
+    /*
+     * 썸네일 PNG 가장자리의 반투명 그림자(왼쪽 약 2%, 오른쪽 약 3%)를 좌우로 밀어내
+     * 카드끼리 틈 없이 붙게 한다 (넘친 부분은 띠가 잘라낸다)
+     */
+    .project-ring-media img {
+        left: -2.5%;
+        width: 106%;
     }
     .project-ring-empty {
         background: linear-gradient(180deg, #fdf3ec, #f8e9e0);
@@ -163,7 +173,8 @@
 
     @media (max-width: 900px) {
         .project-ring {
-            --panel-width: 58vw;
+            --panel-width: 70vw;
+            --panel-height: calc(58vw * 1.02);
             perspective: 180vw;
         }
         .project-ring-face {

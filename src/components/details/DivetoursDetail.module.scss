@@ -1,0 +1,40 @@
+.scope {
+    isolation: isolate;
+}
+
+:global {
+    /*
+     * 투어 썸네일 무한 슬라이드 (좌표 · --u는 DetailCanvas와 같다)
+     * 카드 600 × 600, 간격 10. 목록을 두 벌 이어 붙이고 트랙을 -50%까지 옮겨 처음으로 돌아가도 이음새가 보이지 않게
+     * (간격을 카드 오른쪽 여백으로 주어 두 벌의 길이가 정확히 같다)
+     */
+    .dv-marquee {
+        width: 100%;
+        height: calc(600 * var(--u));
+        overflow: hidden;
+    }
+    .dv-marquee-track {
+        display: flex;
+        width: max-content;
+        /* 카드 한 장(610)당 6초 → 화면에서 약 100px/초 */
+        animation: dv-marquee calc(var(--count) * 6s) linear infinite;
+    }
+    .dv-marquee-track img {
+        display: block;
+        width: calc(600 * var(--u));
+        height: calc(600 * var(--u));
+        margin-right: calc(10 * var(--u));
+        object-fit: cover;
+        user-select: none;
+    }
+    @media (prefers-reduced-motion: reduce) {
+        .dv-marquee-track {
+            animation: none;
+        }
+    }
+    @keyframes :global(dv-marquee) {
+        to {
+            transform: translateX(-50%);
+        }
+    }
+}

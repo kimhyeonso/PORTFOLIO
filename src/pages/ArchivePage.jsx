@@ -8,10 +8,10 @@ import { workProjects } from '../data/workProjects.js'
 import styles from './ArchivePage.module.scss'
 
 // Working(실무) 페이지. 주소는 기존 /archive를 그대로 쓴다.
-// 회사 key는 workProjects.js의 category 값과 같아야 하고, code는 카드 번호 앞 머리글자 ("C — 01")
+// 회사 key는 workProjects.js의 category 값과 같아야 한다
 const companies = [
-  { key: 'concentrix', label: 'CONCENTRIX', code: 'C' },
-  { key: 'ricota', label: 'RICOTA', code: 'R' },
+  { key: 'concentrix', label: 'CONCENTRIX' },
+  { key: 'ricota', label: 'RICOTA' },
 ]
 
 /**
@@ -79,14 +79,11 @@ export default function ArchivePage({ onNavigate, onMenuToggle }) {
         return (
           <section className="work-page-company" id={`work-${company.key}`} data-company={company.key} key={company.key} aria-labelledby={`work-${company.key}-title`}>
             <h2 className="work-page-company-title" id={`work-${company.key}-title`}>{company.label}</h2>
-            {projects.map((project, index) => {
-              const code = `${company.code} — ${String(index + 1).padStart(2, '0')}`
-              return (
-                <div className="work-page-reveal" key={project.slug}>
-                  <WorkProjectRow project={project} code={code} reverse={index % 2 === 1} onOpen={() => setDetail(project)} />
-                </div>
-              )
-            })}
+            {projects.map((project, index) => (
+              <div className="work-page-reveal" key={project.slug}>
+                <WorkProjectRow project={project} reverse={index % 2 === 1} onOpen={() => setDetail(project)} />
+              </div>
+            ))}
           </section>
         )
       })}

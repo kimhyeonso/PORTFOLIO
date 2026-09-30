@@ -26,6 +26,12 @@
         height: auto;
         user-select: none;
     }
+    .detail-video {
+        display: block;
+        width: calc(var(--w) * var(--u));
+        height: auto;
+        background: #000;
+    }
     .detail-label {
         color: #555;
         font-family: 'Noto Sans KR', sans-serif;
