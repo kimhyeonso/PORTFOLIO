@@ -8,7 +8,17 @@
       "Bash(node -e ' *)",
       "Bash(echo '<!doctype html><body style='\\\\''margin:0;display:flex;gap:8px;background:#fafafa'\\\\''><img src='\\\\''__TRACKED_VAR__/productThumnail01.png'\\\\'' width=300><img src='\\\\''__TRACKED_VAR__/productThumnail02.png'\\\\'' width=300><img src='\\\\''__TRACKED_VAR__/productThumnail03.png'\\\\'' width=300><img src='\\\\''__TRACKED_VAR__/productThumnail04.png'\\\\'' width=300><img src='\\\\''__TRACKED_VAR__/productThumnail05.png'\\\\'' width=300><img src='\\\\''__TRACKED_VAR__/productThumnail06.jpg'\\\\'' width=300>')",
       "Bash(node crop.mjs \"$\\(pwd\\)/dv/p.html\" dv/p 0 300 300 1 1850)",
-      "Bash(node -e \"const b=require\\('fs'\\).readFileSync\\('c:/portfolio2026/src/assets/image/project/DIVETOURS/productThumnail06.jpg'\\);for\\(let i=2;i<b.length;\\){if\\(b[i]!==0xff\\){i++;continue}const m=b[i+1];if\\(m>=0xc0&&m<=0xc2\\){console.log\\('jpg',b.readUInt16BE\\(i+7\\),b.readUInt16BE\\(i+5\\)\\);break}i+=2+b.readUInt16BE\\(i+2\\)}\")"
+      "Bash(node -e \"const b=require\\('fs'\\).readFileSync\\('c:/portfolio2026/src/assets/image/project/DIVETOURS/productThumnail06.jpg'\\);for\\(let i=2;i<b.length;\\){if\\(b[i]!==0xff\\){i++;continue}const m=b[i+1];if\\(m>=0xc0&&m<=0xc2\\){console.log\\('jpg',b.readUInt16BE\\(i+7\\),b.readUInt16BE\\(i+5\\)\\);break}i+=2+b.readUInt16BE\\(i+2\\)}\")",
+      "Bash(python -c ' *)",
+      "Bash(python -c \"from PIL import Image; print\\(Image.open\\(r'C:\\\\Users\\\\이젠아~1\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\c--portfolio2026\\\\b65f7df1-1853-443f-a900-a7346e7f6f71\\\\images\\\\1.png'\\).size\\)\")",
+      "Bash(where magick *)",
+      "Bash(ls \"/c/Program Files \\(x86\\)/Microsoft/Edge/Application/msedge.exe\" \"/c/Program Files/Google/Chrome/Application/chrome.exe\" 2>&1)",
+      "Read(//c/Program Files \\\\\\(x86\\\\\\)/Microsoft/Edge/Application/**)",
+      "Bash(sed -i 's/ArchiveItem/WorkingItem/g; s/ArchiveGrid/WorkingGrid/g' src/components/working/WorkingGrid.jsx)",
+      "Bash(sed -i 's/ArchiveItem/WorkingItem/g' src/components/working/WorkingItem.jsx)",
+      "Bash(sed -i 's/ArchiveFilter/WorkingFilter/g; s/Archive filters/Working filters/g' src/components/working/WorkingFilter.jsx)",
+      "Bash(sed -i \"s#'/archive'#'/working'#g\" src/pages/MainPage.jsx src/components/common/Header.jsx src/components/common/MenuOverlay.jsx)",
+      "Bash(sed -i \"s#\\(/archive/project/{slug}\\)#\\(/working/project/{slug}\\)#; s#// Working\\(실무\\) 페이지. 주소는 기존 /archive를 그대로 쓴다.#// Working\\(실무\\) 페이지 \\(주소 /working, 예전 주소 /archive로 들어와도 이리로 온다\\)#\" src/pages/WorkingPage.jsx)"
     ]
   }
 }

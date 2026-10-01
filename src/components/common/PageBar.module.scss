@@ -1,0 +1,71 @@
+.scope {
+    isolation: isolate;
+}
+
+:global {
+    /* 막대 높이: 페이지마다 위 여백 · 스크롤 위치를 이 값으로 맞춘다 */
+    :root {
+        --page-bar-height: clamp(96px, 9vw, 170px);
+    }
+    @media (max-width: 900px) {
+        :root {
+            --page-bar-height: 118px;
+        }
+    }
+
+    /* 홈 · 메뉴 버튼은 각자 왼쪽 위 · 오른쪽 위 자리(ExitButton · MenuButton)를 그대로 쓴다 */
+    .page-bar {
+        position: fixed;
+        z-index: 20;
+        top: 0;
+        right: 0;
+        left: 0;
+        height: var(--page-bar-height);
+        pointer-events: none;
+    }
+    .page-bar > * {
+        pointer-events: auto;
+    }
+    /* 스크롤하는 내용이 막대 아래로 부드럽게 사라지게 */
+    .page-bar.is-solid {
+        background: linear-gradient(rgba(246, 239, 229, .98) 72%, rgba(246, 239, 229, 0));
+    }
+
+    /* 가운데 탭: 버튼과 같은 줄 가운데 (모바일은 버튼 아래 줄) */
+    .page-bar-tabs {
+        position: absolute;
+        top: clamp(26px, 4.4vw, 66px);
+        left: 50%;
+        display: flex;
+        /* 전역 nav의 줄바꿈(index.css)을 끄고 탭을 한 줄로 */
+        flex-wrap: nowrap;
+        align-items: baseline;
+        gap: clamp(12px, 1.2vw, 28px);
+        width: max-content;
+        white-space: nowrap;
+        transform: translateX(-50%);
+        font-family: 'Inter', 'Noto Sans KR', sans-serif;
+    }
+    .page-bar-tabs button {
+        border: 0;
+        padding: 0;
+        color: rgba(80, 60, 45, .55);
+        background: none;
+        font-family: inherit;
+        font-size: clamp(.8rem, .95vw, 1.2rem);
+        transition: color .25s ease, font-size .25s ease;
+    }
+    .page-bar-tabs button.is-active {
+        color: #111;
+        font-size: clamp(1rem, 1.25vw, 1.6rem);
+    }
+    .page-bar-tabs button:hover, .page-bar-tabs button:focus-visible {
+        color: #111;
+        background: none;
+    }
+    @media (max-width: 900px) {
+        .page-bar-tabs {
+            top: 78px;
+        }
+    }
+}

@@ -34,11 +34,12 @@ export default function ProjectCard({ project, isActive, onOpen, onSelect }) {
     const side = project.textSide ?? 'left'
 
     // [세부정보] · 링크 버튼. 모바일은 이미지 위 오버레이, PC는 글자 아래 줄에 보인다 (안 쓰는 쪽은 CSS로 숨김)
+    // PDF가 연결된 프로젝트는 [세부정보] 대신 [PDF]로 보여준다
     const actions = (
         <>
             {project.detail !== false && (
                 <button className="project-card-action" type="button" onClick={isActive ? onOpen : undefined} tabIndex={isActive ? 0 : -1}>
-                    세부정보
+                    {project.pdf ? 'PDF' : '세부정보'}
                 </button>
             )}
             {/* link(Behance·사이트 주소)가 있는 프로젝트만 새 탭으로 여는 버튼 */}

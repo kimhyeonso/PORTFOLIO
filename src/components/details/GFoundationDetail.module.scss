@@ -1,0 +1,101 @@
+.scope {
+    isolation: isolate;
+}
+
+:global {
+    /* GFoundationDetail 전용 (좌표 · --u는 DetailCanvas와 같다) */
+    .gf {
+        --orange: #ea7212;
+        --body: #555;
+    }
+    .gf .detail {
+        background: #fff;
+    }
+    .gf-svg {
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+    }
+    .gf-faded {
+        opacity: .35;
+    }
+
+    /* 글자 (y는 글줄의 세로 가운데) */
+    .gf-text {
+        color: var(--body);
+        font-family: 'Noto Sans KR', sans-serif;
+        font-size: calc(var(--size) * var(--u));
+        font-weight: 400;
+        line-height: 1.2;
+        white-space: nowrap;
+        transform: translateY(-50%);
+    }
+    .gf-text.is-center {
+        transform: translate(-50%, -50%);
+    }
+    .gf-text b {
+        color: #222;
+        font-weight: 700;
+    }
+    .gf-text.is-dark {
+        color: #333;
+    }
+    .gf-text.is-strong, .gf-text.is-title {
+        color: #333;
+        font-weight: 700;
+    }
+    .gf-text.is-en {
+        color: #333;
+        font-family: 'Inter', 'Noto Sans KR', sans-serif;
+        font-weight: 700;
+    }
+    .gf-text.is-label {
+        color: var(--orange);
+        font-family: 'Inter', 'Noto Sans KR', sans-serif;
+        font-weight: 700;
+    }
+    .gf-text.is-key {
+        color: var(--orange);
+        font-weight: 700;
+    }
+
+    /* 상자들 */
+    .gf-box {
+        box-sizing: border-box;
+        width: calc(var(--w) * var(--u));
+        height: calc(var(--h) * var(--u));
+    }
+    .gf-mission {
+        border: calc(3 * var(--u)) solid #ee7d12;
+        border-radius: calc(36 * var(--u));
+        background: #fffcfa;
+    }
+    .gf-panel {
+        border-radius: calc(24 * var(--u));
+        background: #fbf3ee;
+    }
+    .gf-divider {
+        background: #f3a45e;
+    }
+    .gf-card {
+        border-radius: calc(20 * var(--u));
+        background: #f8f1ec;
+        box-shadow: 0 calc(4 * var(--u)) calc(12 * var(--u)) rgb(0 0 0 / .18);
+    }
+    .gf-bar {
+        background: #f08a1c;
+    }
+
+    /* MISSION 카드 번호 동그라미 */
+    .gf-number {
+        display: grid;
+        place-items: center;
+        width: calc(58 * var(--u));
+        height: calc(58 * var(--u));
+        border-radius: 50%;
+        color: #fff;
+        background: #ef7a1a;
+        font-family: 'Inter', sans-serif;
+        font-size: calc(34 * var(--u));
+    }
+}

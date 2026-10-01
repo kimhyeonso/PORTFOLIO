@@ -54,21 +54,17 @@
         }
     }
 
-    /* 세로 화면: 배경을 화면 높이에 맞추고 가로로 스와이프해 문을 둘러본다 */
+    /*
+     * 세로 화면: 모바일 전용 세로 배경(941:1672)을 화면에 꽉 채운다 (남는 쪽은 가운데 기준으로 잘림).
+     * 그냥 채우면 작아 보여서 화면 폭의 127%까지 확대한다. 문은 배경 가로 12.8%~87.4%에 있어
+     * 134%를 넘으면 양 끝 문이 잘리므로, 양옆에 조금 여유를 둔 값이다.
+     * 문 위치는 MainPage.jsx의 mobileArea를 쓴다 (MainPage.jsx의 PORTRAIT_QUERY와 같은 조건).
+     */
     @media (max-aspect-ratio: 1 / 1) {
-        .main-viewport {
-            overflow-x: auto;
-            scrollbar-width: none;
-        }
-        .main-viewport::-webkit-scrollbar {
-            display: none;
-        }
         .main-stage {
-            top: 0;
-            left: 0;
-            width: auto;
-            height: 100%;
-            transform: none;
+            width: max(127%, 100dvh * 941 / 1672);
+            aspect-ratio: 941 / 1672;
+            background-image: url('../assets/image/home/background-mo.png');
         }
     }
 }

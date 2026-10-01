@@ -17,6 +17,30 @@
         transition: left 1s ease-in-out, bottom 1s ease-in, height 1s ease-in;
         pointer-events: none;
     }
+    /* 세로 화면(모바일 배경): 발이 바닥 원형 한가운데(나침반 별, 배경 위에서 77%)에 오도록 위치 · 키를 맞추고,
+       발밑에 옅은 그림자를 깔아 원형 위에 서 있는 느낌을 낸다 (문으로 걸어갈 땐 숨김) */
+    @media (max-aspect-ratio: 1 / 1) {
+        .main-character {
+            --y: 21.5%;
+            --h: 24%;
+        }
+        .main-character::after {
+            position: absolute;
+            z-index: -1;
+            bottom: -1.5%;
+            left: 50%;
+            width: 95%;
+            height: 9%;
+            content: '';
+            border-radius: 50%;
+            background: radial-gradient(closest-side, rgba(90, 60, 30, .35), transparent);
+            transform: translateX(-50%);
+            transition: opacity .3s ease;
+        }
+        .main-character.is-walking::after {
+            opacity: 0;
+        }
+    }
     /* 네 방향 이미지를 겹쳐 두고 opacity로 바꿔 전환 깜빡임을 없앤다 */
     .main-character img {
         position: absolute;

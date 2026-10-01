@@ -1,1 +1,115 @@
+/*
+ * PROFILE 페이지 전용 (배경 · 위 여백은 HallPage, 위쪽 막대는 PageBar).
+ * 글꼴 · 색 · 흰 카드 · 머리글 강조선은 Working 페이지(WorkProjectRow)와 같은 값을 쓴다.
+ */
+:global {
+    .profile-page {
+        --profile-accent: #9d8fe3;
+        display: grid;
+        gap: clamp(24px, 3vw, 48px);
+        max-width: 1400px;
+        margin: 0 auto;
+    }
 
+    /* 섹션 머리글: 작은 Inter 대문자 + 아래 짧은 강조선 (Working 오른쪽 설명 머리글과 같은 모양) */
+    .profile-label {
+        width: fit-content;
+        margin: 0 0 clamp(18px, 1.8vw, 30px);
+        padding-bottom: clamp(12px, 1.1vw, 18px);
+        color: var(--profile-accent);
+        font-family: 'Inter', sans-serif;
+        font-size: clamp(.85rem, 1vw, 1.1rem);
+        font-weight: 400;
+        letter-spacing: .12em;
+        background: linear-gradient(var(--profile-accent), var(--profile-accent)) left bottom / 40px 2px no-repeat;
+    }
+
+    /* 맨 위: 이름 크게 */
+    .profile-hero {
+        margin: 0;
+        padding: clamp(24px, 4vw, 72px) 0 clamp(8px, 1vw, 16px);
+    }
+    .profile-hero h1 {
+        margin: 0;
+        font-family: 'Inter', 'Noto Sans KR', sans-serif;
+        font-size: clamp(2.6rem, 6vw, 6.5rem);
+        font-weight: 700;
+        letter-spacing: -.02em;
+        line-height: 1.05;
+    }
+    .profile-hero-intro {
+        margin: clamp(14px, 1.4vw, 24px) 0 0;
+        color: #2a2724;
+        font-size: clamp(1rem, 1.3vw, 1.4rem);
+        line-height: 1.7;
+        word-break: keep-all;
+    }
+
+    /* 섹션: Working 정보 카드와 같은 흰 바탕 80% */
+    .profile-section {
+        margin: 0;
+        padding: clamp(30px, 2.6vw, 44px) clamp(24px, 2.2vw, 40px);
+        background: rgba(255, 255, 255, .8);
+        /* 탭으로 이동했을 때 위쪽 막대에 가리지 않게 */
+        scroll-margin-top: calc(var(--page-bar-height) + 12px);
+    }
+    .profile-text, .profile-text p {
+        margin: 0;
+        color: #2a2724;
+        font-size: clamp(.95rem, 1.05vw, 1.15rem);
+        line-height: 2.1;
+        word-break: keep-all;
+    }
+    .profile-empty {
+        margin: 0;
+        color: #857e76;
+        font-size: clamp(.9rem, 1vw, 1.05rem);
+    }
+
+    /* 경력 */
+    .profile-timeline {
+        display: grid;
+    }
+    .profile-experience {
+        padding: clamp(16px, 1.6vw, 26px) 0;
+        border-top: 1px solid rgba(29, 27, 25, .14);
+    }
+    .profile-experience:first-child {
+        padding-top: 0;
+        border-top: 0;
+    }
+    .profile-experience-period {
+        margin: 0;
+        color: #6b655e;
+        font-family: 'Inter', sans-serif;
+        font-size: clamp(.85rem, .95vw, 1rem);
+        letter-spacing: .04em;
+    }
+    .profile-experience h3 {
+        margin: 4px 0 8px;
+        font-family: 'Inter', 'Noto Sans KR', sans-serif;
+        font-size: clamp(1.15rem, 1.4vw, 1.6rem);
+        font-weight: 700;
+        word-break: keep-all;
+    }
+
+    /* 기술 */
+    .profile-skills {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    .profile-skill {
+        display: flex;
+        align-items: baseline;
+        gap: 8px;
+        padding: 8px 14px;
+        border: 1px solid rgba(29, 27, 25, .14);
+        font-family: 'Inter', 'Noto Sans KR', sans-serif;
+        font-size: clamp(.85rem, .95vw, 1rem);
+    }
+    .profile-skill em {
+        color: #857e76;
+        font-style: normal;
+    }
+}

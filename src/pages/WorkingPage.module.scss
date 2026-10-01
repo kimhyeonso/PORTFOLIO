@@ -1,0 +1,37 @@
+/* Working 페이지 전용 (배경 · 위 여백은 HallPage, 위쪽 막대는 PageBar가 맡는다) */
+:global {
+    .work-page {
+        --work-accent: #9d8fe3;
+    }
+
+    .work-page-company {
+        margin: 0;
+        /* 탭으로 이동했을 때 위쪽 막대에 가리지 않게 */
+        scroll-margin-top: calc(var(--page-bar-height) - 40px);
+    }
+    /* 회사 이름은 탭이 대신 보여주므로 화면에서는 숨기고 스크린리더에만 읽힌다 */
+    .work-page-company-title {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip-path: inset(50%);
+        white-space: nowrap;
+    }
+    /* 회사 묶음 사이 구분선 */
+    .work-page-company + .work-page-company {
+        margin-top: clamp(30px, 4vw, 80px);
+        border-top: 1px solid rgba(80, 60, 45, .16);
+    }
+
+    /* 화면에 들어오면 아래에서 떠오른다 */
+    .work-page-reveal {
+        opacity: 0;
+        transform: translateY(48px);
+        transition: opacity .9s ease, transform .9s cubic-bezier(.2, .75, .25, 1);
+    }
+    .work-page-reveal.is-visible {
+        opacity: 1;
+        transform: none;
+    }
+}

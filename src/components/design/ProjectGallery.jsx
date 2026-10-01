@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import ExitButton from '../common/ExitButton.jsx'
-import MenuButton from '../common/MenuButton.jsx'
+import PageBar from '../common/PageBar.jsx'
 import ProjectCard from './ProjectCard.jsx'
 import ProjectControlBar from './ProjectControlBar.jsx'
 import ProjectModal from './ProjectModal.jsx'
@@ -27,14 +26,16 @@ function stepWidth(mode) {
  * 카드의 [세부정보](또는 카드 보기에서 아래 조작 바 제목)를 누르면 새 페이지 대신 ProjectModal 팝업(이미지만)이 열린다.
  * 탭은 해당 분류의 첫 카드로 이동하고, 현재 카드의 분류가 탭에 표시된다.
  * 이동: 탭 · 아래 조작 바 · 옆 카드 클릭 · ←/→ 키 · 마우스 휠 · 클릭 드래그 / 터치 스와이프
+ * initialSlug: 메뉴 썸네일로 들어왔을 때 그 프로젝트의 카드 보기로 바로 연다 (원통 인트로 생략)
  */
-export default function ProjectGallery({ projects, tabs, background, label, onMenuToggle, imageOnly = false, onExit }) {
+export default function ProjectGallery({ projects, tabs, background, label, onMenuToggle, imageOnly = false, onExit, initialSlug }) {
     const count = projects.length
+    const initialIndex = initialSlug ? projects.findIndex((project) => project.slug === initialSlug) : -1
     // 원통이 짧은 방향으로 돌도록 index 대신 끝없이 늘어나는 회전 칸 수를 기억한다
-    const [position, setPosition] = useState(0)
-    const [mode, setMode] = useState('ring')
+    const [position, setPosition] = useState(Math.max(0, initialIndex))
+    const [mode, setMode] = useState(initialIndex >= 0 ? 'card' : 'ring')
     // 페이지에 처음 들어왔을 때만 원통이 몇 바퀴 도는 인트로 (카드 보기에서 돌아올 땐 생략)
-    const [intro, setIntro] = useState(() => !window.matchMedia('(prefers-reduced-motion: reduce)').matches)
+    const [intro, setIntro] = useState(() => initialIndex < 0 && !window.matchMedia('(prefers-reduced-motion: reduce)').matches)
     // 보기를 바꾸면 인트로는 끝난 것으로 본다 (인트로 도중 전환했다 돌아와도 다시 돌지 않게)
     const changeMode = (next) => {
         setIntro(false)
@@ -142,11 +143,7 @@ export default function ProjectGallery({ projects, tabs, background, label, onMe
     if (count === 0) {
         return (
             <main className={`${styles.scope} project-gallery is-empty`} style={{ '--gallery-bg': `url(${background})` }} aria-label={label}>
-                {onExit && <ExitButton onClick={onExit} tone="dark" />}
-                <MenuButton onClick={onMenuToggle} tone="dark" />
-                <nav className="project-gallery-tabs" aria-label={`${label} 분류`}>
-                    {tabs.map((tab, tabIndex) => <button className={tabIndex === 0 ? 'is-active' : ''} type="button" key={tab.key}>{tab.label}</button>)}
-                </nav>
+                <PageBar label={`${label} 분류`} tabs={tabs} active={tabs[0]?.key} onExit={onExit} onMenuToggle={onMenuToggle} />
                 <p className="project-gallery-empty">COMING SOON</p>
             </main>
         )
@@ -155,16 +152,7 @@ export default function ProjectGallery({ projects, tabs, background, label, onMe
     return (
         <>
             <main className={`${styles.scope} project-gallery is-${mode}`} ref={galleryRef} style={{ '--gallery-bg': `url(${background})` }} aria-label={label} onWheel={handleWheel} onPointerDown={handlePointerDown} onPointerMove={handlePointerMove} onPointerUp={handlePointerUp} onPointerCancel={handlePointerUp} onClickCapture={handleClickCapture}>
-                {onExit && <ExitButton onClick={onExit} tone="dark" />}
-                <MenuButton onClick={onMenuToggle} tone="dark" />
-
-                <nav className="project-gallery-tabs" aria-label={`${label} 분류`}>
-                    {tabs.map((tab) => (
-                        <button className={tab.key === activeCategory ? 'is-active' : ''} type="button" key={tab.key} onClick={() => selectTab(tab.key)} aria-current={tab.key === activeCategory ? 'true' : undefined}>
-                            {tab.label}
-                        </button>
-                    ))}
-                </nav>
+                <PageBar label={`${label} 분류`} tabs={tabs} active={activeCategory} onSelect={selectTab} onExit={onExit} onMenuToggle={onMenuToggle} />
 
                 <div className="project-gallery-stage" aria-live="polite" key={mode}>
                     {mode === 'ring' ? (

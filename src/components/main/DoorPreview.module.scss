@@ -51,6 +51,13 @@
         font-style: normal;
         animation: main-preview-blink 1s steps(2) infinite;
     }
+    /* 세로 화면: 캐릭터(아래 21.5% + 키 24%) 머리 위에 띄운다 */
+    @media (max-aspect-ratio: 1 / 1) {
+        .main-preview {
+            bottom: 47%;
+            min-width: 40%;
+        }
+    }
     @keyframes :global(main-preview-pop) {
         from {
             opacity: 0;

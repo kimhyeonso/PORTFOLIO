@@ -4,13 +4,14 @@ import { frontendProjects } from '../../data/frontendProjects.js'
 import { workProjects } from '../../data/workProjects.js'
 import styles from './MenuOverlay.module.scss'
 
-// 메뉴 섹션. projects가 있으면 제목 아래에 썸네일 목록을 보여주고, 썸네일은 base/project/{slug} 상세 페이지로 간다
+// 메뉴 섹션. projects가 있으면 제목 아래에 썸네일 목록을 보여주고, 썸네일은 base/project/{slug}로 간다
+// (그 목록 페이지가 열리며 해당 프로젝트의 카드 보기 · Working은 그 줄을 바로 보여준다)
 const sections = [
   { label: 'HOME', path: '/' },
   { label: 'PROFILE', path: '/profile' },
   { label: 'DESIGN', path: '/design', projects: designProjects, base: '/design' },
   { label: 'FRONTEND', path: '/frontend', projects: frontendProjects, base: '/frontend' },
-  { label: 'WORKING', path: '/archive', projects: workProjects, base: '/archive' },
+  { label: 'WORKING', path: '/working', projects: workProjects, base: '/working' },
 ]
 
 /**

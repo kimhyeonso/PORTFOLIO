@@ -1,23 +1,15 @@
 import { Suspense, cloneElement, lazy, useEffect, useState } from 'react'
-import Footer from '../components/common/Footer.jsx'
-import Header from '../components/common/Header.jsx'
 import MenuOverlay from '../components/common/MenuOverlay.jsx'
-import ArchivePage from '../pages/ArchivePage.jsx'
-import DesignDetailPage from '../pages/DesignDetailPage.jsx'
-import DesignGalleryPage from '../pages/DesignGalleryPage.jsx'
+import WorkingPage from '../pages/WorkingPage.jsx'
 import DesignPage from '../pages/DesignPage.jsx'
 import FrontendPage from '../pages/FrontendPage.jsx'
 import IntroPage from '../pages/IntroPage.jsx'
 import MainPage from '../pages/MainPage.jsx'
 import ProfilePage from '../pages/ProfilePage.jsx'
-import { frontendProjects } from '../data/frontendProjects.js'
-import { workProjects } from '../data/workProjects.js'
 
 // 인트로 → 메인 전환 화면(링 소용돌이 + 다음 스테이지 질문)은 따로 불러오고, 인트로에 있는 동안 미리 받아 둔다
 const loadIntroPortal = () => import('../components/intro/IntroPortal.jsx')
 const IntroPortal = lazy(loadIntroPortal)
-
-const fullscreenPages = [MainPage, DesignPage, FrontendPage, ArchivePage]
 
 /*
  * 처음 접속(주소 /)하면 인트로부터 보여준다. 주소를 /intro로 바꿔 두고(뒤로 가기 기록은 남기지 않음),
@@ -25,8 +17,16 @@ const fullscreenPages = [MainPage, DesignPage, FrontendPage, ArchivePage]
  */
 const INTRO_SEEN_KEY = 'intro-seen'
 
+// 예전 주소 /archive(…)로 들어오면 /working(…)으로 바꿔 둔다 (뒤로 가기 기록은 남기지 않음)
+function redirectOldPath(pathname) {
+  if (pathname !== '/archive' && !pathname.startsWith('/archive/')) return pathname
+  const next = pathname.replace(/^\/archive/, '/working')
+  window.history.replaceState({}, '', next)
+  return next
+}
+
 function getInitialPath() {
-  const { pathname } = window.location
+  const pathname = redirectOldPath(window.location.pathname)
   if (pathname !== '/') return pathname
   try {
     if (sessionStorage.getItem(INTRO_SEEN_KEY)) return pathname
@@ -38,16 +38,23 @@ function getInitialPath() {
   return '/intro'
 }
 
+/*
+ * 메뉴 썸네일 주소(/design · /frontend · /working + /project/{slug})는 따로 상세 페이지를 두지 않고,
+ * 그 목록 페이지를 열어 해당 프로젝트 카드(Working은 그 줄)를 바로 보여준다.
+ * key를 주소로 줘서, 이미 같은 목록을 보고 있다가 메뉴에서 다른 썸네일을 눌러도 처음부터 다시 연다.
+ */
 function getPage(pathname, onNavigate, onEnterMain) {
+  const slug = pathname.split('/').at(-1)
   if (pathname === '/intro') return <IntroPage onEnterMain={onEnterMain} />
-  if (pathname === '/profile') return <ProfilePage />
-  if (pathname === '/design') return <DesignPage onNavigate={onNavigate} />
-  if (pathname.startsWith('/design/project/')) return <DesignDetailPage slug={pathname.split('/').at(-1)} onNavigate={onNavigate} />
-  if (pathname.startsWith('/design/')) return <DesignGalleryPage category={pathname.split('/').at(-1)} onNavigate={onNavigate} />
-  if (pathname === '/frontend') return <FrontendPage onNavigate={onNavigate} />
-  if (pathname.startsWith('/frontend/project/')) return <DesignDetailPage slug={pathname.split('/').at(-1)} projects={frontendProjects} basePath="/frontend" onNavigate={onNavigate} />
-  if (pathname === '/archive') return <ArchivePage onNavigate={onNavigate} />
-  if (pathname.startsWith('/archive/project/')) return <DesignDetailPage slug={pathname.split('/').at(-1)} projects={workProjects} basePath="/archive" onNavigate={onNavigate} />
+  if (pathname === '/profile') return <ProfilePage onNavigate={onNavigate} />
+  if (pathname === '/design') return <DesignPage key={pathname} onNavigate={onNavigate} />
+  if (pathname.startsWith('/design/project/')) return <DesignPage key={pathname} initialSlug={slug} onNavigate={onNavigate} />
+  // 예전 분류별 목록 주소(/design/{분류})도 Design 갤러리로 연다
+  if (pathname.startsWith('/design/')) return <DesignPage key={pathname} onNavigate={onNavigate} />
+  if (pathname === '/frontend') return <FrontendPage key={pathname} onNavigate={onNavigate} />
+  if (pathname.startsWith('/frontend/project/')) return <FrontendPage key={pathname} initialSlug={slug} onNavigate={onNavigate} />
+  if (pathname === '/working') return <WorkingPage key={pathname} onNavigate={onNavigate} />
+  if (pathname.startsWith('/working/project/')) return <WorkingPage key={pathname} initialSlug={slug} onNavigate={onNavigate} />
   return <MainPage onNavigate={onNavigate} />
 }
 
@@ -58,7 +65,7 @@ export default function AppRoutes() {
   const [isPortal, setIsPortal] = useState(false)
 
   useEffect(() => {
-    const onPopState = () => setPathname(window.location.pathname)
+    const onPopState = () => setPathname(redirectOldPath(window.location.pathname))
     window.addEventListener('popstate', onPopState)
     return () => window.removeEventListener('popstate', onPopState)
   }, [])
@@ -87,11 +94,7 @@ export default function AppRoutes() {
 
   if (isIntro) return <>{page}{portal}</>
 
-  // 메인 홀, 디자인 갤러리는 전체 화면 장면이라 상단 헤더/푸터 없이 자체 햄버거 버튼으로 메뉴를 연다
-  if (fullscreenPages.includes(page.type)) {
-    return <><MenuOverlay isOpen={isMenuOpen} onClose={() => setIsMenuOpen(false)} onNavigate={navigate} />{cloneElement(page, { onMenuToggle: () => setIsMenuOpen(true) })}{portal}</>
-  }
-
-  return <><Header onNavigate={navigate} onMenuToggle={() => setIsMenuOpen(true)} /><MenuOverlay isOpen={isMenuOpen} onClose={() => setIsMenuOpen(false)} onNavigate={navigate} />{page}<Footer />{portal}</>
+  // 모든 페이지가 전체 화면 장면이라 헤더/푸터 없이 각자 메뉴 버튼(PageBar · 메인 홀)으로 메뉴를 연다
+  return <><MenuOverlay isOpen={isMenuOpen} onClose={() => setIsMenuOpen(false)} onNavigate={navigate} />{cloneElement(page, { onMenuToggle: () => setIsMenuOpen(true) })}{portal}</>
 }
 

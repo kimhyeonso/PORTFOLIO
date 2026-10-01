@@ -1,4 +1,9 @@
+// 기술 하나: 이름 (+ 수준)
 export default function SkillItem({ name, level }) {
-  return <div><span>{name}</span>{level && <span>{level}</span>}</div>
+  return (
+    <div className="profile-skill">
+      <span>{name}</span>
+      {level && <em>{level}</em>}
+    </div>
+  )
 }
-

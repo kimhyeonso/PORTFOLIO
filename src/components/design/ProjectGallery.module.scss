@@ -22,37 +22,14 @@
         height: 100dvh;
         min-height: 560px;
         margin: 0;
-        padding: 0;
+        /* 위쪽 고정 막대(PageBar: 홈 · 탭 · 메뉴) 아래 공간에서 가운데 정렬 */
+        padding: var(--page-bar-height) 0 0;
         overflow: hidden;
         /* 홀 배경 위에 크림빛을 옅게 덮는다 (Working 페이지와 같은 값) */
         background:
             linear-gradient(rgba(246, 239, 229, .72), rgba(246, 239, 229, .82)),
             #efe3d3 var(--gallery-bg) center / cover no-repeat;
         animation: project-gallery-in .7s ease-out both;
-    }
-
-    .project-gallery-tabs {
-        display: flex;
-        align-items: baseline;
-        gap: clamp(12px, 1.2vw, 28px);
-        font-family: 'Inter', 'Noto Sans KR', sans-serif;
-    }
-    .project-gallery-tabs button {
-        border: 0;
-        padding: 0;
-        color: rgba(80, 60, 45, .55);
-        background: none;
-        font-family: inherit;
-        font-size: clamp(.8rem, .95vw, 1.2rem);
-        transition: color .25s ease, font-size .25s ease;
-    }
-    .project-gallery-tabs button.is-active {
-        color: #111;
-        font-size: clamp(1rem, 1.25vw, 1.6rem);
-    }
-    .project-gallery-tabs button:hover, .project-gallery-tabs button:focus-visible {
-        color: #111;
-        background: none;
     }
 
     /* 카드 한 장 너비 + 간격만큼 트랙을 밀어 현재 카드를 왼쪽 기준 위치에 둔다 */
@@ -69,7 +46,6 @@
 
     .project-gallery.is-empty {
         justify-content: flex-start;
-        padding-top: clamp(60px, 7vw, 120px);
     }
     .project-gallery-empty {
         margin: auto 0;
@@ -166,9 +142,20 @@
             --card-gap: 2.5vw;
             --card-left: calc((100vw - var(--card-width)) / 2);
             justify-content: flex-start;
-            padding-top: 90px;
             overflow-x: hidden;
             overflow-y: auto;
+        }
+        /* 아래 조작 바는 남는 공간만큼 밀어 화면 하단에 붙인다 (홈 바 영역은 피한다) */
+        .project-gallery-bottom {
+            margin-top: auto;
+            margin-bottom: calc(24px + env(safe-area-inset-bottom));
+        }
+        /* 원통 보기: 위아래 남는 공간을 똑같이 나눠 탭과 조작 바 사이 가운데에 둔다 */
+        .project-gallery.is-ring .project-gallery-stage {
+            margin: auto 0;
+        }
+        .project-gallery.is-ring .project-gallery-bottom {
+            margin-top: 0;
         }
     }
 }

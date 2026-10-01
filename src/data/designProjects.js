@@ -104,7 +104,7 @@ export const allDesignProjects = [
       'SANITARY PAD': 'https://kimhyeonso.github.io/GFoundation-sanitarypad/',
       'CHILD SPONSOR': 'https://kimhyeonso.github.io/Gfoundation-childsponsorship/',
     },
-    images: [],
+    images: [], // 세부정보 팝업은 components/details/GFoundationDetail.jsx (코드로 만든 상세페이지)
   },
   {
     id: '05',

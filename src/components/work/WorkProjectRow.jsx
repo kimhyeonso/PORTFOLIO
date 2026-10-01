@@ -35,7 +35,7 @@ export default function WorkProjectRow({ project, onOpen, reverse = false }) {
                 {thumbnail ? <img src={thumbnail} alt={`${title} 미리보기`} loading="lazy" /> : <div className="work-row-empty" />}
                 {/* 이미지에 마우스를 올리면(또는 키보드로 포커스하면) 어두워지며 버튼이 나타난다 — Design/Frontend 카드와 같은 모양 */}
                 <div className="work-row-overlay">
-                    {project.detail !== false && <button className="work-row-action" type="button" onClick={onOpen}>세부정보</button>}
+                    {project.detail !== false && <button className="work-row-action" type="button" onClick={onOpen}>{project.pdf ? 'PDF' : '세부정보'}</button>}
                     {links.map(({ label, url }) => (
                         <a className="work-row-action" key={url} href={url} target="_blank" rel="noreferrer" aria-label={`${title} ${label} 새 탭에서 열기`}>{label}</a>
                     ))}

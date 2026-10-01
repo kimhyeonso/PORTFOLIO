@@ -8,6 +8,14 @@ import guestBookThumbnail from '../assets/image/project/Forentend/GuestBookThumn
 import nodeThumbnail from '../assets/image/project/Forentend/NodeThumnail.png'
 import chemverseThumbnail from '../assets/image/project/Forentend/ChemverseThumnail.png'
 import lcodeThumbnail from '../assets/image/project/Forentend/LcodeThumnail.png'
+// 팀 프로젝트 발표 자료 (세부정보 팝업에서 PDF로 보여준다, 팝업을 열 때만 받는다)
+import nodePdf from '../assets/image/project/NODE/NODE.pdf'
+import chemversePdf from '../assets/image/project/CHEMVERSE/CHAMBERS.pdf'
+import lcodePdf from '../assets/image/project/LCODE/LcodePPT.pdf'
+
+/*
+ * pdf  세부정보 팝업에 보여줄 PDF (import한 주소). 있으면 images · 상세페이지 대신 PDF 뷰어로 연다.
+ */
 
 export const frontendProjects = [
   {
@@ -148,6 +156,7 @@ export const frontendProjects = [
     tools: ['Figma', 'VS Code'],
     link: 'https://kimhyeonso.github.io/NODE/',
     github: '',
+    pdf: nodePdf,
     images: [],
   },
   {
@@ -169,6 +178,7 @@ export const frontendProjects = [
     tools: ['Figma', 'VS Code'],
     link: 'https://kimhyeonso.github.io/CHAMVERSE/html/intro.html',
     github: '',
+    pdf: chemversePdf,
     images: [],
   },
   {
@@ -190,6 +200,7 @@ export const frontendProjects = [
     tools: ['Photoshop', 'Figma', 'VS Code', 'React', 'Firebase', 'OpenAI'],
     link: 'https://lcode-2.vercel.app/',
     github: '',
+    pdf: lcodePdf,
     images: [],
   },
 ]
