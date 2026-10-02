@@ -18,7 +18,17 @@
       "Bash(sed -i 's/ArchiveItem/WorkingItem/g' src/components/working/WorkingItem.jsx)",
       "Bash(sed -i 's/ArchiveFilter/WorkingFilter/g; s/Archive filters/Working filters/g' src/components/working/WorkingFilter.jsx)",
       "Bash(sed -i \"s#'/archive'#'/working'#g\" src/pages/MainPage.jsx src/components/common/Header.jsx src/components/common/MenuOverlay.jsx)",
-      "Bash(sed -i \"s#\\(/archive/project/{slug}\\)#\\(/working/project/{slug}\\)#; s#// Working\\(실무\\) 페이지. 주소는 기존 /archive를 그대로 쓴다.#// Working\\(실무\\) 페이지 \\(주소 /working, 예전 주소 /archive로 들어와도 이리로 온다\\)#\" src/pages/WorkingPage.jsx)"
+      "Bash(sed -i \"s#\\(/archive/project/{slug}\\)#\\(/working/project/{slug}\\)#; s#// Working\\(실무\\) 페이지. 주소는 기존 /archive를 그대로 쓴다.#// Working\\(실무\\) 페이지 \\(주소 /working, 예전 주소 /archive로 들어와도 이리로 온다\\)#\" src/pages/WorkingPage.jsx)",
+      "Bash(cygpath -w /c/Users/이젠아~1/AppData/Local/Temp/claude/c--portfolio2026/d7621ae9-2e2c-4aa9-984a-c0f626e81cdc/scratchpad)",
+      "Bash(node \"C:/Users/이젠아~1/AppData/Local/Temp/claude/c--portfolio2026/d7621ae9-2e2c-4aa9-984a-c0f626e81cdc/scratchpad/equip3.mjs\")",
+      "Bash(grep -n \"st-gear-badge\\\\\" aria-hidden\\\\|st-gear-info\\\\|st-gear-name\\\\\">\\\\|st-gear-track\\\\\">\\\\|</span>$\" src/components/profile/Panels.jsx)",
+      "Bash(sed -n '/st-gear-item \\\\${/,/<\\\\/button>/p' src/components/profile/Panels.jsx)",
+      "Bash(sed -n '/^export const skillIcons/,/^}/p' src/data/skillIcons.js)",
+      "Bash(grep -n '^    @media \\(max-width: $mobile\\) {' src/pages/ProfilePage.module.scss)",
+      "Bash(node \"C:/Users/이젠아~1/AppData/Local/Temp/claude/c--portfolio2026/d7621ae9-2e2c-4aa9-984a-c0f626e81cdc/scratchpad/colors.mjs\")",
+      "Bash(grep -n \"\\\\.st-hero-name {\\\\|\\\\.st-hero-ko {\\\\|\\\\.st-hero-ko, \\\\.st-hero-ornament, \\\\.st-hero-quote\\\\|\\\\.st-hero-label, \\\\.st-hero-copy\" -A3 src/pages/ProfilePage.module.scss)",
+      "Bash(node \"C:/Users/이젠아~1/AppData/Local/Temp/claude/c--portfolio2026/d7621ae9-2e2c-4aa9-984a-c0f626e81cdc/scratchpad/contact.mjs\")",
+      "Bash(sed -n '/^export const profile = {/,/^}/p;/^export const contact = {/,/^}/p' src/data/profileStatus.js)"
     ]
   }
 }

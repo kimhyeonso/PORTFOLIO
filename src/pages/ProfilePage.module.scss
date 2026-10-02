@@ -1,115 +1,1423 @@
 /*
- * PROFILE 페이지 전용 (배경 · 위 여백은 HallPage, 위쪽 막대는 PageBar).
- * 글꼴 · 색 · 흰 카드 · 머리글 강조선은 Working 페이지(WorkProjectRow)와 같은 값을 쓴다.
+ * PROFILE 페이지(판타지 RPG 상태창) 전용.
+ * 밝고 따뜻한 하늘 배경 위에 3D 장면(캔버스)을 깔고, 그 위에 HTML 메뉴 · 정보 패널을 겹친다.
+ * 전역 스타일(index.css의 main · header · section · button)을 이기도록 전부 .status-page 안에 둔다.
  */
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;700&family=Pixelify+Sans:wght@400;700&family=Silkscreen&display=swap');
+
+$mobile: 900px;
+$pixel: 'Silkscreen', monospace;
+$display: 'Pixelify Sans', 'Silkscreen', sans-serif;
+$body: 'IBM Plex Sans KR', 'Noto Sans KR', sans-serif;
+$octagon: polygon(30% 0, 70% 0, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0 70%, 0 30%);
+
+/* 이 모듈을 컴포넌트에서 실제로 쓰게 하는 클래스 (값 없이 import하면 프로덕션 빌드에서 CSS가 빠진다) */
+.scope {
+    position: relative;
+}
+
 :global {
-    .profile-page {
-        --profile-accent: #9d8fe3;
-        display: grid;
-        gap: clamp(24px, 3vw, 48px);
-        max-width: 1400px;
-        margin: 0 auto;
+    .status-page {
+        --ivory: #fbf7ec;
+        --cream: #f4ead2;
+        --sky: #8cc8ec;
+        --sky-deep: #3e7fb0;
+        --gold: #c9a24a;
+        --gold-lite: #ecd48f;
+        --gold-deep: #a8853a;
+        --leaf: #7fb88a;
+        --amber: #e3955a;
+        --ink: #2f3d5a;
+        --ink-soft: #5d6a84;
+        --glass: rgba(255, 252, 244, .7);
+        --parch: #f7ecd0;
+        --page-bar-height: clamp(84px, 7.4vw, 132px);
+
+        position: relative;
+        width: 100%;
+        max-width: none;
+        height: 100vh;
+        height: 100svh;
+        min-height: 0;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        color: var(--ink);
+        background: #faf5e6;
+        font-family: $body;
+
+        /* 전역 button 스타일(검은 hover)을 풀어 둔다 */
+        button {
+            border: 0;
+            padding: 0;
+            color: inherit;
+            background: none;
+            font: inherit;
+        }
+        button:focus-visible, [tabindex]:focus-visible {
+            outline: 2px dashed var(--sky-deep);
+            outline-offset: 3px;
+        }
+        ul, ol {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+        h1, h2, h3, p {
+            margin: 0;
+        }
+
+        /* ───────── 배경: 예전 프로필 페이지의 홀 이미지 (캔버스 뒤에 고정) ───────── */
+        .st-sky {
+            position: fixed;
+            z-index: 0;
+            inset: 0;
+            background: #efe3d3 var(--st-bg) center / cover no-repeat;
+            pointer-events: none;
+        }
+        /* 크림빛을 옅게 덮어 3D 장면 · 패널이 배경에 묻히지 않게 (예전 페이지보다 옅게) */
+        .st-sky::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background:
+                /* 타이틀(왼쪽 위) 뒤만 조금 더 밝혀 글씨가 읽히게 */
+                radial-gradient(ellipse 42% 34% at 18% 22%, rgba(251, 247, 236, .85), rgba(251, 247, 236, 0) 75%),
+                linear-gradient(rgba(246, 239, 229, .18), rgba(246, 239, 229, .32));
+            transition: opacity 1.4s ease;
+        }
+        /* 인트로용 덮개: 가운데 위(이름) · 아래(인용문)를 밝히고 전체를 조금 더 크림빛으로 */
+        .st-sky::before {
+            content: '';
+            position: absolute;
+            z-index: 1;
+            inset: 0;
+            background:
+                radial-gradient(ellipse 40% 28% at 50% 24%, rgba(251, 247, 236, .8), rgba(251, 247, 236, 0) 75%),
+                radial-gradient(ellipse 46% 16% at 50% 86%, rgba(251, 247, 236, .85), rgba(251, 247, 236, 0) 80%),
+                linear-gradient(rgba(246, 236, 222, .42), rgba(246, 236, 222, .42));
+            opacity: 0;
+            transition: opacity 1.4s ease;
+        }
+        .status-page.is-intro .st-sky::before {
+            opacity: 1;
+        }
+        .status-page.is-intro .st-sky::after {
+            opacity: 0;
+        }
+        /* 높이가 낮은 데스크톱(노트북 720px 등): 장비 · 프로필 행이 많아도 스크롤 없이 들어오게 크기 · 간격을 줄인다 */
+    @media (min-width: 901px) and (max-height: 820px) {
+        .st-equip .st-equip-body {
+            gap: 6px;
+        }
+        .st-equip .st-gear-label {
+            gap: 0;
+        }
+        .st-equip .st-gear-list {
+            row-gap: 4px;
+        }
+        .st-equip .st-gear-badge {
+            width: 40px;
+        }
+        .st-equip .st-gear-track {
+            height: 18px;
+        }
+        .st-equip .st-equipped {
+            padding: 7px 12px;
+        }
+        .st-rows .st-row {
+            padding: 5px 0;
+        }
+        .st-rows .st-row-lines {
+            gap: 3px;
+        }
+        .st-rows .st-row.is-dense dd {
+            line-height: 1.3;
+        }
+        .st-rows .st-row-en::after {
+            margin: 3px auto 0;
+        }
+        .st-side .st-window {
+            padding-top: 14px;
+            padding-bottom: 12px;
+        }
+        .st-window .st-window-bar {
+            margin-bottom: 6px;
+            padding-bottom: 8px;
+        }
     }
 
-    /* 섹션 머리글: 작은 Inter 대문자 + 아래 짧은 강조선 (Working 오른쪽 설명 머리글과 같은 모양) */
-    .profile-label {
-        width: fit-content;
-        margin: 0 0 clamp(18px, 1.8vw, 30px);
-        padding-bottom: clamp(12px, 1.1vw, 18px);
-        color: var(--profile-accent);
-        font-family: 'Inter', sans-serif;
-        font-size: clamp(.85rem, 1vw, 1.1rem);
-        font-weight: 400;
-        letter-spacing: .12em;
-        background: linear-gradient(var(--profile-accent), var(--profile-accent)) left bottom / 40px 2px no-repeat;
+    @media (max-width: $mobile) {
+            .st-sky::after {
+                background:
+                    radial-gradient(ellipse 90% 22% at 50% 16%, rgba(251, 247, 236, .85), rgba(251, 247, 236, 0) 80%),
+                    linear-gradient(rgba(246, 239, 229, .18), rgba(246, 239, 229, .32));
+            }
+        }
+
+        /* ───────── 3D 장면: 데스크톱은 화면 전체 고정 ───────── */
+        .st-stage {
+            position: fixed;
+            z-index: 1;
+            inset: 0;
+            pointer-events: none;
+        }
+
+        /* ───────── 레이아웃: 왼쪽 40% 타이틀 · 캐릭터 / 오른쪽 60% 메뉴 · 패널 ───────── */
+        .st-layout {
+            position: relative;
+            z-index: 2;
+            display: grid;
+            grid-template-columns: 40% 60%;
+            height: 100%;
+            padding: var(--page-bar-height) clamp(20px, 3.4vw, 64px) clamp(18px, 3vh, 40px);
+            pointer-events: none;
+        }
+        /* 캔버스(.st-stage, z 1)가 같은 레이아웃 안에 있으므로 타이틀 · 패널을 위로 올린다 */
+        .st-hero, .st-side {
+            position: relative;
+            z-index: 2;
+            pointer-events: auto;
+        }
+
+        .st-hero {
+            display: block;
+            width: auto;
+            margin: 0;
+            padding: 0 0 0 clamp(0px, 1.4vw, 24px);
+            align-self: start;
+        }
+        /* 왼쪽 위 한글 이름 (픽셀 글꼴에 한글이 없어 본문 글꼴 굵게 + 금색 픽셀 그림자) */
+        .st-hero-name {
+            margin: 0 0 10px;
+            color: var(--ink);
+            font-family: $body;
+            font-size: clamp(2.2rem, 3.9vw, 4.4rem);
+            font-weight: 700;
+            letter-spacing: .06em;
+            line-height: 1.1;
+            text-shadow: 3px 3px 0 var(--gold);
+            white-space: nowrap;
+        }
+        .st-hero-title {
+            color: var(--sky-deep);
+            font-family: $pixel;
+            font-size: clamp(13px, 1.15vw, 18px);
+            letter-spacing: .12em;
+        }
+        .st-hero-copy {
+            margin-top: 10px;
+            color: var(--ink);
+            font-size: clamp(15px, 1.3vw, 20px);
+            font-weight: 500;
+            line-height: 1.5;
+            word-break: keep-all;
+        }
+        /* 인트로에서만 보이는 요소 */
+        .st-hero-en, .st-hero-ko, .st-hero-ornament, .st-hero-quote {
+            display: none;
+        }
+
+        /* ───────── 처음 진입 인트로: 가운데 정렬 (이름 · 장식 · 직함 위 / 캐릭터 가운데 / 인용문 아래) ───────── */
+        &.is-intro {
+            .st-hero {
+                position: absolute;
+                inset: var(--page-bar-height) 0 clamp(36px, 7vh, 88px);
+                /* 그리드 안 절대 위치라 start면 내용 높이로 줄어든다 → inset까지 늘린다 */
+                align-self: stretch;
+                justify-self: stretch;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                padding: 0;
+                text-align: center;
+                pointer-events: none;
+            }
+            .st-hero-copy, .st-hero-name {
+                display: none;
+            }
+            .st-hero-en {
+                display: block;
+                margin: 0;
+                color: #1f2638;
+                font-family: $display;
+                font-size: clamp(3rem, 5.4vw, 6.6rem);
+                font-weight: 700;
+                letter-spacing: .03em;
+                line-height: 1;
+                text-shadow: 4px 4px 0 var(--gold-lite);
+                white-space: nowrap;
+            }
+            .st-hero-ko {
+                display: block;
+                margin-top: clamp(10px, 1.1vw, 20px);
+                padding-left: .6em;
+                color: var(--ink);
+                font-size: clamp(1rem, 1.5vw, 1.7rem);
+                font-weight: 700;
+                letter-spacing: .6em;
+            }
+            /* box02.png: 위아래 투명 여백(높이의 약 26%)을 음수 여백으로 덜어낸다 */
+            .st-hero-ornament {
+                --w: clamp(260px, 25vw, 480px);
+                display: block;
+                width: var(--w);
+                height: auto;
+                margin: calc(var(--w) * -.06) 0 calc(var(--w) * -.07);
+            }
+            .st-hero-title {
+                color: var(--ink);
+                font-size: clamp(13px, 1.35vw, 24px);
+                letter-spacing: .3em;
+            }
+            .st-hero-quote {
+                position: relative;
+                display: block;
+                margin: auto 0 0;
+                padding: 0 2.4em;
+                color: #5b3a22;
+                font-size: clamp(1.3rem, 2.1vw, 2.4rem);
+                font-weight: 700;
+                line-height: 1.45;
+                text-shadow: 0 0 18px rgba(251, 247, 236, .9);
+                word-break: keep-all;
+            }
+            .st-hero-line {
+                display: block;
+            }
+            .st-hero-mark {
+                position: absolute;
+                color: #3b2a1c;
+                font-size: 1.6em;
+                line-height: 1;
+            }
+            .st-hero-mark.is-open {
+                top: -.3em;
+                left: 0;
+            }
+            .st-hero-mark.is-close {
+                right: 0;
+                bottom: -.55em;
+            }
+            /* 메뉴 · 패널은 오른쪽 밖에 숨겨 둔다 */
+            .st-side {
+                visibility: hidden;
+                opacity: 0;
+                transform: translateX(12vw);
+                pointer-events: none;
+            }
+        }
+
+        .st-side {
+            transition: opacity .9s ease .35s, transform 1.2s cubic-bezier(.22, .8, .24, 1) .25s;
+        }
+        .st-side {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            width: 100%;
+            max-width: 900px;
+            min-height: 0;
+            margin: 0;
+            padding-left: clamp(8px, 1.5vw, 28px);
+            justify-self: end;
+        }
+
+        /* ───────── 메뉴 (위에 금색 장식) ───────── */
+        /* box02.png (위아래 투명 여백은 음수 여백으로 덜어낸다) */
+        .st-side-ornament {
+            --w: clamp(260px, 26vw, 480px);
+            display: block;
+            flex: none;
+            width: var(--w);
+            height: auto;
+            margin: calc(var(--w) * -.1) auto calc(var(--w) * -.11);
+            pointer-events: none;
+        }
+        .st-menu {
+            display: block;
+            flex: none;
+        }
+        .st-menu ul {
+            display: grid;
+            grid-template-columns: repeat(5, minmax(0, 1fr));
+            gap: clamp(8px, .9vw, 14px);
+            padding: 10px 2px 4px 10px;
+        }
+        .st-menu-btn {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+            width: 100%;
+            padding: 10px 6px 9px;
+            border: 2px dashed rgba(201, 162, 74, .6);
+            color: var(--ink);
+            background: rgba(250, 246, 236, .68);
+            text-align: center;
+            transition: background .2s ease, border-color .2s ease;
+        }
+        .st-menu-btn:hover {
+            border-color: var(--gold);
+            background: rgba(255, 252, 244, .7);
+        }
+        .st-menu-btn.is-active {
+            border: 3px solid #dcc78f;
+            padding: 9px 5px 8px;
+            background: rgba(244, 248, 247, .92);
+        }
+        .st-menu-key {
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            display: grid;
+            place-items: center;
+            width: 20px;
+            height: 20px;
+            border: 1px solid rgba(201, 162, 74, .8);
+            color: var(--ink-soft);
+            background: rgba(255, 252, 244, .9);
+            font-size: 11px;
+            line-height: 1;
+        }
+        .st-menu-btn.is-active .st-menu-key {
+            border-color: var(--gold);
+            color: #fff;
+            background: var(--gold);
+        }
+        .st-menu-en {
+            overflow: hidden;
+            max-width: 100%;
+            font-size: clamp(12px, 1vw, 16px);
+            font-weight: 500;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .st-menu-btn.is-active .st-menu-en {
+            font-weight: 700;
+        }
+        .st-menu-ko {
+            color: var(--ink-soft);
+            font-size: clamp(11px, .85vw, 14px);
+        }
+
+        /* ───────── 정보 패널: 차가운 아이보리 + 얇은 금색 이중 테두리 + 왼쪽 위 소용돌이 장식 ───────── */
+        .st-window {
+            position: relative;
+            display: flex;
+            /* 내용 높이만큼, 길면 남은 높이 안에서 본문만 스크롤 */
+            flex: 0 1 auto;
+            flex-direction: column;
+            min-height: 0;
+            margin-left: 10px;
+            padding: clamp(20px, 1.8vw, 30px) clamp(22px, 2.2vw, 40px) clamp(18px, 1.6vw, 28px);
+            border: 2px solid #e2cf9a;
+            outline: 1px solid rgba(201, 162, 74, .55);
+            outline-offset: -9px;
+            background: rgba(240, 245, 244, .9);
+            box-shadow: 0 18px 44px rgba(120, 96, 60, .16);
+            -webkit-backdrop-filter: blur(12px);
+            backdrop-filter: blur(12px);
+            transform-origin: 50% 50%;
+        }
+        /* box01.png: 그림 속 가로선(위에서 27%) · 세로선(왼쪽에서 21%)이 패널 테두리에 겹치도록 */
+        .st-window-flourish {
+            --w: clamp(120px, 10vw, 190px);
+            position: absolute;
+            z-index: 1;
+            top: calc(var(--w) * -.27);
+            left: calc(var(--w) * -.21);
+            width: var(--w);
+            height: auto;
+            pointer-events: none;
+        }
+        /* 나머지 모서리: 작은 금색 점 */
+        .st-corner {
+            position: absolute;
+            z-index: 1;
+            width: 7px;
+            height: 7px;
+            background: var(--gold);
+        }
+        .st-corner.is-tr { top: -4px; right: -4px; }
+        .st-corner.is-bl { bottom: -4px; left: -4px; }
+        .st-corner.is-br { right: -4px; bottom: -4px; }
+        .st-window-bar {
+            display: flex;
+            flex: none;
+            justify-content: space-between;
+            margin: 0 4px clamp(10px, 1vw, 16px);
+            padding: 0 0 clamp(12px, 1.1vw, 18px);
+            border-bottom: 1px dashed rgba(201, 162, 74, .7);
+            color: var(--ink);
+            font-size: clamp(12px, .95vw, 15px);
+            letter-spacing: .04em;
+            text-transform: uppercase;
+        }
+        .st-window-body {
+            flex: 1;
+            min-height: 0;
+            padding: 0 8px 4px 4px;
+            overflow-y: auto;
+            scrollbar-color: var(--gold) transparent;
+            scrollbar-width: thin;
+        }
+
+        .st-keyhint {
+            display: flex;
+            flex: none;
+            align-items: center;
+            align-self: flex-end;
+            gap: 6px;
+            padding: 6px 10px;
+            color: var(--ink-soft);
+            background: rgba(251, 247, 236, .75);
+            font-family: $pixel;
+            font-size: 10px;
+            letter-spacing: .14em;
+        }
+        .st-keyhint kbd {
+            padding: 2px 6px;
+            border: 2px solid var(--gold);
+            color: var(--ink);
+            background: var(--ivory);
+            font-family: $pixel;
+            font-size: 10px;
+        }
+
+        /* ───────── 상태창 디테일: 패널 결 · 상단 바 · 활성 메뉴 표시 ───────── */
+        /* 패널 바탕: 위쪽 빛 + 은은한 사선 결 + 안쪽 금빛 */
+        .st-window {
+            background:
+                radial-gradient(ellipse 70% 40% at 50% 0%, rgba(255, 255, 255, .75), rgba(255, 255, 255, 0) 70%),
+                repeating-linear-gradient(135deg, rgba(201, 162, 74, .045) 0 2px, transparent 2px 9px),
+                rgba(240, 245, 244, .9);
+            box-shadow: inset 0 0 46px rgba(236, 212, 143, .28), 0 18px 44px rgba(120, 96, 60, .16);
+        }
+        .st-window-bar {
+            align-items: center;
+        }
+        .st-window-title {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .st-window-title::before {
+            content: '';
+            width: 7px;
+            height: 7px;
+            background: var(--gold);
+            box-shadow: 0 0 0 2px rgba(236, 212, 143, .5);
+            transform: rotate(45deg);
+        }
+        .st-window-page {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+        }
+        /* 5칸 페이지 표시: 지금 패널만 금색 */
+        .st-window-pips {
+            display: inline-flex;
+            gap: 5px;
+        }
+        .st-window-pips i {
+            width: 6px;
+            height: 6px;
+            border: 1px solid rgba(201, 162, 74, .8);
+            transform: rotate(45deg);
+            transition: background .3s ease;
+        }
+        .st-window-pips i.is-on {
+            background: var(--gold);
+        }
+        /* 메뉴: 비활성은 hover 때 살짝 떠오르고, 활성은 안쪽 빛 + 아래 금색 삼각 표시 */
+        .st-menu-btn:not(.is-active):hover {
+            transform: translateY(-2px);
+        }
+        .st-menu-btn {
+            transition: background .2s ease, border-color .2s ease, transform .2s ease;
+        }
+        .st-menu-btn.is-active {
+            box-shadow: inset 0 0 0 2px rgba(255, 255, 255, .7), inset 0 -12px 18px rgba(236, 212, 143, .28);
+        }
+        .st-menu-btn.is-active::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            width: 12px;
+            height: 7px;
+            background: var(--gold);
+            clip-path: polygon(0 0, 100% 0, 50% 100%);
+            transform: translateX(-50%);
+        }
+
+        /* ───────── PROFILE: 라벨(영문 · 한글) | 보석 달린 금색 세로 막대 | 값 ───────── */
+        .st-rows {
+            margin: 0;
+        }
+        /* PROFILE: [사진 카드 | 정보 행] */
+        .st-profile {
+            display: grid;
+            grid-template-columns: clamp(112px, 9.5vw, 160px) minmax(0, 1fr);
+            align-items: center;
+            gap: clamp(14px, 1.6vw, 28px);
+        }
+        /* 사진 옆에서는 라벨 칸 · 막대 여백을 줄여 값이 한 줄에 들어가게 */
+        .st-profile .st-row {
+            grid-template-columns: clamp(52px, 4.4vw, 80px) 1fr;
+            gap: clamp(10px, 1.2vw, 22px);
+        }
+        .st-profile .st-row dd {
+            padding-left: clamp(14px, 1.4vw, 26px);
+        }
+        .st-photo {
+            margin: 0;
+        }
+        /* 증명사진 카드: 금색 이중 테두리 + 하늘빛 배경, 투명 전신 사진을 상반신만 보이게 확대 */
+        .st-photo-frame {
+            position: relative;
+            overflow: hidden;
+            aspect-ratio: 3 / 4;
+            border: 2px solid var(--gold);
+            outline: 1px solid rgba(201, 162, 74, .6);
+            outline-offset: 3px;
+            background:
+                radial-gradient(ellipse 80% 60% at 50% 35%, rgba(255, 255, 255, .95), rgba(255, 255, 255, 0) 70%),
+                linear-gradient(180deg, #d9ecf7, #f4ead2);
+            box-shadow: 0 10px 24px rgba(120, 96, 60, .18);
+        }
+        .st-photo-frame img {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: 58% 0;
+            transform: scale(2.1);
+            transform-origin: 58% 4%;
+        }
+        /* 모서리 금색 점 */
+        .st-photo-frame::before, .st-photo-frame::after {
+            content: '';
+            position: absolute;
+            z-index: 1;
+            width: 7px;
+            height: 7px;
+            background: var(--gold);
+            transform: rotate(45deg);
+        }
+        .st-photo-frame::before { top: 5px; left: 5px; }
+        .st-photo-frame::after { right: 5px; bottom: 5px; }
+        /* 이름표 */
+        .st-photo-name {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+            margin-top: 12px;
+        }
+        .st-photo-ko {
+            color: var(--ink);
+            font-size: clamp(14px, 1.2vw, 20px);
+            font-weight: 700;
+            letter-spacing: .2em;
+        }
+        .st-photo-en {
+            color: #a07a2c;
+            font-family: $pixel;
+            font-size: 10px;
+            letter-spacing: .14em;
+        }
+        .st-row {
+            position: relative;
+            display: grid;
+            grid-template-columns: clamp(64px, 6vw, 110px) 1fr;
+            align-items: center;
+            gap: clamp(16px, 2vw, 40px);
+            padding: clamp(14px, 1.4vw, 24px) 0;
+            /* 구분선: 양끝이 흐려지는 금색 선 */
+            background:
+                linear-gradient(90deg, rgba(201, 162, 74, 0), rgba(201, 162, 74, .55) 18%, rgba(201, 162, 74, .55) 82%, rgba(201, 162, 74, 0)) left bottom / 100% 1px no-repeat;
+        }
+        /* hover: 왼쪽에서 금빛이 번진다 */
+        .st-row::before {
+            content: '';
+            position: absolute;
+            inset: 4px -8px 4px -8px;
+            z-index: -1;
+            background: linear-gradient(90deg, rgba(236, 212, 143, .32), rgba(236, 212, 143, 0) 70%);
+            opacity: 0;
+            transform: scaleX(.6);
+            transform-origin: left center;
+            transition: opacity .35s ease, transform .45s ease;
+        }
+        .st-row:hover::before {
+            opacity: 1;
+            transform: none;
+        }
+        /* 구분선 가운데 작은 마름모 */
+        .st-row::after {
+            content: '';
+            position: absolute;
+            bottom: -3px;
+            left: 50%;
+            width: 5px;
+            height: 5px;
+            border: 1px solid rgba(201, 162, 74, .8);
+            background: rgba(240, 245, 244, 1);
+            transform: translateX(-50%) rotate(45deg);
+        }
+        .st-row:last-child {
+            background: none;
+        }
+        .st-row:last-child::after {
+            display: none;
+        }
+        .st-rows {
+            position: relative;
+            z-index: 0;
+        }
+        .st-row dt {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            text-align: center;
+        }
+        .st-row-en {
+            color: #a07a2c;
+            font-size: clamp(12px, .95vw, 15px);
+            font-weight: 500;
+        }
+        /* 영문과 한글 사이 짧은 금색 선 */
+        .st-row-en::after {
+            content: '';
+            display: block;
+            width: 14px;
+            height: 1px;
+            margin: 5px auto 1px;
+            background: rgba(201, 162, 74, .7);
+        }
+        .st-row-ko {
+            color: var(--ink);
+            font-size: clamp(11px, .85vw, 14px);
+        }
+        .st-row dd {
+            position: relative;
+            margin: 0;
+            padding-left: clamp(16px, 2vw, 40px);
+            color: #22283a;
+            font-size: clamp(14px, 1.2vw, 20px);
+            font-weight: 500;
+            word-break: keep-all;
+        }
+        /* 세로 막대 (양끝이 흐려진다) + 가운데 보석 */
+        .st-row dd::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            width: 2px;
+            height: 2.2em;
+            background: linear-gradient(rgba(201, 162, 74, 0), var(--gold) 25%, var(--gold) 75%, rgba(201, 162, 74, 0));
+            transform: translateY(-50%);
+        }
+        .st-row dd::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 1px;
+            width: 7px;
+            height: 7px;
+            background: var(--gold-lite);
+            box-shadow: 0 0 0 1px var(--gold), 0 0 8px rgba(236, 212, 143, .9);
+            transform: translate(-50%, -50%) rotate(45deg);
+            transition: box-shadow .3s ease;
+        }
+        .st-row:hover dd::after {
+            box-shadow: 0 0 0 1px var(--gold), 0 0 14px rgba(236, 212, 143, 1);
+        }
+        .st-row-lines {
+            display: grid;
+            gap: clamp(6px, .6vw, 12px);
+        }
+        /* 한 줄: 금색 마름모 글머리 + 항목(흐리게) · 값(진하게) / 값 + 금빛 태그 */
+        .st-row-lines li {
+            position: relative;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 4px 12px;
+            padding-left: 18px;
+        }
+        .st-row-lines li::before {
+            content: '';
+            position: absolute;
+            top: .62em;
+            left: 0;
+            width: 5px;
+            height: 5px;
+            border: 1px solid var(--gold);
+            transform: rotate(45deg);
+        }
+        .st-line-key {
+            color: var(--ink-soft);
+        }
+        .st-line-key::after {
+            content: '';
+            display: inline-block;
+            width: 12px;
+            height: 1px;
+            margin-left: 12px;
+            background: rgba(201, 162, 74, .7);
+            vertical-align: middle;
+        }
+        /* 내용이 많은 행(대외활동 등): 글씨를 조금 작게 */
+        .st-row.is-dense dd {
+            font-size: clamp(13px, 1vw, 17px);
+        }
+        .st-row.is-dense .st-row-lines {
+            gap: clamp(5px, .5vw, 9px);
+        }
+        .st-line-tag {
+            padding: 1px 10px;
+            border: 1px solid rgba(201, 162, 74, .45);
+            color: #8a6a2a;
+            background: rgba(236, 212, 143, .22);
+        }
+
+        /* 전직 목표: 지금 직업(점선 칩) → 흐르는 픽셀 점선 → 목표(빛이 지나가는 금색 블록 + 반짝이) */
+        .st-goal {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 10px clamp(14px, 1.6vw, 28px);
+        }
+        .st-goal-from {
+            padding: clamp(4px, .45vw, 8px) clamp(10px, .9vw, 16px);
+            border: 1px dashed rgba(47, 61, 90, .35);
+            color: var(--ink-soft);
+            background: rgba(255, 255, 255, .45);
+        }
+        .st-goal-arrow {
+            position: relative;
+            width: clamp(52px, 4.4vw, 84px);
+            height: 2px;
+            background: repeating-linear-gradient(90deg, var(--gold) 0 6px, transparent 6px 10px);
+            background-size: 20px 2px;
+            animation: st-march .7s linear infinite;
+        }
+        .st-goal-arrow::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            right: -2px;
+            width: 9px;
+            height: 9px;
+            border-top: 2px solid var(--gold);
+            border-right: 2px solid var(--gold);
+            transform: translateY(-50%) rotate(45deg);
+        }
+        .st-goal-to {
+            position: relative;
+            padding: clamp(5px, .5vw, 9px) clamp(12px, 1.1vw, 20px);
+            color: #fff;
+            background: linear-gradient(110deg, var(--gold) 38%, #f1d993 50%, var(--gold) 62%) 120% 0 / 260% 100% no-repeat, var(--gold);
+            box-shadow: 3px 3px 0 #6b5320;
+            font-size: clamp(14px, 1.2vw, 20px);
+            font-weight: 500;
+            text-shadow: 0 1px 0 rgba(107, 83, 32, .45);
+            animation: st-shine 3.4s ease-in-out infinite;
+        }
+        /* 오른쪽 위 반짝이 */
+        .st-goal-to::before {
+            content: '';
+            position: absolute;
+            top: -7px;
+            right: -7px;
+            width: 14px;
+            height: 14px;
+            background: var(--gold-lite);
+            clip-path: polygon(50% 0, 62% 38%, 100% 50%, 62% 62%, 50% 100%, 38% 62%, 0 50%, 38% 38%);
+            animation: st-twinkle 1.8s ease-in-out infinite;
+        }
+
+        /* ───────── SKILL ───────── */
+        .st-skills {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 14px;
+            padding: 4px 6px 6px 0;
+        }
+        .st-skill {
+            padding: 16px 16px 14px;
+            border: 2px solid color-mix(in srgb, var(--c) 55%, transparent);
+            background: rgba(255, 255, 255, .55);
+            cursor: default;
+            transition: transform .2s ease, box-shadow .2s ease, background .2s ease;
+        }
+        .st-skill:hover, .st-skill:focus-visible {
+            background: rgba(255, 255, 255, .8);
+            box-shadow: 4px 4px 0 var(--c);
+            transform: translateY(-3px);
+        }
+        .st-skill-head {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .st-orb {
+            flex: none;
+            width: 22px;
+            height: 22px;
+            background: radial-gradient(circle at 35% 30%, #fff 0 14%, var(--c) 48%, color-mix(in srgb, var(--c) 70%, #2f3d5a) 100%);
+            clip-path: $octagon;
+        }
+        .st-skill-no {
+            color: color-mix(in srgb, var(--c) 70%, #2f3d5a);
+            font-family: $pixel;
+            /* 타이틀(.st-skill-title)과 같은 크기 */
+            font-size: clamp(14px, 1.2vw, 20px);
+            line-height: 1;
+        }
+        /* PROFILE 패널 값(예: 상지대학교…)과 같은 글꼴 스타일 */
+        .st-skill-title {
+            color: #22283a;
+            font-family: $body;
+            font-size: clamp(14px, 1.2vw, 20px);
+            font-weight: 500;
+            letter-spacing: 0;
+        }
+        .st-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 12px;
+        }
+        .st-chips li {
+            padding: 3px 8px;
+            border: 1px solid color-mix(in srgb, var(--c) 50%, transparent);
+            background: color-mix(in srgb, var(--c) 16%, #fff);
+            font-size: 12px;
+        }
+        .st-skill-uses {
+            margin-top: 10px;
+            color: var(--ink-soft);
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
+        /* ───────── EQUIPMENT: < [카테고리 이름 · 슬롯 3개 · EQUIPPED · 페이지 표시] > (한 페이지씩) ───────── */
+        .st-equip {
+            display: grid;
+            grid-template-columns: auto minmax(0, 1fr) auto;
+            align-items: center;
+            gap: clamp(10px, 1.2vw, 18px);
+        }
+        .st-equip-body {
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+            gap: clamp(10px, 1vw, 16px);
+            min-width: 0;
+        }
+        .st-equip-body > .st-gear-label, .st-equip-body > .st-equip-page {
+            align-self: center;
+        }
+        .st-gear-label {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+            font-weight: 400;
+        }
+        .st-equip-page {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--ink-soft);
+            font-size: 12px;
+        }
+        .st-equip-pips {
+            display: inline-flex;
+            gap: 5px;
+        }
+        .st-equip-pips i {
+            width: 6px;
+            height: 6px;
+            border: 1px solid rgba(201, 162, 74, .8);
+            transform: rotate(45deg);
+            transition: background .3s ease;
+        }
+        .st-equip-pips i.is-on {
+            background: var(--c);
+            border-color: var(--c);
+        }
+        /* < > 버튼: 금색 테두리 네모 + 꺾쇠 */
+        .st-equip-arrow {
+            position: relative;
+            /* 넘길 때 미끄러져 들어오는 장비 줄이 버튼 아래로 지나가게 (버튼 위 포인터로 장비가 선택되지 않게) */
+            z-index: 3;
+            width: clamp(34px, 2.6vw, 42px);
+            height: clamp(34px, 2.6vw, 42px);
+            border: 1px solid rgba(201, 162, 74, .8);
+            background: rgba(255, 252, 244, .8);
+            transition: background .2s ease, transform .2s ease;
+        }
+        .st-equip-arrow::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 9px;
+            height: 9px;
+            border-top: 2px solid var(--gold-deep);
+            border-left: 2px solid var(--gold-deep);
+        }
+        .st-equip-arrow.is-prev::before {
+            transform: translate(-30%, -50%) rotate(-45deg);
+        }
+        .st-equip-arrow.is-next::before {
+            transform: translate(-70%, -50%) rotate(135deg);
+        }
+        .st-equip-arrow:hover {
+            background: var(--gold);
+        }
+        .st-equip-arrow:hover::before {
+            border-color: #fff;
+        }
+        .st-equip-arrow.is-prev:active {
+            transform: translateX(-2px);
+        }
+        .st-equip-arrow.is-next:active {
+            transform: translateX(2px);
+        }
+        /* 카테고리 이름: PROFILE 패널 값(예: 상지대학교…)과 같은 크기 */
+        .st-gear-en {
+            font-family: $pixel;
+            font-size: clamp(14px, 1.2vw, 20px);
+            letter-spacing: .12em;
+        }
+        .st-gear-ko {
+            color: var(--ink-soft);
+            font-size: clamp(14px, 1.2vw, 20px);
+        }
+        /* 장비 한 줄: 육각 배지(아이콘) + [이름 / 끝이 뾰족한 유리 트랙 안에 숙련도만큼 차오르는 막대] */
+        /* 가로 2개씩 (모바일은 1열) */
+        .st-gear-list {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: clamp(8px, .9vw, 14px) clamp(16px, 2vw, 32px);
+        }
+        /* [배지 | 막대] / [이름 | ] — 막대는 배지 높이 가운데, 이름은 배지 바로 아래 */
+        .st-gear-item {
+            display: grid;
+            grid-template-columns: auto minmax(0, 1fr);
+            grid-template-areas: 'badge track' 'name .';
+            align-items: center;
+            row-gap: 2px;
+            width: 100%;
+            text-align: left;
+        }
+        .st-gear-badge {
+            grid-area: badge;
+        }
+        /* 육각 배지: 바깥 테(밝은 회색 유리) + 안쪽 면 */
+        .st-gear-badge {
+            --hex: polygon(25% 0, 75% 0, 100% 50%, 75% 100%, 25% 100%, 0 50%);
+            position: relative;
+            z-index: 2;
+            display: grid;
+            place-items: center;
+            width: clamp(46px, 3.6vw, 60px);
+            aspect-ratio: 1.12;
+            background: linear-gradient(160deg, #ffffff, #d5dae4 70%, #c3cad7);
+            clip-path: var(--hex);
+            filter: drop-shadow(0 2px 2px rgba(60, 70, 100, .25));
+            transition: background .25s ease;
+        }
+        .st-gear-badge::before {
+            content: '';
+            position: absolute;
+            inset: 4px;
+            background: linear-gradient(180deg, #fbfcfe, #e6eaf1);
+            clip-path: var(--hex);
+        }
+        .st-gear-item.is-selected .st-gear-badge, .st-gear-item:hover .st-gear-badge {
+            background: linear-gradient(160deg, var(--gold-lite), var(--gold) 70%, var(--gold-deep));
+        }
+        .st-gear-icon {
+            position: relative;
+            width: 54%;
+            height: auto;
+        }
+        .st-gear-badge .st-tag {
+            position: relative;
+            width: 52%;
+            height: auto;
+            aspect-ratio: 1;
+        }
+        /* 이름 + 트랙 (트랙은 배지 뒤에서 시작한다) */
+        /* 이름이 배지보다 길면 칸을 넓히지 않고 양옆으로 넘친다 (막대 시작 위치 고정) */
+        .st-gear-name {
+            grid-area: name;
+            justify-self: center;
+            width: max-content;
+            font-size: 13px;
+            text-align: center;
+        }
+        .st-gear-item.is-selected .st-gear-name {
+            color: var(--ink);
+            font-weight: 700;
+        }
+        .st-gear-track {
+            --tip: 10px;
+            --point: polygon(0 0, calc(100% - var(--tip)) 0, 100% 50%, calc(100% - var(--tip)) 100%, 0 100%);
+            grid-area: track;
+            /* 배지 뒤에서 시작 */
+            margin-left: -14px;
+            position: relative;
+            display: block;
+            height: clamp(20px, 1.6vw, 26px);
+            background: linear-gradient(180deg, #ffffff, #cdd3de);
+            clip-path: var(--point);
+        }
+        /* 트랙 안쪽 홈 */
+        .st-gear-track::before {
+            content: '';
+            position: absolute;
+            inset: 4px 4px 4px 0;
+            background: linear-gradient(180deg, #dfe3ea, #f3f5f8);
+            clip-path: var(--point);
+        }
+        /* 숙련도 막대: 위는 밝고 아래는 진한 그라디언트 + 윗부분 하이라이트 + 오른쪽 반짝임 */
+        .st-gear-fill {
+            position: absolute;
+            top: 4px;
+            bottom: 4px;
+            left: 0;
+            width: calc((100% - 4px) * var(--lv));
+            background: linear-gradient(180deg, color-mix(in srgb, var(--c) 40%, #fff) 0%, var(--c) 50%, color-mix(in srgb, var(--c) 72%, #1d3566) 100%);
+            clip-path: polygon(0 0, calc(100% - 7px) 0, 100% 50%, calc(100% - 7px) 100%, 0 100%);
+            transform-origin: left center;
+            transition: filter .25s ease;
+        }
+        .st-gear-fill::before {
+            content: '';
+            position: absolute;
+            top: 2px;
+            right: 12px;
+            left: 6px;
+            height: 30%;
+            border-radius: 4px;
+            background: linear-gradient(180deg, rgba(255, 255, 255, .7), rgba(255, 255, 255, .1));
+        }
+        .st-gear-fill::after {
+            content: '';
+            position: absolute;
+            right: 12px;
+            bottom: 3px;
+            width: 22%;
+            max-width: 60px;
+            height: 2px;
+            border-radius: 2px;
+            background: linear-gradient(90deg, rgba(255, 255, 255, 0), #fff 60%, rgba(255, 255, 255, 0));
+        }
+        .st-gear-item.is-selected .st-gear-fill, .st-gear-item:hover .st-gear-fill {
+            filter: brightness(1.08) drop-shadow(0 0 4px color-mix(in srgb, var(--c) 70%, #fff));
+        }
+        .st-gear-item:focus-visible {
+            outline: 2px dashed var(--sky-deep);
+            outline-offset: 3px;
+        }
+        .st-equipped .st-gear-icon {
+            width: 30px;
+        }
+        .st-equipped-lv {
+            padding: 2px 8px;
+            color: #fff;
+            background: var(--c);
+            font-family: $pixel;
+            font-size: 10px;
+            letter-spacing: .1em;
+        }
+        .st-tag {
+            display: grid;
+            flex: none;
+            place-items: center;
+            width: 30px;
+            height: 30px;
+            color: #fff;
+            background: var(--c);
+            clip-path: $octagon;
+            font-family: $pixel;
+            font-size: 11px;
+            text-shadow: 1px 1px 0 rgba(47, 61, 90, .35);
+        }
+        .st-equipped {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 10px 12px;
+            padding: 12px 14px;
+            border: 2px solid var(--gold);
+            background: var(--parch);
+            box-shadow: inset 0 0 0 2px var(--ivory);
+        }
+        .st-equipped-label {
+            padding: 3px 8px;
+            color: var(--ivory);
+            background: var(--gold);
+            font-family: $pixel;
+            font-size: 10px;
+            letter-spacing: .2em;
+        }
+        .st-equipped-name {
+            font-family: $display;
+            font-size: 1.15rem;
+        }
+        .st-equipped-gear {
+            margin-left: auto;
+            color: var(--ink-soft);
+            font-family: $pixel;
+            font-size: 10px;
+            letter-spacing: .1em;
+        }
+
+        /* ───────── STATS ───────── */
+        .st-bars {
+            display: grid;
+            grid-template-columns: repeat(6, minmax(0, 1fr));
+            gap: 10px;
+            padding: 16px 12px 10px;
+            border: 2px solid rgba(201, 162, 74, .4);
+            background: rgba(255, 255, 255, .35);
+        }
+        .st-bar {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            width: 100%;
+            padding: 4px 0;
+        }
+        .st-bar-value {
+            font-family: $display;
+            font-size: 1.35rem;
+            line-height: 1;
+        }
+        .st-bar-track {
+            display: flex;
+            align-items: flex-end;
+            width: 34px;
+            height: clamp(110px, 22vh, 200px);
+            padding: 2px;
+            border: 2px solid rgba(201, 162, 74, .45);
+            background: repeating-linear-gradient(to top, rgba(201, 162, 74, .14) 0 10px, transparent 10px 13px);
+            transition: border-color .2s ease, box-shadow .2s ease;
+        }
+        .st-bar-fill {
+            display: block;
+            width: 100%;
+            background: linear-gradient(to top, var(--amber), var(--gold-lite));
+            -webkit-mask-image: repeating-linear-gradient(to top, #000 0 10px, transparent 10px 13px);
+            mask-image: repeating-linear-gradient(to top, #000 0 10px, transparent 10px 13px);
+            transform-origin: 50% 100%;
+        }
+        .st-bar-abbr {
+            font-family: $pixel;
+            font-size: 12px;
+            letter-spacing: .1em;
+        }
+        .st-bar-ko {
+            color: var(--ink-soft);
+            font-size: 11px;
+        }
+        .st-bar:hover .st-bar-track, .st-bar.is-selected .st-bar-track {
+            border-color: var(--gold);
+            box-shadow: 3px 3px 0 var(--gold-lite);
+        }
+        .st-bar.is-selected .st-bar-abbr {
+            color: var(--sky-deep);
+        }
+        .st-dialog {
+            position: relative;
+            margin-top: 14px;
+            padding: 14px 40px 16px 18px;
+            border: 3px solid var(--gold);
+            background: var(--ivory);
+            box-shadow: inset 0 0 0 2px var(--ivory), inset 0 0 0 4px rgba(201, 162, 74, .45), 4px 4px 0 rgba(201, 162, 74, .4);
+        }
+        .st-dialog-name {
+            color: var(--sky-deep);
+            font-family: $pixel;
+            font-size: 12px;
+            letter-spacing: .12em;
+        }
+        .st-dialog-name span {
+            margin-left: 6px;
+            color: var(--ink-soft);
+            font-family: $body;
+            letter-spacing: 0;
+        }
+        .st-dialog-text {
+            margin-top: 6px;
+            font-size: 15px;
+            word-break: keep-all;
+        }
+        .st-dialog-cursor {
+            position: absolute;
+            right: 14px;
+            bottom: 8px;
+            color: var(--gold);
+            font-size: 11px;
+            animation: st-blink 1s steps(2, jump-none) infinite;
+        }
+
     }
 
-    /* 맨 위: 이름 크게 */
-    .profile-hero {
-        margin: 0;
-        padding: clamp(24px, 4vw, 72px) 0 clamp(8px, 1vw, 16px);
-    }
-    .profile-hero h1 {
-        margin: 0;
-        font-family: 'Inter', 'Noto Sans KR', sans-serif;
-        font-size: clamp(2.6rem, 6vw, 6.5rem);
-        font-weight: 700;
-        letter-spacing: -.02em;
-        line-height: 1.05;
-    }
-    .profile-hero-intro {
-        margin: clamp(14px, 1.4vw, 24px) 0 0;
-        color: #2a2724;
-        font-size: clamp(1rem, 1.3vw, 1.4rem);
-        line-height: 1.7;
-        word-break: keep-all;
+    /* 상태창 페이지에서는 위쪽 막대 배경을 깔지 않는다 (모바일만 아이보리 띠) */
+    .status-page .page-bar {
+        background: none;
     }
 
-    /* 섹션: Working 정보 카드와 같은 흰 바탕 80% */
-    .profile-section {
-        margin: 0;
-        padding: clamp(30px, 2.6vw, 44px) clamp(24px, 2.2vw, 40px);
-        background: rgba(255, 255, 255, .8);
-        /* 탭으로 이동했을 때 위쪽 막대에 가리지 않게 */
-        scroll-margin-top: calc(var(--page-bar-height) + 12px);
-    }
-    .profile-text, .profile-text p {
-        margin: 0;
-        color: #2a2724;
-        font-size: clamp(.95rem, 1.05vw, 1.15rem);
-        line-height: 2.1;
-        word-break: keep-all;
-    }
-    .profile-empty {
-        margin: 0;
-        color: #857e76;
-        font-size: clamp(.9rem, 1vw, 1.05rem);
+    /* ───────── 모바일: 타이틀 → 캐릭터 스테이지 → 메뉴(sticky) → 패널 ───────── */
+    @media (max-width: $mobile) {
+        .status-page {
+            --page-bar-height: 64px;
+            height: auto;
+            min-height: 100svh;
+            overflow: visible;
+            overflow-x: clip;
+
+            .page-bar {
+                background: linear-gradient(rgba(251, 247, 236, .96) 75%, rgba(251, 247, 236, 0));
+            }
+            .st-layout {
+                display: flex;
+                flex-direction: column;
+                height: auto;
+                padding: calc(var(--page-bar-height) + 6px) 16px 40px;
+                pointer-events: auto;
+            }
+            .st-hero {
+                padding: 0;
+                text-align: center;
+            }
+            .st-hero-name {
+                font-size: clamp(2rem, 10vw, 3rem);
+            }
+            .st-stage {
+                position: relative;
+                inset: auto;
+                height: 46svh;
+                min-height: 300px;
+                margin: 0 -16px;
+            }
+            .st-side {
+                max-width: none;
+                padding-left: 0;
+            }
+            .st-menu {
+                position: sticky;
+                z-index: 5;
+                top: calc(var(--page-bar-height) - 8px);
+                margin: 0 -16px;
+                overflow-x: auto;
+                background: linear-gradient(rgba(251, 247, 236, .94), rgba(251, 247, 236, .8));
+                scrollbar-width: none;
+            }
+            .st-menu::-webkit-scrollbar {
+                display: none;
+            }
+            .st-menu ul {
+                display: flex;
+                gap: 12px;
+                width: max-content;
+                padding: 14px 24px 12px 30px;
+            }
+            .st-side-ornament {
+                display: none;
+            }
+            .st-menu-btn {
+                min-width: 96px;
+            }
+            .st-menu-en {
+                font-size: 13px;
+            }
+            .st-window {
+                flex: none;
+                margin-left: 0;
+                padding: 18px 14px 16px;
+                background: rgba(240, 245, 244, .95);
+                -webkit-backdrop-filter: none;
+                backdrop-filter: none;
+            }
+            .st-window-body {
+                overflow: visible;
+                padding-right: 4px;
+            }
+            .st-keyhint {
+                display: none;
+            }
+            .st-row {
+                grid-template-columns: 56px 1fr;
+                gap: 12px;
+            }
+            .st-row dd {
+                padding-left: 14px;
+                font-size: 14px;
+            }
+            .st-skills {
+                grid-template-columns: 1fr;
+            }
+            .st-profile {
+                grid-template-columns: 1fr;
+                justify-items: center;
+            }
+            .st-photo {
+                width: 140px;
+            }
+            .st-profile .st-rows {
+                width: 100%;
+            }
+            .st-gear-list {
+                grid-template-columns: 1fr;
+            }
+            .st-equipped-gear {
+                width: 100%;
+                margin-left: 0;
+            }
+            .st-bars {
+                gap: 4px;
+                padding: 14px 6px 8px;
+            }
+            .st-bar-track {
+                width: 22px;
+                height: 130px;
+            }
+            .st-bar-value {
+                font-size: 1.1rem;
+            }
+            .st-bar-abbr {
+                font-size: 10px;
+            }
+            .st-bar-ko {
+                font-size: 10px;
+                white-space: nowrap;
+            }
+        }
     }
 
-    /* 경력 */
-    .profile-timeline {
-        display: grid;
-    }
-    .profile-experience {
-        padding: clamp(16px, 1.6vw, 26px) 0;
-        border-top: 1px solid rgba(29, 27, 25, .14);
-    }
-    .profile-experience:first-child {
-        padding-top: 0;
-        border-top: 0;
-    }
-    .profile-experience-period {
-        margin: 0;
-        color: #6b655e;
-        font-family: 'Inter', sans-serif;
-        font-size: clamp(.85rem, .95vw, 1rem);
-        letter-spacing: .04em;
-    }
-    .profile-experience h3 {
-        margin: 4px 0 8px;
-        font-family: 'Inter', 'Noto Sans KR', sans-serif;
-        font-size: clamp(1.15rem, 1.4vw, 1.6rem);
-        font-weight: 700;
-        word-break: keep-all;
+    /* 모션 감소: CSS 애니메이션 정지 */
+    @media (prefers-reduced-motion: reduce) {
+        .status-page *, .status-page *::before, .status-page *::after {
+            animation: none !important;
+            transition-duration: .01ms !important;
+        }
     }
 
-    /* 기술 */
-    .profile-skills {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 10px;
-    }
-    .profile-skill {
-        display: flex;
-        align-items: baseline;
-        gap: 8px;
-        padding: 8px 14px;
-        border: 1px solid rgba(29, 27, 25, .14);
-        font-family: 'Inter', 'Noto Sans KR', sans-serif;
-        font-size: clamp(.85rem, .95vw, 1rem);
-    }
-    .profile-skill em {
-        color: #857e76;
-        font-style: normal;
-    }
+    /* 애니메이션(st-blink · st-march · st-shine · st-twinkle)은 ProfilePage.keyframes.scss */
 }
