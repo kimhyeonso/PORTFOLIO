@@ -12,6 +12,53 @@ import styles from './DetailCanvas.module.scss'
  */
 const pos = (style) => Object.fromEntries(Object.entries(style).map(([key, value]) => [`--${key}`, value]))
 
+/*
+ * 모든 상세페이지가 함께 쓰는 세로 간격 (시안 1920px 기준, 글줄 상자 · 이미지의 가장자리끼리 잰 값).
+ * 좌표를 손으로 적지 말고 stack()으로 이 간격만큼 띄워 쌓으면 페이지마다 간격이 같아진다.
+ */
+export const GAP = {
+    line: 16, //     소제목 글 → 바로 아래 설명 글
+    near: 40, //     이미지 · 아이콘 ↔ 딸린 글, 문단 ↔ 문단, 한 묶음 안의 이미지 ↔ 이미지
+    title: 60, //    제목 → 그 내용
+    item: 100, //    한 섹션 안의 덩어리 ↔ 덩어리, 색 띠 안쪽 위 · 아래 여백
+    section: 220, // 섹션 ↔ 섹션, 페이지 위 · 아래 여백
+}
+
+// 이미지를 너비 w로 넣었을 때의 높이 (size: 원본 [너비, 높이])
+export const fitHeight = (w, [width, height]) => (w * height) / width
+
+/*
+ * 위에서부터 차례로 쌓으며 y 좌표를 계산한다 (앞 요소의 아래 끝에서 gap만큼 띄운다).
+ *   const flow = stack(1209)                  시작 위치 (앞 요소의 아래 끝)
+ *   flow.text(30, GAP.section)                글 한 줄 → 세로 가운데 y (글줄 높이 = 글자 크기 × 1.2)
+ *   flow.lines(2, 30, 53, GAP.title)          여러 줄 (줄 간격 53) → 줄마다 세로 가운데 y
+ *   flow.box(1000, GAP.item)                  이미지 · 상자 (높이 1000) → 위쪽 y
+ *   flow.bottom                               지금까지의 아래 끝
+ *   flow.skip(y)                              아래 끝을 y로 옮긴다 (나란히 놓인 덩어리 중 가장 긴 것에 맞출 때)
+ */
+export function stack(start = 0) {
+    let bottom = start
+    const place = (gap, height) => {
+        const top = bottom + gap
+        bottom = top + height
+        return top
+    }
+    return {
+        get bottom() {
+            return bottom
+        },
+        box: (height, gap = 0) => place(gap, height),
+        text: (size, gap = 0) => place(gap, size * 1.2) + size * 0.6,
+        lines: (count, size, pitch, gap = 0) => {
+            const top = place(gap, (count - 1) * pitch + size * 1.2)
+            return Array.from({ length: count }, (_, index) => top + size * 0.6 + index * pitch)
+        },
+        skip: (y) => {
+            bottom = y
+        },
+    }
+}
+
 export function Pic({ src, x, y, w, alt = '' }) {
     return <img className="detail-pic" src={src} alt={alt} loading="lazy" draggable="false" style={pos({ x, y, w })} />
 }

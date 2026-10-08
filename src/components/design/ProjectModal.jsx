@@ -11,9 +11,18 @@ import styles from './ProjectModal.module.scss'
  *   코드로 만든 상세페이지  components/details에 컴포넌트를 만들고 details/index.js에 slug로 등록
  *   이미지만              프로젝트 데이터의 images에 import한 상세 이미지들 (위에서부터 차례로 이어 붙는다)
  *   PDF                  프로젝트 데이터의 pdf에 import한 PDF (브라우저 PDF 뷰어로 보여주고, 새 탭 열기 링크를 단다)
+ * [미리보기] 버튼은 previewOf(project)로 만든 내용(pdfPreview 이미지 한 장)을 이 팝업에 연다.
  * 오른쪽 위 닫기(✕)는 내려도 따라온다. Esc · ✕ · 바깥(어두운 부분) 클릭으로 닫히고,
  * 열려 있는 동안 뒤 페이지는 스크롤되지 않는다.
  */
+// [미리보기] 팝업 내용: 제안서에서 기여한 부분을 강조한 이미지 한 장 (pdfPreview가 아직 true면 이미지 없이 썸네일을 대신 보여준다)
+export const previewOf = ({ title, thumbnail, pdfPreview }) => ({
+    title: `${title} 미리보기`,
+    thumbnail,
+    images: typeof pdfPreview === 'string' ? [pdfPreview] : [],
+    preview: true,
+})
+
 export default function ProjectModal({ project, onClose }) {
     const closeRef = useRef(null)
     // 부모가 다시 그려져 onClose가 새로 만들어져도 아래 효과가 다시 돌지 않게 ref로 들고 있는다
@@ -36,13 +45,13 @@ export default function ProjectModal({ project, onClose }) {
         }
     }, [])
 
-    const { title, thumbnail, pdf, images = [] } = project
+    const { title, thumbnail, pdf, images = [], preview = false } = project
     const Detail = projectDetails[project.slug]
     const hasDetail = Boolean(pdf || Detail) || images.length > 0
 
     return (
         <div className={`${styles.scope} project-modal`} onClick={(event) => event.target === event.currentTarget && onClose()}>
-            <div className={`project-modal-panel ${hasDetail ? 'is-detail' : ''} ${pdf ? 'is-pdf' : ''}`} role="dialog" aria-modal="true" aria-label={`${title} 세부정보`}>
+            <div className={`project-modal-panel ${hasDetail ? 'is-detail' : ''} ${pdf ? 'is-pdf' : ''} ${preview ? 'is-preview' : ''}`} role="dialog" aria-modal="true" aria-label={`${title} 세부정보`}>
                 {/* PDF 뷰어의 위쪽 도구 막대를 가리지 않도록, PDF일 때는 닫기 버튼과 링크를 따로 한 줄에 둔다 */}
                 {pdf && (
                     <a className="project-modal-pdf-link" href={pdf} target="_blank" rel="noreferrer">

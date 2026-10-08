@@ -1,0 +1,138 @@
+.scope {
+    isolation: isolate;
+}
+
+:global {
+    /* HanwooDetail 전용 (좌표 · --u는 DetailCanvas와 같다) */
+    .hw {
+        --maroon: #6e1414;
+        --red: #852424;
+        --dark: #2b2523;
+        --body: #5a5450;
+    }
+    .hw .detail {
+        background: #fff;
+    }
+
+    /* 글자 (y는 글줄의 세로 가운데) */
+    .hw-text {
+        color: var(--body);
+        font-family: 'Noto Sans KR', sans-serif;
+        font-size: calc(var(--size) * var(--u));
+        font-weight: 400;
+        line-height: 1.2;
+        white-space: nowrap;
+        transform: translateY(-50%);
+    }
+    .hw-text.is-center {
+        transform: translate(-50%, -50%);
+    }
+    .hw-text b {
+        color: #222;
+        font-weight: 700;
+    }
+    .hw-text.is-hero {
+        color: var(--maroon);
+        font-weight: 700;
+    }
+    .hw-text.is-info {
+        color: #444;
+    }
+    .hw-text.is-info b {
+        color: var(--maroon);
+    }
+    .hw-text.is-label {
+        color: var(--maroon);
+        font-weight: 700;
+    }
+    .hw-text.is-head {
+        color: var(--red);
+        font-weight: 700;
+    }
+    .hw-text.is-head-dark {
+        color: var(--dark);
+        font-weight: 500;
+    }
+    .hw-text.is-head-dark b {
+        color: var(--red);
+    }
+    /* "한우를 우리의 일상으로": 큰 글자 사이 작은 글자 */
+    .hw-text.is-mixed small {
+        font-size: .65em;
+        font-weight: 500;
+    }
+    .hw-text.is-maroon {
+        color: var(--red);
+    }
+    .hw-text.is-card-title {
+        color: var(--maroon);
+        font-weight: 700;
+    }
+    .hw-text.is-dark {
+        color: #333;
+        font-weight: 500;
+    }
+    .hw-text.is-caption {
+        color: var(--red);
+        font-weight: 700;
+    }
+    .hw-text.is-white {
+        color: #fff;
+        text-shadow: 0 0 calc(12 * var(--u)) rgb(0 0 0 / .45);
+    }
+    .hw-text.is-white.is-bold {
+        font-weight: 700;
+    }
+
+    /* 상자들 */
+    .hw-box {
+        box-sizing: border-box;
+        width: calc(var(--w) * var(--u));
+        height: calc(var(--h) * var(--u));
+    }
+    .hw-cream {
+        background: #f8f1e6;
+    }
+    .hw-card {
+        border-radius: calc(24 * var(--u));
+        background: rgb(255 255 255 / .82);
+    }
+    .hw-arrow {
+        background: #5a0d0d;
+        clip-path: polygon(0 0, 100% 50%, 0 100%);
+    }
+
+    /* MAIN KEY VISUAL 컬러칩 · 키워드 */
+    .hw-chip {
+        width: calc(100 * var(--u));
+        height: calc(100 * var(--u));
+        border-radius: 50%;
+        background: var(--color);
+    }
+    .hw-pill {
+        display: flex;
+        align-items: center;
+        box-sizing: border-box;
+        width: calc(var(--w) * var(--u));
+        height: calc(var(--h) * var(--u));
+        overflow: hidden;
+        border-radius: calc(16 * var(--u));
+        background: #f3e8da;
+        font-family: 'Noto Sans KR', sans-serif;
+        font-size: calc(28 * var(--u));
+        white-space: nowrap;
+    }
+    .hw-pill b {
+        display: grid;
+        place-items: center;
+        align-self: stretch;
+        width: calc(170 * var(--u));
+        background: #eddccb;
+        color: var(--maroon);
+        font-weight: 500;
+    }
+    .hw-pill span {
+        padding-left: calc(24 * var(--u));
+        color: var(--body);
+    }
+}

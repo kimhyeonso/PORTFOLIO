@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import PageBar from '../common/PageBar.jsx'
 import ProjectCard from './ProjectCard.jsx'
 import ProjectControlBar from './ProjectControlBar.jsx'
-import ProjectModal from './ProjectModal.jsx'
+import ProjectModal, { previewOf } from './ProjectModal.jsx'
 import ProjectRing from './ProjectRing.jsx'
 import styles from './ProjectGallery.module.scss'
 
@@ -161,7 +161,7 @@ export default function ProjectGallery({ projects, tabs, background, label, onMe
                         <div className="project-gallery-viewport">
                             <div className="project-gallery-track" style={{ '--index': index }}>
                                 {projects.map((project, cardIndex) => (
-                                    <ProjectCard key={project.slug} project={project} isActive={cardIndex === index} onSelect={() => go(cardIndex)} onOpen={() => openDetail(project)} />
+                                    <ProjectCard key={project.slug} project={project} isActive={cardIndex === index} onSelect={() => go(cardIndex)} onOpen={() => openDetail(project)} onPreview={() => setDetail(previewOf(project))} />
                                 ))}
                             </div>
                         </div>

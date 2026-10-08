@@ -191,8 +191,6 @@ export default function ProfilePage({ onNavigate, onMenuToggle }) {
     enterPanel(tl, el, shown.key, mobile ? 0.5 : 1, !mobile)
     const reveals = el.querySelectorAll('.reveal')
     if (reveals.length) tl.fromTo(reveals, { y: 14, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5, stagger: 0.06, ease: 'power2.out' }, shown.key === 'equipment' ? 0.5 : 0.15)
-    // 패널 본문은 맨 위부터
-    el.querySelector('.st-window-body').scrollTop = 0
     return () => tl.kill()
   }, [shown, intro, mobile, reduced])
 

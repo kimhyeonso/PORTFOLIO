@@ -106,8 +106,12 @@ export const contact = {
       ],
     },
     {
+      key: 'Certificate', ko: '자격증',
+      lines: ['웹디자인 기능사 · 2024'],
+    },
+    {
       key: 'Contact', ko: '연락처',
-      lines: [{ label: 'Email', value: '이메일을 입력해 주세요' }, { label: 'Phone', value: '전화번호를 입력해 주세요' }],
+      lines: [{ label: 'Email', value: 'as889977@naver.com' }, { label: 'Phone', value: '010-9525-8350' }],
     },
   ],
 }

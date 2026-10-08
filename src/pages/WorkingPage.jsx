@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import background from '../assets/image/Menu_Desgin/working.png'
 import HallPage from '../components/common/HallPage.jsx'
 import PageBar from '../components/common/PageBar.jsx'
-import ProjectModal from '../components/design/ProjectModal.jsx'
+import ProjectModal, { previewOf } from '../components/design/ProjectModal.jsx'
 import WorkProjectRow from '../components/work/WorkProjectRow.jsx'
 import { workProjects } from '../data/workProjects.js'
 import './WorkingPage.module.scss'
@@ -40,7 +40,9 @@ export default function WorkingPage({ onNavigate, onMenuToggle, initialSlug }) {
     window.scrollTo({ top: Math.max(0, top - barHeight) })
   }, [initialSlug])
 
-  // 화면에 들어온 줄에 is-visible을 붙여 떠오르게 한다 (움직임 줄이기 설정이면 처음부터 보이게)
+  // 화면에 들어온 줄에 is-visible을 붙여 아래에서 올라오게 한다 (움직임 줄이기 설정이면 처음부터 보이게)
+  // 줄이 화면 아래로 다시 빠지면 is-visible을 떼어, 다시 내려 볼 때마다 올라오는 효과가 나온다
+  // (위로 지나간 줄은 그대로 두어 위로 스크롤할 때 깜빡이지 않게)
   useEffect(() => {
     const rows = pageRef.current.querySelectorAll('.work-page-reveal')
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches || !('IntersectionObserver' in window)) {
@@ -49,9 +51,8 @@ export default function WorkingPage({ onNavigate, onMenuToggle, initialSlug }) {
     }
     const observer = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
-        if (!entry.isIntersecting) return
-        entry.target.classList.add('is-visible')
-        observer.unobserve(entry.target)
+        if (entry.isIntersecting) entry.target.classList.add('is-visible')
+        else if (entry.boundingClientRect.top > 0) entry.target.classList.remove('is-visible')
       })
     }, { threshold: 0.18 })
     rows.forEach((row) => observer.observe(row))
@@ -84,7 +85,7 @@ export default function WorkingPage({ onNavigate, onMenuToggle, initialSlug }) {
             <h2 className="work-page-company-title" id={`work-${company.key}-title`}>{company.label}</h2>
             {projects.map((project, index) => (
               <div className="work-page-reveal" id={`work-project-${project.slug}`} key={project.slug}>
-                <WorkProjectRow project={project} reverse={index % 2 === 1} onOpen={() => setDetail(project)} />
+                <WorkProjectRow project={project} reverse={index % 2 === 1} onOpen={() => setDetail(project)} onPreview={() => setDetail(previewOf(project))} />
               </div>
             ))}
           </section>

@@ -6,8 +6,8 @@
 
 :global {
     /*
-     * 시안(1920 × 18810px) 좌표를 그대로 쓰고, --u(= 컨테이너 너비 / 1920)를 곱해 팝업 너비에 맞게 줄인다.
-     * 요소마다 인라인 --x, --y, --w, --h, --size 값을 받는다.
+     * 시안(너비 1920px) 좌표를 그대로 쓰고, --u(= 컨테이너 너비 / 1920)를 곱해 팝업 너비에 맞게 줄인다.
+     * 요소마다 인라인 --x, --y, --w, --h, --size 값을, 캔버스는 전체 높이 --height를 받는다.
      */
     .wf {
         --navy: #25414c;
@@ -19,7 +19,7 @@
     .wf-canvas {
         --u: calc(100cqw / 1920);
         position: relative;
-        height: calc(18810 * var(--u));
+        height: calc(var(--height) * var(--u));
         overflow: hidden;
         color: var(--gray);
         font-family: 'Noto Sans KR', 'Inter', sans-serif;

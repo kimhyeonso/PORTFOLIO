@@ -1,0 +1,149 @@
+.scope {
+    isolation: isolate;
+}
+
+:global {
+    /* TeenatureDetail 전용 (좌표 · --u는 DetailCanvas와 같다) */
+    .tn {
+        --green: #2a5534;
+        --pink: #d0386a;
+        --deep: #24452c;
+        --body: #5a5a5a;
+    }
+    .tn .detail {
+        background: #fff;
+    }
+
+    /* 글자 (y는 글줄의 세로 가운데) */
+    .tn-text {
+        color: var(--body);
+        font-family: 'Noto Sans KR', sans-serif;
+        font-size: calc(var(--size) * var(--u));
+        font-weight: 400;
+        line-height: 1.2;
+        white-space: nowrap;
+        transform: translateY(-50%);
+    }
+    .tn-text.is-center {
+        transform: translate(-50%, -50%);
+    }
+    .tn-text.is-right {
+        text-align: right;
+        transform: translate(-100%, -50%);
+    }
+    .tn-text b {
+        color: #222;
+        font-weight: 700;
+    }
+    .tn-text.is-hero {
+        color: #e6efc8;
+        font-weight: 700;
+        letter-spacing: -.02em;
+    }
+    .tn-text.is-info {
+        color: #e9eedf;
+    }
+    .tn-text.is-info b {
+        color: #f4f6e6;
+    }
+    .tn-text.is-label {
+        color: var(--green);
+        font-weight: 700;
+    }
+    .tn-text.is-head {
+        color: var(--green);
+        font-weight: 700;
+    }
+    .tn-text.is-strong {
+        color: var(--green);
+        font-weight: 700;
+    }
+    .tn-text.is-dark {
+        color: #333;
+        font-weight: 500;
+    }
+    .tn-text.is-tone.is-pink {
+        color: var(--pink);
+    }
+    .tn-text.is-tone.is-green {
+        color: var(--deep);
+    }
+    .tn-text.is-bold {
+        font-weight: 700;
+    }
+
+    /* 상자 · 배경 */
+    .tn-box {
+        box-sizing: border-box;
+        width: calc(var(--w) * var(--u));
+        height: calc(var(--h) * var(--u));
+    }
+    .tn-bg {
+        background-position: center;
+        background-size: cover;
+    }
+    .tn-mint {
+        background: #f3f9ec;
+    }
+    .tn-dotted {
+        border-left: calc(2 * var(--u)) dashed #8a8a8a;
+    }
+    .tn-glass {
+        border-radius: calc(20 * var(--u));
+        background: rgb(255 255 255 / .72);
+    }
+    .tn-bar {
+        background: var(--green);
+    }
+    .tn-cross {
+        width: calc(70 * var(--u));
+        height: calc(70 * var(--u));
+    }
+    .tn-arrow {
+        width: calc(var(--w) * var(--u));
+        height: calc(24 * var(--u));
+    }
+
+    /* CREATIVE STRATEGY 카드 · 태그 · 컬러칩 */
+    .tn-kv {
+        border-radius: calc(20 * var(--u));
+        box-shadow: 0 calc(4 * var(--u)) calc(14 * var(--u)) rgb(0 0 0 / .06);
+    }
+    .tn-kv.is-pink {
+        background: #f2e6e0;
+    }
+    .tn-kv.is-green {
+        background: #dcf3d6;
+    }
+    .tn-tags {
+        display: flex;
+        gap: calc(10 * var(--u));
+        padding: 0;
+        list-style: none;
+        transform: translate(-50%, -50%);
+    }
+    .tn-tags li {
+        display: grid;
+        place-items: center;
+        box-sizing: border-box;
+        height: calc(52 * var(--u));
+        padding: 0 calc(18 * var(--u));
+        border: calc(1.5 * var(--u)) solid;
+        border-radius: 999px;
+        background: #fff;
+        color: #444;
+        font-family: 'Noto Sans KR', sans-serif;
+        font-size: calc(22 * var(--u));
+        white-space: nowrap;
+    }
+    .tn-tags.is-pink li {
+        border-color: #d68aa0;
+    }
+    .tn-tags.is-green li {
+        border-color: #4f6e55;
+    }
+    .tn-chip {
+        border-radius: calc(8 * var(--u));
+        background: var(--color);
+    }
+}

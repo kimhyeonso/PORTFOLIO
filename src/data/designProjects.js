@@ -8,6 +8,7 @@ import gFoundationThumbnail from '../assets/image/project/G-FOUNDATION/Thumnail.
 import universeThumbnail from '../assets/image/project/UNIVERSE/Thumnail.png'
 import hanwooThumbnail from '../assets/image/project/HANWOO/Thumnail.png'
 import teenatureThumbnail from '../assets/image/project/TEENATURE/Thumnail.png'
+import teenaturePreview from '../assets/image/project/TEENATURE/preview.png'
 
 /**
  * 디자인 프로젝트 카드 데이터 (Frontend와 같은 구조)
@@ -29,6 +30,9 @@ import teenatureThumbnail from '../assets/image/project/TEENATURE/Thumnail.png'
  *                  여러 개          { '버튼 이름': 'https://...', … }     → [버튼 이름] (이름마다 하나씩)
  *   세부정보      이미지 호버 시 [세부정보] → 팝업(ProjectModal): 썸네일 없이 images(상세페이지)만
  *   detail       false면 [세부정보] 버튼을 숨긴다 (세부정보 팝업이 없는 프로젝트)
+ *   pdfPreview   이미지 호버 시 [미리보기] 버튼 → 팝업에 이 이미지 한 장 (제안서 PDF에서 기여한 부분을 강조한 이미지)
+ *                  import한 이미지     pdfPreviewImage            → 그 이미지를 보여준다
+ *                  true               아직 이미지가 없을 때       → 버튼만 보이고, 팝업엔 썸네일이 대신 보인다
  *   images       세부정보 팝업에 바로 보일 상세 이미지들 (위에서부터 이어 붙음, 없으면 썸네일이 대신 보임)
  *   category     상단 탭 필터 (web-ui | editorial | proposal)   ※ proposal은 Design에선 숨기고 Working에서만 보여준다
  *                같은 category끼리 붙어 있어야 탭을 눌렀을 때 그 묶음으로 이동한다
@@ -88,6 +92,7 @@ export const allDesignProjects = [
     id: '04',
     slug: 'g-foundation',
     category: 'web-ui',
+    pdfPreview: true,
     title: '지파운데이션',
     work: 'proposal',
     type: 'Proposal Design',
@@ -173,12 +178,13 @@ export const allDesignProjects = [
     thumbnail: universeThumbnail,
     tools: ['Photoshop', 'Illustrator'],
     link: '',
-    images: [],
+    images: [], // 세부정보 팝업은 components/details/KwangwoonDetail.jsx (코드로 만든 상세페이지)
   },
   {
     id: '09',
     slug: 'hanwoo',
     category: 'proposal',
+    pdfPreview: true,
     title: '한우자조금',
     work: 'proposal',
     type: 'Proposal Design',
@@ -192,12 +198,13 @@ export const allDesignProjects = [
     thumbnail: hanwooThumbnail,
     tools: ['Photoshop', 'Illustrator', 'PowerPoint'],
     link: '',
-    images: [],
+    images: [], // 세부정보 팝업은 components/details/HanwooDetail.jsx (코드로 만든 상세페이지)
   },
   {
     id: '10',
     slug: 'teenature',
     category: 'proposal',
+    pdfPreview: teenaturePreview, // [미리보기] 팝업에 보일 이미지
     title: '티네이처',
     work: 'proposal',
     type: 'Proposal Design',
@@ -211,7 +218,7 @@ export const allDesignProjects = [
     thumbnail: teenatureThumbnail,
     tools: ['Photoshop'],
     link: '',
-    images: [],
+    images: [], // 세부정보 팝업은 components/details/TeenatureDetail.jsx (코드로 만든 상세페이지)
   },
 ]
 

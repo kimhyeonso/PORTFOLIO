@@ -28,7 +28,9 @@
       "Bash(node \"C:/Users/이젠아~1/AppData/Local/Temp/claude/c--portfolio2026/d7621ae9-2e2c-4aa9-984a-c0f626e81cdc/scratchpad/colors.mjs\")",
       "Bash(grep -n \"\\\\.st-hero-name {\\\\|\\\\.st-hero-ko {\\\\|\\\\.st-hero-ko, \\\\.st-hero-ornament, \\\\.st-hero-quote\\\\|\\\\.st-hero-label, \\\\.st-hero-copy\" -A3 src/pages/ProfilePage.module.scss)",
       "Bash(node \"C:/Users/이젠아~1/AppData/Local/Temp/claude/c--portfolio2026/d7621ae9-2e2c-4aa9-984a-c0f626e81cdc/scratchpad/contact.mjs\")",
-      "Bash(sed -n '/^export const profile = {/,/^}/p;/^export const contact = {/,/^}/p' src/data/profileStatus.js)"
+      "Bash(sed -n '/^export const profile = {/,/^}/p;/^export const contact = {/,/^}/p' src/data/profileStatus.js)",
+      "PowerShell(Add-Type -AssemblyName System.Drawing; Get-ChildItem \"src/assets/image/project/UNIVERSE\" | ForEach-Object { $i=[System.Drawing.Image]::FromFile\\($_.FullName\\); \"$\\($_.Name\\) $\\($i.Width\\)x$\\($i.Height\\) $\\([math]::Round\\($_.Length/1KB\\)\\)KB\"; $i.Dispose\\(\\) })",
+      "PowerShell(npx vite build 2>&1)"
     ]
   }
 }

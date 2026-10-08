@@ -26,7 +26,7 @@ function toLinks(link) {
  * 모바일: 위 썸네일 + 오른쪽 아래 도구 아이콘, 아래 제목·정보·설명
  * 썸네일에 마우스를 올리면(또는 키보드로 포커스하면) 어두워지며 [세부정보](상세 페이지) · [홈페이지](외부 링크) 버튼이 나타난다
  */
-export default function ProjectCard({ project, isActive, onOpen, onSelect }) {
+export default function ProjectCard({ project, isActive, onOpen, onPreview, onSelect }) {
     const { title, type, year, period, contribution, role, description, thumbnail, tools = [], link, work } = project
     const contributionText = formatContribution(contribution)
     const links = toLinks(link)
@@ -40,6 +40,12 @@ export default function ProjectCard({ project, isActive, onOpen, onSelect }) {
             {project.detail !== false && (
                 <button className="project-card-action" type="button" onClick={isActive ? onOpen : undefined} tabIndex={isActive ? 0 : -1}>
                     {project.pdf ? 'PDF' : '세부정보'}
+                </button>
+            )}
+            {/* 미리보기: 제안서에서 기여한 부분을 강조한 이미지 한 장을 팝업으로 */}
+            {project.pdfPreview && (
+                <button className="project-card-action" type="button" onClick={isActive ? onPreview : undefined} tabIndex={isActive ? 0 : -1}>
+                    미리보기
                 </button>
             )}
             {/* link(Behance·사이트 주소)가 있는 프로젝트만 새 탭으로 여는 버튼 */}

@@ -5,7 +5,7 @@ import { frontendProjects } from '../data/frontendProjects.js'
 // 탭 key는 frontendProjects.js의 category 값과 같아야 한다
 const tabs = [
   { key: 'copy-site', label: 'COPY SITE' },
-  { key: 'personal', label: 'PERSONAL' },
+  { key: 'personal', label: 'INDIVIDUAL' },
   { key: 'team', label: 'TEAM PROJECT' },
 ]
 

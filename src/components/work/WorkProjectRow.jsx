@@ -23,7 +23,7 @@ function toLinks(link) {
  * Working 페이지의 프로젝트 한 줄: 왼쪽 큰 이미지(호버 시 세부정보·홈페이지 버튼) · 가운데 정보 카드 · 오른쪽 설명
  * reverse면 반대로: 왼쪽에 카드와 설명, 오른쪽에 더 큰 이미지 (짝수 번째 줄)
  */
-export default function WorkProjectRow({ project, onOpen, reverse = false }) {
+export default function WorkProjectRow({ project, onOpen, onPreview, reverse = false }) {
     const { title, type, year, period, contribution, description = '', thumbnail, tools = [], link, work } = project
     const date = period ? `${period.start} - ${period.end}` : year
     const contributionText = formatContribution(contribution)
@@ -36,6 +36,8 @@ export default function WorkProjectRow({ project, onOpen, reverse = false }) {
                 {/* 이미지에 마우스를 올리면(또는 키보드로 포커스하면) 어두워지며 버튼이 나타난다 — Design/Frontend 카드와 같은 모양 */}
                 <div className="work-row-overlay">
                     {project.detail !== false && <button className="work-row-action" type="button" onClick={onOpen}>{project.pdf ? 'PDF' : '세부정보'}</button>}
+                    {/* 미리보기: 제안서에서 기여한 부분을 강조한 이미지 한 장을 팝업으로 */}
+                    {project.pdfPreview && <button className="work-row-action" type="button" onClick={onPreview}>미리보기</button>}
                     {links.map(({ label, url }) => (
                         <a className="work-row-action" key={url} href={url} target="_blank" rel="noreferrer" aria-label={`${title} ${label} 새 탭에서 열기`}>{label}</a>
                     ))}

@@ -125,6 +125,24 @@
     .project-modal-pdf-link:hover, .project-modal-pdf-link:focus-visible {
         text-decoration: underline;
     }
+    /*
+     * [미리보기]: 모든 프로젝트를 같은 비율(티네이처 미리보기 2747 × 1551)의 틀로 열고,
+     * 화면 높이 안에 들어오게 너비를 정해 스크롤이 생기지 않는다. 비율이 다른 이미지는 잘리지 않게 틀 안에 맞춘다.
+     */
+    .project-modal-panel.is-preview {
+        position: relative;
+        width: min(1440px, 100%, calc((100dvh - 40px) * 2747 / 1551));
+        aspect-ratio: 2747 / 1551;
+        overflow: hidden;
+    }
+    .is-preview .project-modal-media {
+        position: absolute;
+        inset: 0;
+    }
+    .is-preview .project-modal-media > img {
+        height: 100%;
+        object-fit: contain;
+    }
     /* 코드로 만든 상세페이지를 불러오는 동안 */
     .project-modal-loading {
         height: 60vh;

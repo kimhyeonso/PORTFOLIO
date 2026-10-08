@@ -11,4 +11,7 @@ export const projectDetails = {
     'dive-to-earth': lazy(() => import('./DivetoursDetail.jsx')),
     'mountain-equipment': lazy(() => import('./MountainDetail.jsx')),
     'advertising-banner': lazy(() => import('./AdvertisingBannerDetail.jsx')),
+    'kwangwoon-university': lazy(() => import('./KwangwoonDetail.jsx')),
+    hanwoo: lazy(() => import('./HanwooDetail.jsx')),
+    teenature: lazy(() => import('./TeenatureDetail.jsx')),
 }

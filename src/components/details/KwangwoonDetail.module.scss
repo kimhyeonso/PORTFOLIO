@@ -1,0 +1,108 @@
+.scope {
+    isolation: isolate;
+}
+
+:global {
+    /* KwangwoonDetail 전용 (좌표 · --u는 DetailCanvas와 같다) */
+    .kw {
+        --maroon: #7d0a2e;
+        --navy: #142a6e;
+        --body: #555;
+    }
+    .kw .detail {
+        background: #fff;
+    }
+
+    /* 글자 (y는 글줄의 세로 가운데) */
+    .kw-text {
+        color: var(--body);
+        font-family: 'Noto Sans KR', sans-serif;
+        font-size: calc(var(--size) * var(--u));
+        font-weight: 400;
+        line-height: 1.2;
+        white-space: nowrap;
+        transform: translateY(-50%);
+    }
+    .kw-text.is-center {
+        transform: translate(-50%, -50%);
+    }
+    .kw-text b {
+        color: #222;
+        font-weight: 700;
+    }
+    .kw-text.is-hero {
+        color: var(--maroon);
+        font-weight: 900;
+    }
+    .kw-text.is-hero-sub {
+        color: var(--maroon);
+        font-weight: 700;
+    }
+    .kw-text.is-info {
+        color: #fff;
+        font-weight: 300;
+    }
+    .kw-text.is-info b {
+        color: #fff;
+    }
+    .kw-text.is-label {
+        color: var(--maroon);
+        font-family: 'Inter', 'Noto Sans KR', sans-serif;
+        font-weight: 700;
+    }
+    .kw-text.is-quote {
+        color: var(--maroon);
+        font-weight: 700;
+    }
+    .kw-text.is-concept {
+        color: var(--maroon);
+        font-family: 'Inter', 'Noto Sans KR', sans-serif;
+        font-weight: 700;
+    }
+    .kw-text.is-concept.is-navy {
+        color: var(--navy);
+    }
+    .kw-text.is-plan {
+        color: #5c0820;
+        font-weight: 700;
+    }
+    .kw-text.is-plan-sm {
+        color: #333;
+        font-weight: 700;
+    }
+    .kw-text.is-slogan {
+        color: var(--navy);
+        font-weight: 700;
+        letter-spacing: .2em;
+    }
+
+    /* B안 · C안 제목 아래 짧은 선 */
+    .kw-bar {
+        width: calc(80 * var(--u));
+        height: calc(6 * var(--u));
+        background: var(--maroon);
+    }
+
+    /* 키워드 태그 */
+    .kw-tags {
+        display: flex;
+        gap: calc(20 * var(--u));
+        padding: 0;
+        list-style: none;
+        transform: translateY(-50%);
+    }
+    .kw-tags.is-center {
+        transform: translate(-50%, -50%);
+    }
+    .kw-tags li {
+        padding: calc(10 * var(--u)) calc(24 * var(--u));
+        border-radius: 999px;
+        color: var(--maroon);
+        background: #fbe6eb;
+        font-family: 'Noto Sans KR', sans-serif;
+        font-size: calc(24 * var(--u));
+        font-weight: 700;
+        line-height: 1.2;
+        white-space: nowrap;
+    }
+}

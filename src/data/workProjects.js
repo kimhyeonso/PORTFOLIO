@@ -1,4 +1,5 @@
 import amorepacificThumbnail from '../assets/image/project/AMOREPACIFIC/Thumnail.png'
+import amorepacificPreview from '../assets/image/project/AMOREPACIFIC/preview.png'
 import { allDesignProjects } from './designProjects.js'
 
 /**
@@ -29,11 +30,11 @@ const workOrder = {
   ricota: [
     'hanwoo',
     'teenature',
-    'kwangwoon-university',
-    'g-foundation',
     'ricota-homepage',
+    'g-foundation',
     'dive-to-earth',
     'advertising-banner',
+    'kwangwoon-university',
   ],
 }
 
@@ -49,6 +50,7 @@ const extraProjects = [
     period: { start: '2024.10', end: '2025.04', duration: '6개월' },
     description: '아모레퍼시픽의 모든 브랜드의 상품 썸네일 제작, 상품 상세페이지 디자인 검수 일을 하였습니다',
     thumbnail: amorepacificThumbnail,
+    pdfPreview: amorepacificPreview, // [미리보기] 팝업에 보일 이미지
     tools: ['Figma', 'Photoshop'],
     link: '',
     images: [],

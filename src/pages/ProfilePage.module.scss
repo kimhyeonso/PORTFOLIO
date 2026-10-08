@@ -421,6 +421,13 @@ $octagon: polygon(30% 0, 70% 0, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0 70%, 0
             backdrop-filter: blur(12px);
             transform-origin: 50% 50%;
         }
+        /* 데스크톱 01~05 정보 창은 같은 세로 길이를 유지한다. */
+        @media (min-width: 901px) {
+            .st-window {
+                height: clamp(500px, 60vh, 640px);
+            }
+        }
+
         /* box01.png: 그림 속 가로선(위에서 27%) · 세로선(왼쪽에서 21%)이 패널 테두리에 겹치도록 */
         .st-window-flourish {
             --w: clamp(120px, 10vw, 190px);
@@ -459,9 +466,14 @@ $octagon: polygon(30% 0, 70% 0, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0 70%, 0
             flex: 1;
             min-height: 0;
             padding: 0 8px 4px 4px;
-            overflow-y: auto;
-            scrollbar-color: var(--gold) transparent;
-            scrollbar-width: thin;
+            overflow-y: hidden;
+        }
+
+        /* 05 Record는 자격증까지 한 화면에 보여 주고 패널 내부 스크롤을 쓰지 않는다. */
+        .st-window[data-panel='contact'] .st-window-body {
+            flex: none;
+            min-height: auto;
+            overflow-y: hidden;
         }
 
         .st-keyhint {
@@ -571,6 +583,17 @@ $octagon: polygon(30% 0, 70% 0, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0 70%, 0
         }
         .st-profile .st-row dd {
             padding-left: clamp(14px, 1.4vw, 26px);
+        }
+        /* Profile 패널 여백만 조금 줄여 Goal 한 줄을 포함한 전체 내용을 맞춘다. */
+        @media (min-width: 901px) {
+            .st-window[data-panel='profile'] {
+                padding-top: clamp(16px, 1.4vw, 24px);
+                padding-bottom: clamp(14px, 1.2vw, 20px);
+            }
+            .st-window[data-panel='profile'] .st-window-bar {
+                margin-bottom: clamp(6px, .7vw, 10px);
+                padding-bottom: clamp(8px, .8vw, 12px);
+            }
         }
         .st-photo {
             margin: 0;
@@ -795,6 +818,24 @@ $octagon: polygon(30% 0, 70% 0, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0 70%, 0
             align-items: center;
             gap: 10px clamp(14px, 1.6vw, 28px);
         }
+        /* PROFILE의 Goal은 한 줄 안에서 완결해 패널 본문 높이가 늘어나지 않게 한다. */
+        .st-profile .st-goal {
+            flex-wrap: nowrap;
+            gap: 0 clamp(5px, .5vw, 10px);
+            font-size: clamp(14px, 1vw, 16px);
+            white-space: nowrap;
+        }
+        .st-profile .st-goal-from {
+            padding: 2px clamp(5px, .45vw, 8px);
+        }
+        .st-profile .st-goal-arrow {
+            flex: 0 0 clamp(24px, 2vw, 38px);
+            width: clamp(24px, 2vw, 38px);
+        }
+        .st-profile .st-goal-to {
+            padding: 3px clamp(6px, .6vw, 10px);
+            font-size: inherit;
+        }
         .st-goal-from {
             padding: clamp(4px, .45vw, 8px) clamp(10px, .9vw, 16px);
             border: 1px dashed rgba(47, 61, 90, .35);
@@ -850,6 +891,15 @@ $octagon: polygon(30% 0, 70% 0, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0 70%, 0
             grid-template-columns: repeat(2, minmax(0, 1fr));
             gap: 14px;
             padding: 4px 6px 6px 0;
+        }
+        @media (min-width: 901px) {
+            .st-window[data-panel='skill'] .st-skills {
+                height: 100%;
+                grid-template-rows: repeat(2, minmax(0, 1fr));
+            }
+            .st-window[data-panel='skill'] .st-skill {
+                min-height: 0;
+            }
         }
         .st-skill {
             padding: 16px 16px 14px;
