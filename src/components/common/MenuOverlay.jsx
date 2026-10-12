@@ -11,7 +11,7 @@ const sections = [
   { label: 'PROFILE', path: '/profile' },
   { label: 'DESIGN', path: '/design', projects: designProjects, base: '/design' },
   { label: 'FRONTEND', path: '/frontend', projects: frontendProjects, base: '/frontend' },
-  { label: 'WORKING', path: '/working', projects: workProjects, base: '/working' },
+  { label: 'EXPERIENCE', path: '/working', projects: workProjects, base: '/working' },
 ]
 
 /**
