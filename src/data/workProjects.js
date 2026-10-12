@@ -53,7 +53,7 @@ const extraProjects = [
     pdfPreview: amorepacificPreview, // [미리보기] 팝업에 보일 이미지
     tools: ['Figma', 'Photoshop'],
     link: '',
-    images: [],
+    images: [], // 세부정보 팝업은 components/details/AmorepacificDetail.jsx (코드로 만든 상세페이지)
   },
 ]
 

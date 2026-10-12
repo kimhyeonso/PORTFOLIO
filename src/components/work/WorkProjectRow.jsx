@@ -1,3 +1,4 @@
+import { skillIcons } from '../../data/skillIcons.js'
 import styles from './WorkProjectRow.module.scss'
 
 // 카드에 적는 작업 형태 (workProjects의 work 값)
@@ -52,7 +53,15 @@ export default function WorkProjectRow({ project, onOpen, onPreview, reverse = f
                     {work && <span>{workLabels[work]}</span>}
                     {contributionText && <span>{contributionText}</span>}
                 </p>
-                {tools.length > 0 && <p className="work-row-tools">{tools.map((tool) => toolNames[tool] || tool).join(' · ')}</p>}
+                {/* 사용 프로그램: skillIcons에 아이콘이 있으면 이미지로, 없으면 이름 글자로 */}
+                {tools.length > 0 && (
+                    <ul className="work-row-tools" aria-label="사용 프로그램">
+                        {tools.map((tool) => {
+                            const name = toolNames[tool] || tool
+                            return <li key={tool}>{skillIcons[tool] ? <img src={skillIcons[tool]} alt={name} title={name} /> : name}</li>
+                        })}
+                    </ul>
+                )}
             </div>
 
             <div className="work-row-detail">

@@ -181,9 +181,7 @@ function EquipmentPanel({ reduced }) {
                                 type="button"
                                 aria-pressed={selected === ii}
                                 aria-label={`${it.name} ${ui.levelLabel} ${it.level}`}
-                                // mouseenter 대신 pointermove: 넘길 때 미끄러져 들어온 줄이 멈춘 포인터 아래를 지나가도 선택되지 않게
-                                onPointerMove={() => setSelected(ii)}
-                                onFocus={() => setSelected(ii)}
+                                // 누를 때만 선택한다 (마우스를 올리는 것만으로는 EQUIPPED 상자가 바뀌지 않는다)
                                 onClick={() => setSelected(ii)}
                             >
                                 {/* 배지 오른쪽에 막대, 배지 아래에 이름 */}
@@ -218,7 +216,7 @@ function EquipmentPanel({ reduced }) {
     )
 }
 
-// 막대가 아래에서 차오르고(0.08초 간격) 숫자가 올라간다. 막대를 고르면 아래 대화창에 설명
+// 막대가 아래에서 차오르고(0.08초 간격) 숫자가 올라간다. 막대를 누르면 아래 대화창에 설명
 function StatsPanel({ reduced }) {
     const [selected, setSelected] = useState(0)
     const root = useRef(null)
@@ -255,8 +253,7 @@ function StatsPanel({ reduced }) {
                             type="button"
                             aria-pressed={selected === i}
                             aria-label={`${s.en} ${s.ko} ${s.value}`}
-                            onMouseEnter={() => setSelected(i)}
-                            onFocus={() => setSelected(i)}
+                            // 누를 때만 선택한다 (마우스를 올리는 것만으로는 아래 대화창이 바뀌지 않는다)
                             onClick={() => setSelected(i)}
                         >
                             <span className="st-bar-value" ref={(el) => { numbers.current[i] = el }} aria-hidden="true">0</span>

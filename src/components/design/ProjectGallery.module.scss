@@ -27,7 +27,7 @@
         overflow: hidden;
         /* 홀 배경 위에 크림빛을 옅게 덮는다 (Working 페이지와 같은 값) */
         background:
-            linear-gradient(rgba(246, 239, 229, .72), rgba(246, 239, 229, .82)),
+            linear-gradient(rgba(246, 239, 229, .62), rgba(246, 239, 229, .72)),
             #efe3d3 var(--gallery-bg) center / cover no-repeat;
         animation: project-gallery-in .7s ease-out both;
     }
@@ -64,8 +64,8 @@
         animation: project-gallery-swap .6s ease both;
     }
     .project-gallery.is-ring .project-gallery-stage {
-        /* 원통 보기는 화면 아래쪽에 조금 더 가깝게 */
-        margin-top: clamp(24px, 4.5vw, 110px);
+        /* 원통 보기는 탭 아래로 살짝만 띄운다 */
+        margin-top: clamp(0px, 1.5vw, 40px);
         margin-bottom: clamp(12px, 2vw, 48px);
     }
 
@@ -87,6 +87,22 @@
         display: flex;
         align-items: center;
         gap: clamp(8px, .6vw, 12px);
+    }
+    /*
+     * PC: 화면 높이가 모자라도 아래 조작 바는 잘리지 않게 줄이지 않고 아래 여백을 둔다.
+     * 대신 카드 영역(stage)이 남는 높이만큼만 차지하고, 넘치는 원통은 조작 바 뒤로 지나간다
+     */
+    @media (min-width: 901px) {
+        .project-gallery-stage {
+            flex-shrink: 1;
+            min-height: 0;
+        }
+        .project-gallery-bottom {
+            position: relative;
+            z-index: 2;
+            flex-shrink: 0;
+            margin-bottom: clamp(20px, 4vh, 48px);
+        }
     }
     .project-view-toggle {
         display: grid;

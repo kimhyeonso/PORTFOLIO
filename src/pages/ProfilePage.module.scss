@@ -9,6 +9,13 @@ $mobile: 900px;
 $pixel: 'Silkscreen', monospace;
 $display: 'Pixelify Sans', 'Silkscreen', sans-serif;
 $body: 'IBM Plex Sans KR', 'Noto Sans KR', sans-serif;
+// 숫자: 픽셀 글꼴은 숫자가 잘 안 읽혀 본문 글꼴의 굵은 숫자로 (자릿수 너비가 같아 차오를 때 흔들리지 않는다)
+@mixin number {
+    font-family: $body;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0;
+}
 $octagon: polygon(30% 0, 70% 0, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0 70%, 0 30%);
 
 /* 이 모듈을 컴포넌트에서 실제로 쓰게 하는 클래스 (값 없이 import하면 프로덕션 빌드에서 CSS가 빠진다) */
@@ -83,7 +90,7 @@ $octagon: polygon(30% 0, 70% 0, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0 70%, 0
             background:
                 /* 타이틀(왼쪽 위) 뒤만 조금 더 밝혀 글씨가 읽히게 */
                 radial-gradient(ellipse 42% 34% at 18% 22%, rgba(251, 247, 236, .85), rgba(251, 247, 236, 0) 75%),
-                linear-gradient(rgba(246, 239, 229, .18), rgba(246, 239, 229, .32));
+                linear-gradient(rgba(246, 239, 229, .08), rgba(246, 239, 229, .22));
             transition: opacity 1.4s ease;
         }
         /* 인트로용 덮개: 가운데 위(이름) · 아래(인용문)를 밝히고 전체를 조금 더 크림빛으로 */
@@ -95,7 +102,7 @@ $octagon: polygon(30% 0, 70% 0, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0 70%, 0
             background:
                 radial-gradient(ellipse 40% 28% at 50% 24%, rgba(251, 247, 236, .8), rgba(251, 247, 236, 0) 75%),
                 radial-gradient(ellipse 46% 16% at 50% 86%, rgba(251, 247, 236, .85), rgba(251, 247, 236, 0) 80%),
-                linear-gradient(rgba(246, 236, 222, .42), rgba(246, 236, 222, .42));
+                linear-gradient(rgba(246, 236, 222, .32), rgba(246, 236, 222, .32));
             opacity: 0;
             transition: opacity 1.4s ease;
         }
@@ -151,7 +158,7 @@ $octagon: polygon(30% 0, 70% 0, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0 70%, 0
             .st-sky::after {
                 background:
                     radial-gradient(ellipse 90% 22% at 50% 16%, rgba(251, 247, 236, .85), rgba(251, 247, 236, 0) 80%),
-                    linear-gradient(rgba(246, 239, 229, .18), rgba(246, 239, 229, .32));
+                    linear-gradient(rgba(246, 239, 229, .08), rgba(246, 239, 229, .22));
             }
         }
 
@@ -927,7 +934,7 @@ $octagon: polygon(30% 0, 70% 0, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0 70%, 0
         }
         .st-skill-no {
             color: color-mix(in srgb, var(--c) 70%, #2f3d5a);
-            font-family: $pixel;
+            @include number;
             /* 타이틀(.st-skill-title)과 같은 크기 */
             font-size: clamp(14px, 1.2vw, 20px);
             line-height: 1;
@@ -1189,9 +1196,8 @@ $octagon: polygon(30% 0, 70% 0, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0 70%, 0
             padding: 2px 8px;
             color: #fff;
             background: var(--c);
-            font-family: $pixel;
-            font-size: 10px;
-            letter-spacing: .1em;
+            @include number;
+            font-size: 12px;
         }
         .st-tag {
             display: grid;
@@ -1254,7 +1260,7 @@ $octagon: polygon(30% 0, 70% 0, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0 70%, 0
             padding: 4px 0;
         }
         .st-bar-value {
-            font-family: $display;
+            @include number;
             font-size: 1.35rem;
             line-height: 1;
         }

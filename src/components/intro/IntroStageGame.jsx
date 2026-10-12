@@ -245,7 +245,7 @@ export default function IntroStageGame({ config, onClear, onSkip, onSelectStage 
             <div className={`sg-hero ${clearing ? 'is-entering' : ''}`} data-pose={pose} data-single-sprite={sprites.jump === sprites.run} ref={heroRef}>
                 {exclaim && phase === 'ready' && <img className="sg-exclaim" src={exclamation} alt="" />}
                 {sparkKey > 0 && <img className="sg-spark" key={sparkKey} src={sparkle} alt="" />}
-                <div className="sg-hero-sprite"><img src={sprites[pose]} alt="Kim Hyeonsu game character" /></div>
+                <div className="sg-hero-sprite"><img src={sprites[pose]} alt="Kim Hyeonsoo game character" /></div>
             </div>
 
             {titleCard && (

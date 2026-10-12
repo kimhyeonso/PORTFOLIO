@@ -91,12 +91,25 @@
         letter-spacing: .06em;
         line-height: 1.45;
     }
+    /* 사용 프로그램 아이콘 (아이콘이 없는 프로그램은 이름 글자) */
     .work-row-tools {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: clamp(8px, .8vw, 12px);
         margin: clamp(14px, 1.3vw, 22px) 0 0;
+        padding: 0;
+        list-style: none;
         color: #857e76;
         font-family: 'Inter', sans-serif;
         font-size: clamp(.82rem, .9vw, 1rem);
         letter-spacing: .03em;
+    }
+    .work-row-tools img {
+        display: block;
+        width: clamp(28px, 2.2vw, 40px);
+        height: clamp(28px, 2.2vw, 40px);
+        object-fit: contain;
     }
 
     /* 오른쪽 설명 */

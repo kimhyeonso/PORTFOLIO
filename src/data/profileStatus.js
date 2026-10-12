@@ -4,7 +4,7 @@
  */
 
 export const hero = {
-  name: 'KIM HYEONSU',
+  name: 'KIM HYEONSOO',
   nameKo: '김현수',
   title: 'Designer × Frontend Developer',
   // 인트로에서는 두 줄 인용문, 이후 왼쪽 위에서는 한 줄로 이어진다

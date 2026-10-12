@@ -14,4 +14,5 @@ export const projectDetails = {
     'kwangwoon-university': lazy(() => import('./KwangwoonDetail.jsx')),
     hanwoo: lazy(() => import('./HanwooDetail.jsx')),
     teenature: lazy(() => import('./TeenatureDetail.jsx')),
+    amorepacific: lazy(() => import('./AmorepacificDetail.jsx')),
 }

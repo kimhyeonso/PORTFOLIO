@@ -5,8 +5,10 @@ import homepageThumbnail from '../assets/image/project/HOMEPAGE/Thumnail.png'
 import mountainThumbnail from '../assets/image/project/MOUNTAIN EQUIMENT/Thumnail.png'
 import bannerThumbnail from '../assets/image/project/ADVERTISING BANNER/Thumnail.png'
 import gFoundationThumbnail from '../assets/image/project/G-FOUNDATION/Thumnail.png'
+import gFoundationPreview from '../assets/image/project/G-FOUNDATION/preview.png'
 import universeThumbnail from '../assets/image/project/UNIVERSE/Thumnail.png'
 import hanwooThumbnail from '../assets/image/project/HANWOO/Thumnail.png'
+import hanwooPreview from '../assets/image/project/HANWOO/preview.png'
 import teenatureThumbnail from '../assets/image/project/TEENATURE/Thumnail.png'
 import teenaturePreview from '../assets/image/project/TEENATURE/preview.png'
 
@@ -92,7 +94,7 @@ export const allDesignProjects = [
     id: '04',
     slug: 'g-foundation',
     category: 'web-ui',
-    pdfPreview: true,
+    pdfPreview: gFoundationPreview, // [미리보기] 팝업에 보일 이미지
     title: '지파운데이션',
     work: 'proposal',
     type: 'Proposal Design',
@@ -104,7 +106,7 @@ export const allDesignProjects = [
     ],
     description: '지파운데이션 제안서의 상세페이지 리디자인으로 인포그래픽 중심으로 작업한 후 pc 화면으로 구현하였습니다',
     thumbnail: gFoundationThumbnail,
-    tools: ['VS Code', 'Figma', 'Photoshop'],
+    tools: ['VS Code', 'GitHub', 'Figma', 'Photoshop'],
     link: {
       'SANITARY PAD': 'https://kimhyeonso.github.io/GFoundation-sanitarypad/',
       'CHILD SPONSOR': 'https://kimhyeonso.github.io/Gfoundation-childsponsorship/',
@@ -125,7 +127,7 @@ export const allDesignProjects = [
     ],
     description: '다이브 투어스 스마트 스토어 운영 및 온라인 배너 상세 페이지 제작 하였습니다',
     thumbnail: diveToursThumbnail,
-    tools: [],
+    tools: ['Photoshop', 'Illustrator', 'Figma'],
     link: '',
     images: [],
   },
@@ -184,7 +186,7 @@ export const allDesignProjects = [
     id: '09',
     slug: 'hanwoo',
     category: 'proposal',
-    pdfPreview: true,
+    pdfPreview: hanwooPreview, // [미리보기] 팝업에 보일 이미지
     title: '한우자조금',
     work: 'proposal',
     type: 'Proposal Design',
