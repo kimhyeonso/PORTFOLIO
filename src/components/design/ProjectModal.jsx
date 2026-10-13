@@ -1,4 +1,5 @@
 import { Suspense, useEffect, useRef } from 'react'
+import Icon from '../common/Icon.jsx'
 import { projectDetails } from '../details/index.js'
 import styles from './ProjectModal.module.scss'
 
@@ -59,7 +60,7 @@ export default function ProjectModal({ project, onClose }) {
                     </a>
                 )}
                 <button className="project-modal-close" type="button" ref={closeRef} onClick={onClose} aria-label="팝업 닫기">
-                    <span /><span />
+                    <Icon name="close" className="project-modal-close-icon" />
                 </button>
                 <div className="project-modal-media">
                     {pdf ? (

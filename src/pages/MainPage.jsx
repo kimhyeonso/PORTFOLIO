@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import MenuButton from '../components/common/MenuButton.jsx'
 import Door from '../components/main/Door.jsx'
 import DoorPreview from '../components/main/DoorPreview.jsx'
+import IntroReplayButton from '../components/main/IntroReplayButton.jsx'
 import MainCharacter from '../components/main/MainCharacter.jsx'
 import styles from './MainPage.module.scss'
 
@@ -60,6 +61,7 @@ export default function MainPage({ onNavigate, onMenuToggle }) {
 
   return (
     <main className={`${styles.scope} main-hall ${entering ? 'is-leaving' : ''}`} aria-label="Portfolio main hall">
+      <IntroReplayButton onClick={() => onNavigate('/intro')} />
       <MenuButton onClick={onMenuToggle} />
       <div className="main-viewport">
         <div className="main-stage">

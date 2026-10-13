@@ -212,6 +212,8 @@
             top: 0;
             left: -2.5%;
             width: 106%;
+            /* reset의 img { max-width: 100% }에 막히지 않게 */
+            max-width: none;
             height: 100%;
             aspect-ratio: auto;
         }

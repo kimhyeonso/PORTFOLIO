@@ -1,5 +1,10 @@
 import background from '../../assets/image/intro/background/stage04-background.png'
 import run from '../../assets/image/intro/character/stage04_run.png'
+import run01 from '../../assets/image/intro/character/stage04_run01.png'
+import run02 from '../../assets/image/intro/character/stage04_run02.png'
+import run03 from '../../assets/image/intro/character/stage04_run03.png'
+import run04 from '../../assets/image/intro/character/stage04_run04.png'
+import run05 from '../../assets/image/intro/character/stage04_run05.png'
 import jump from '../../assets/image/intro/character/stage04_jump.png'
 import land from '../../assets/image/intro/character/stage04_landing.png'
 import git from '../../assets/image/intro/item/item_git.png'
@@ -17,8 +22,11 @@ const config = {
     background,
     bgScale: 1.09,
     bgOffset: 0.7,
+    // 배경(5637×1188, 가로 ÷ 세로 4.745)이 다른 스테이지(2.32)보다 두 배 넘게 길어 그대로면 빨리 지나간다.
+    // 다른 스테이지와 같은 너비까지만 훑어 같은 속도로 보이게 한다 (오른쪽 나머지 부분은 보이지 않는다)
+    bgPanAspect: 2.32,
     ground: 19.5,
-    sprites: { run, jump, land },
+    sprites: { run, runFrames: [run01, run02, run03, run04, run05], jump, land },
     smoothSprites: true,
     items: [
         { id: 'git', src: git, label: 'GITHUB GET!', distance: 75, y: 39, size: 14.4 },
@@ -31,6 +39,6 @@ const config = {
     arriving: true,
 }
 
-export default function IntroStage04({ onClear, onSkip, onSelectStage }) {
-    return <IntroStageGame config={config} onClear={onClear} onSkip={onSkip} onSelectStage={onSelectStage} />
+export default function IntroStage04({ onClear, onSkip, onSelectStage, inventory, onCollect }) {
+    return <IntroStageGame config={config} onClear={onClear} onSkip={onSkip} onSelectStage={onSelectStage} inventory={inventory} onCollect={onCollect} />
 }

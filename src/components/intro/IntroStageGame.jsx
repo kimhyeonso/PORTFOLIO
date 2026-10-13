@@ -12,6 +12,7 @@ const SPEED = 42 // u / s
 const JUMP_TIME = 0.78 // s
 const JUMP_HEIGHT = 15 // u
 const LAND_TIME = 0.16 // s
+const RUN_FRAME_TIME = 0.1 // s, 달리기 프레임(runFrames) 한 장이 보이는 시간
 const TITLE_TIME = 2.2 // s, 타이틀 카드 노출 시간
 const ENTER_TIME = 1.3 // s, 문 진입 → 화면 전환
 const PORTAL_ENTER_TIME = 2 // s, 포털에 빨려 들어감 → 화면 전환
@@ -23,10 +24,12 @@ const HIT_OFFSET = 0.62 // 점프 스프라이트의 손 위치 (캐릭터 너�
 
 /**
  * 횡스크롤 스테이지 공용 컴포넌트.
- * config: { number, name, background, bgScale, bgOffset, ground, sprites, items, door, readyTime, exclaim, titleCard, hint, arriving, clearMessage }
+ * config: { number, name, background, bgScale, bgOffset, bgPanAspect, ground, sprites, items, door, readyTime, exclaim, titleCard, hint, arriving, clearMessage }
+ * inventory: 지금까지(이전 스테이지 포함) 먹은 아이템 [{ id, src, name, size }] → 왼쪽 아래 인벤토리에 나열
+ * onCollect: 아이템을 먹을 때 (item)
  */
-export default function IntroStageGame({ config, onClear, onSkip, onSelectStage }) {
-    const { number, name, background, bgScale = 1, bgOffset = 0, ground, sprites, items, door, readyTime = 1, exclaim, titleCard, hint, arriving, clearMessage } = config
+export default function IntroStageGame({ config, onClear, onSkip, onSelectStage, inventory = [], onCollect }) {
+    const { number, name, background, bgScale = 1, bgOffset = 0, bgPanAspect, ground, sprites, items, door, readyTime = 1, exclaim, titleCard, hint, arriving, clearMessage } = config
     const rootRef = useRef(null)
     const bgRef = useRef(null)
     const heroRef = useRef(null)
@@ -35,20 +38,27 @@ export default function IntroStageGame({ config, onClear, onSkip, onSelectStage 
     const pausedRef = useRef(false)
     const jumpRequestRef = useRef(false)
     const onClearRef = useRef(onClear)
+    const onCollectRef = useRef(onCollect)
     const [phase, setPhase] = useState(titleCard ? 'title' : 'ready')
     const [pose, setPose] = useState('run')
     const [paused, setPaused] = useState(false)
     const [collectedCount, setCollectedCount] = useState(0)
     const [dustKey, setDustKey] = useState(0)
     const [sparkKey, setSparkKey] = useState(0)
+    // 지금 자세에 여러 장 프레임(runFrames · jumpFrames · landFrames)이 있으면 차례로 넘겨 보여준다.
+    // 점프 · 착지는 그 자세가 유지되는 시간(JUMP_TIME · LAND_TIME) 동안 한 번에 다 지나가도록 장당 시간을 나눈다
+    const poseFrames = sprites[`${pose}Frames`]
+    const poseDuration = { jump: JUMP_TIME, land: LAND_TIME }[pose]
+    const poseFrameTime = poseFrames && poseDuration ? poseDuration / poseFrames.length : RUN_FRAME_TIME
 
     useEffect(() => {
         onClearRef.current = onClear
-    }, [onClear])
+        onCollectRef.current = onCollect
+    }, [onClear, onCollect])
 
     // 첫 점프 때 이미지 로딩으로 캐릭터가 깜빡이지 않도록 스프라이트를 미리 불러온다
     useEffect(() => {
-        Object.values(sprites).forEach((src) => {
+        Object.values(sprites).flat().forEach((src) => {
             const image = new Image()
             image.src = src
         })
@@ -87,6 +97,7 @@ export default function IntroStageGame({ config, onClear, onSkip, onSelectStage 
             node.classList.add('is-collected')
             setCollectedCount(game.collected.size)
             setSparkKey((key) => key + 1)
+            onCollectRef.current?.({ id: item.id, src: item.src, name: item.label.replace(' GET!', ''), size: item.size ?? 15 })
         }
 
         const tick = (now) => {
@@ -168,7 +179,9 @@ export default function IntroStageGame({ config, onClear, onSkip, onSelectStage 
             heroRef.current.style.transform = `translate3d(${game.walk * unit}px, ${-elevation * unit}px, 0)`
             doorRef.current.style.transform = `translate3d(${doorX - doorHalf}px, 0, 0)`
             // 배경은 반복하지 않고 한 장을 스테이지 시작 → 문 앞 정지 지점까지 왼쪽 끝에서 오른쪽 끝으로 한 번 훑는다
-            const bgRange = Math.max(0, bgAspect * 100 * bgScale * unit - width)
+            // bgPanAspect가 있으면 배경을 그 비율(가로 ÷ 세로) 너비까지만 훑는다 — 유난히 긴 배경이 빨리 지나가지 않게
+            const panAspect = bgPanAspect ? Math.min(bgAspect, bgPanAspect) : bgAspect
+            const bgRange = Math.max(0, panAspect * 100 * bgScale * unit - width)
             const stopScroll = door.distance - (doorStopX - hitX) / unit
             const bgProgress = Math.min(1, Math.max(0, game.scroll / stopScroll))
             bgRef.current.style.backgroundPositionX = `${-bgRange * bgProgress}px`
@@ -177,17 +190,39 @@ export default function IntroStageGame({ config, onClear, onSkip, onSelectStage 
 
         frame = requestAnimationFrame(tick)
         return () => cancelAnimationFrame(frame)
-    }, [background, bgScale, door, items, readyTime, titleCard])
+    }, [background, bgScale, bgPanAspect, door, items, readyTime, titleCard])
 
+    const togglePause = () => {
+        pausedRef.current = !pausedRef.current
+        setPaused(pausedRef.current)
+    }
+
+    // 스페이스 바: 멈춤/재생 (점프는 ↑ · W 키나 화면 탭)
     useEffect(() => {
         const onKeyDown = (event) => {
-            if (!['Space', 'ArrowUp', 'KeyW'].includes(event.code)) return
+            if (event.code === 'Space') {
+                // 버튼에 포커스가 있어도 그 버튼이 눌리지 않고 항상 멈춤/재생만 되도록 기본 동작을 막는다
+                event.preventDefault()
+                if (event.repeat) return
+                pausedRef.current = !pausedRef.current
+                setPaused(pausedRef.current)
+                return
+            }
+            if (!['ArrowUp', 'KeyW'].includes(event.code)) return
             if (event.target.closest?.('button')) return
             event.preventDefault()
             jumpRequestRef.current = true
         }
+        // 버튼은 스페이스를 뗄 때 눌리므로 keyup도 막는다
+        const onKeyUp = (event) => {
+            if (event.code === 'Space') event.preventDefault()
+        }
         window.addEventListener('keydown', onKeyDown)
-        return () => window.removeEventListener('keydown', onKeyDown)
+        window.addEventListener('keyup', onKeyUp)
+        return () => {
+            window.removeEventListener('keydown', onKeyDown)
+            window.removeEventListener('keyup', onKeyUp)
+        }
     }, [])
 
     const handlePointerDown = (event) => {
@@ -195,10 +230,13 @@ export default function IntroStageGame({ config, onClear, onSkip, onSelectStage 
         jumpRequestRef.current = true
     }
 
-    const togglePause = () => {
-        pausedRef.current = !pausedRef.current
-        setPaused(pausedRef.current)
-    }
+    // 인벤토리 칸: 이전 스테이지에서 먹은 것 + 이번 스테이지 아이템 전부(아직 안 먹은 건 흐린 회색으로 미리 자리만 보인다)
+    const stageItemIds = new Set(items.map((item) => item.id))
+    const gotIds = new Set(inventory.map((item) => item.id))
+    const inventorySlots = [
+        ...inventory.filter((item) => !stageItemIds.has(item.id)).map((item) => ({ ...item, got: true, kept: true })),
+        ...items.map((item) => ({ id: item.id, src: item.src, name: item.label.replace(' GET!', ''), size: item.size ?? 15, got: gotIds.has(item.id) })),
+    ]
 
     const clearing = phase === 'enter' || phase === 'done'
     const rootClass = [styles.scope, 'sg', paused && 'is-paused', collectedCount > 0 && 'is-playing', clearing && 'is-clearing', arriving && 'is-arriving', door.portal && 'is-portal', config.smoothSprites && 'is-smooth'].filter(Boolean).join(' ')
@@ -209,11 +247,14 @@ export default function IntroStageGame({ config, onClear, onSkip, onSelectStage 
             <div className="sg-bg" ref={bgRef} />
 
             <h1 className="sg-title"><small>STAGE {number} :</small> {name}</h1>
+            {/* 위쪽 가운데: 왼쪽 제목과 오른쪽 SKIP INTRO 사이에 재생/멈춤 (아이콘 + STOP/PLAY) */}
+            <div className="sg-top-center">
+                <IntroPauseButton paused={paused} onToggle={togglePause} />
+            </div>
             <button className="intro-skip" type="button" onClick={onSkip}>
                 SKIP INTRO <span aria-hidden="true">▶</span>
             </button>
             <div className="sg-side">
-                <IntroPauseButton paused={paused} onToggle={togglePause} />
                 <IntroStageMenu className="sg-menu" current={Number(number) - 1} onSelect={onSelectStage} />
             </div>
 
@@ -245,7 +286,13 @@ export default function IntroStageGame({ config, onClear, onSkip, onSelectStage 
             <div className={`sg-hero ${clearing ? 'is-entering' : ''}`} data-pose={pose} data-single-sprite={sprites.jump === sprites.run} ref={heroRef}>
                 {exclaim && phase === 'ready' && <img className="sg-exclaim" src={exclamation} alt="" />}
                 {sparkKey > 0 && <img className="sg-spark" key={sparkKey} src={sparkle} alt="" />}
-                <div className="sg-hero-sprite"><img src={sprites[pose]} alt="Kim Hyeonsoo game character" /></div>
+                <div className={`sg-hero-sprite ${poseFrames ? 'is-pose-frames' : ''}`}>
+                    {poseFrames ? (
+                        <span className="sg-pose-frames" role="img" aria-label={`Kim Hyeonsoo ${pose} character`} data-frame-count={poseFrames.length} style={{ '--frames': poseFrames.length, '--frame-time': `${poseFrameTime}s` }}>
+                            {poseFrames.map((src, index) => <img src={src} alt="" key={src} style={{ '--i': index }} />)}
+                        </span>
+                    ) : <img src={sprites[pose]} alt="Kim Hyeonsoo game character" />}
+                </div>
             </div>
 
             {titleCard && (
@@ -255,7 +302,18 @@ export default function IntroStageGame({ config, onClear, onSkip, onSelectStage 
                 </p>
             )}
             {clearing && <p className="sg-clear">STAGE {number} CLEAR!{clearMessage && <small>{clearMessage}</small>}</p>}
-            {hint && <p className="sg-hint" aria-hidden="true">SPACE / TAP : JUMP</p>}
+            {hint && <p className="sg-hint" aria-hidden="true">TAP : JUMP / SPACE : PAUSE</p>}
+
+            <div className="sg-inventory" aria-label="먹은 프로그램">
+                <p className="sg-inventory-title">ITEMS <span>{inventorySlots.filter((slot) => slot.got).length} / {inventorySlots.length}</span></p>
+                <ul>
+                    {inventorySlots.map((slot) => (
+                        <li key={slot.id} className={[slot.got && 'is-got', slot.kept && 'is-kept'].filter(Boolean).join(' ')} title={slot.name} style={{ '--scale': slot.size / 13 }}>
+                            <img src={slot.src} alt={slot.got ? slot.name : ''} />
+                        </li>
+                    ))}
+                </ul>
+            </div>
         </section>
     )
 }

@@ -3,24 +3,31 @@
 }
 
 :global {
+    /* 글자는 SKIP INTRO(.intro-skip)와 같은 글꼴 · 크기 · 그림자 */
     .intro-pause {
-        display: grid;
-        place-items: center;
-        width: clamp(20px, 2vw, 36px);
-        height: clamp(20px, 2vw, 36px);
+        display: flex;
+        align-items: center;
+        gap: .6em;
         border: 0;
         padding: 0;
+        color: #fff;
         background: none;
+        font-family: 'Press Start 2P', monospace;
+        font-size: clamp(.6rem, 1.35vw, 1.3rem);
+        line-height: 1.4;
+        text-shadow: 3px 3px 0 rgba(12, 42, 74, .5);
+        cursor: pointer;
     }
     .intro-pause img {
         display: block;
-        height: clamp(16px, 1.6vw, 30px);
+        height: 1.1em;
         width: auto;
         image-rendering: pixelated;
         filter: drop-shadow(3px 3px 0 rgba(12, 42, 74, .5));
         transition: transform .2s ease;
     }
     .intro-pause:hover, .intro-pause:focus-visible {
+        color: #ffe47b;
         background: none;
     }
     .intro-pause:hover img, .intro-pause:focus-visible img {

@@ -166,6 +166,8 @@
     .project-ring-media img {
         left: -2.5%;
         width: 106%;
+        /* reset의 img { max-width: 100% }에 막히면 106%가 100%로 줄어 카드 사이에 틈이 생긴다 */
+        max-width: none;
     }
     .project-ring-empty {
         background: linear-gradient(180deg, #fdf3ec, #f8e9e0);

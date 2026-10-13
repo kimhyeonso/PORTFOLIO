@@ -1,6 +1,16 @@
 import background from '../../assets/image/intro/background/stage03-background.png'
 import run from '../../assets/image/intro/character/stage03_run.png'
+import run01 from '../../assets/image/intro/character/stage03_run01.png'
+import run02 from '../../assets/image/intro/character/stage03_run02.png'
+import run03 from '../../assets/image/intro/character/stage03_run03.png'
+import run04 from '../../assets/image/intro/character/stage03_run04.png'
+import run05 from '../../assets/image/intro/character/stage03_run05.png'
 import jump from '../../assets/image/intro/character/stage03_jump.png'
+import jump01 from '../../assets/image/intro/character/stage03_jump01.png'
+import jump02 from '../../assets/image/intro/character/stage03_jump02.png'
+import jump03 from '../../assets/image/intro/character/stage03_jump03.png'
+import jump04 from '../../assets/image/intro/character/stage03_jump04.png'
+import jump05 from '../../assets/image/intro/character/stage03_jump05.png'
 import land from '../../assets/image/intro/character/stage03_landing.png'
 import slack from '../../assets/image/intro/item/item_slack.png'
 import notion from '../../assets/image/intro/item/item_notion.png'
@@ -18,7 +28,13 @@ const config = {
     bgScale: 1.16,
     bgOffset: -1.2,
     ground: 19.5,
-    sprites: { run, jump, land },
+    sprites: {
+        run,
+        runFrames: [run01, run02, run03, run04, run05],
+        jump,
+        jumpFrames: [jump01, jump02, jump03, jump04, jump05],
+        land,
+    },
     items: [
         { id: 'slack', src: slack, label: 'SLACK GET!', distance: 75, y: 37, size: 14.3 },
         { id: 'notion', src: notion, label: 'NOTION GET!', distance: 135, y: 42, size: 15.2 },
@@ -30,6 +46,6 @@ const config = {
     arriving: true,
 }
 
-export default function IntroStage03({ onClear, onSkip, onSelectStage }) {
-    return <IntroStageGame config={config} onClear={onClear} onSkip={onSkip} onSelectStage={onSelectStage} />
+export default function IntroStage03({ onClear, onSkip, onSelectStage, inventory, onCollect }) {
+    return <IntroStageGame config={config} onClear={onClear} onSkip={onSkip} onSelectStage={onSelectStage} inventory={inventory} onCollect={onCollect} />
 }

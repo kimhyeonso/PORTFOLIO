@@ -9,30 +9,46 @@
         top: clamp(22px, 4vw, 56px);
         right: clamp(18px, 3.2vw, 64px);
         display: grid;
-        gap: clamp(5px, .5vw, 8px);
-        width: clamp(34px, 2.6vw, 50px);
+        place-items: center;
         border: 0;
-        padding: 6px 0;
+        padding: 0;
         background: none;
+        cursor: pointer;
     }
-    .menu-button span {
-        display: block;
-        height: clamp(3px, .25vw, 5px);
+    /* 햄버거 아이콘 크기 (PC) */
+    .menu-button-icon {
+        width: 40px;
+        height: 40px;
+        transform-origin: right center;
         transition: transform .2s ease;
     }
+    /* 햄버거 아이콘 크기 (모바일) — 버튼 아래 줄 탭(top: 78px)과 겹치지 않게 줄인다 */
+    @media (max-width: 900px) {
+        .menu-button-icon {
+            width: 20px;
+            height: 20px;
+        }
+        /* 보이는 크기는 그대로 두고, 누르는 영역만 사방 12px씩 넓힌다 (20 + 24 = 44px) */
+        .menu-button::before {
+            content: "";
+            position: absolute;
+            inset: -12px;
+        }
+    }
     .menu-button.is-light {
+        color: #fff;
         filter: drop-shadow(2px 2px 0 rgba(60, 40, 20, .35));
     }
-    .menu-button.is-light span {
-        background: #fff;
-    }
-    .menu-button.is-dark span {
-        background: #1a1a1a;
+    .menu-button.is-dark {
+        color: #1a1a1a;
     }
     .menu-button:hover, .menu-button:focus-visible {
         background: none;
     }
-    .menu-button:hover span:nth-child(2) {
-        transform: translateX(-20%);
+    /* PC 호버: 오른쪽 끝을 고정하고 왼쪽으로 가로만 늘린다 */
+    @media (hover: hover) and (min-width: 901px) {
+        .menu-button:hover .menu-button-icon, .menu-button:focus-visible .menu-button-icon {
+            transform: scaleX(1.25);
+        }
     }
 }

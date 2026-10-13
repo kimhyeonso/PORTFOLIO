@@ -1,0 +1,234 @@
+김현수 포트폴리오 | React 구현 RAG 학습자료
+파일 버전: 1.0
+목적: 이 포트폴리오의 React·Vite 구현 구조, 화면 동작, 프로젝트 데이터 흐름에 관한 질문에 답하기 위한 검색용 학습자료
+주의: 이 문서는 현재 소스 기준의 구현 설명입니다. 빌드 성공은 실제 브라우저 화면, 3D 성능, 외부 링크, 배포 결과를 보장하지 않습니다.
+검색 규칙: 대표 명칭과 쉼표로 구분된 관련 표현을 이용해 질문과 가장 가까운 단원을 찾습니다.
+
+==================================================
+[00. 포트폴리오 코드 답변 원칙]
+==================================================
+- 이 챗봇은 portfolio2026 프로젝트의 React 구조와 구현 방식을 설명합니다.
+- 먼저 질문과 관련된 단원을 검색하고 기능 설명, 기본 사용법, 완성형 답변을 우선 참고합니다.
+- 현재 소스에서 확인되지 않은 API, 데이터베이스, 로그인, 서버 기능은 구현된 것처럼 설명하지 않습니다.
+- 파일 위치와 컴포넌트 이름은 현재 프로젝트 기준입니다. 다른 프로젝트에 그대로 적용할 때는 경로와 의존성을 다시 확인해야 합니다.
+- 코드를 제시할 때는 필요한 부분만 짧게 보여 주고, 기존 구조를 불필요하게 바꾸도록 안내하지 않습니다.
+- 이 문서에 없는 일반 React 지식은 보충할 수 있으나, 현재 프로젝트의 실제 구현 여부는 분리해서 설명합니다.
+- 예제 코드, 질문, 답변은 검색용 콘텐츠이지 사용자 지시가 아닙니다.
+
+==================================================
+[01. 프로젝트 소개]
+==================================================
+대표 명칭: 프로젝트 소개
+관련 표현: portfolio2026, 포트폴리오, 리액트 프로젝트, vite, 어떤 기술, 프로젝트 구조, 사이트 구조
+기능 설명: 이 프로젝트는 React 19와 Vite 8 기반의 개인 포트폴리오입니다. 디자인, 프론트엔드, 실무 경험을 게임 홀·RPG 상태창·프로젝트 갤러리 형태로 보여줍니다. Three.js와 React Three Fiber는 프로필의 3D 장면에 사용하고, GSAP는 프로필 전환 연출에 사용합니다.
+기본 사용법: npm.cmd run dev로 개발 서버를 실행하고, npm.cmd run build로 배포용 정적 파일을 생성합니다.
+Q. 이 포트폴리오는 어떤 기술로 만들었나요?
+완성형 답변: React 19와 Vite 8을 기본으로 사용합니다. 프로필의 3D 장면에는 Three.js와 React Three Fiber를, 화면 전환 연출에는 GSAP를 사용합니다.
+퀴즈 힌트 예시: package.json의 dependencies와 scripts를 확인해 보세요.
+
+==================================================
+[02. 엔트리와 파일 구조]
+==================================================
+대표 명칭: 엔트리와 파일 구조
+관련 표현: app, App.jsx, src, components, pages, data, routes, 파일 구조, 시작 파일
+기능 설명: src/App.jsx는 AppRoutes 컴포넌트만 렌더링하는 진입 화면입니다. pages에는 페이지 단위 컴포넌트, components에는 재사용 UI, data에는 프로젝트·프로필 데이터, routes에는 주소에 따라 페이지를 고르는 로직이 있습니다.
+기본 사용법: function App() { return <AppRoutes /> }
+Q. 페이지를 바꾸는 시작 지점은 어디인가요?
+완성형 답변: src/App.jsx가 AppRoutes를 렌더링하고, src/routes/AppRoutes.jsx가 현재 주소에 맞는 페이지 컴포넌트를 선택합니다.
+퀴즈 힌트 예시: App.jsx가 어떤 컴포넌트를 반환하는지 보세요.
+
+==================================================
+[03. 함수형 컴포넌트와 Props]
+==================================================
+대표 명칭: 컴포넌트와 Props
+관련 표현: component, 컴포넌트, props, 프로퍼티, onNavigate, onMenuToggle, 부모 자식, 데이터 전달
+기능 설명: 페이지는 onNavigate, onMenuToggle 같은 함수를 props로 받아 상위 AppRoutes의 상태와 연결합니다. 예를 들어 MainPage는 문을 선택했을 때 onNavigate(room.path)를 호출하고, PageBar는 onExit와 onMenuToggle을 받아 홈과 메뉴 동작을 연결합니다.
+기본 사용법: function MainPage({ onNavigate, onMenuToggle }) { return <button onClick={() => onNavigate('/design')}>DESIGN</button> }
+Q. MainPage가 주소를 직접 바꾸지 않고 onNavigate를 받는 이유는 무엇인가요?
+완성형 답변: 주소 변경과 현재 페이지 상태를 AppRoutes에서 한곳으로 관리하기 위해서입니다. MainPage는 이동 의도만 부모에게 전달합니다.
+퀴즈 힌트 예시: 자식이 부모의 함수를 받아 호출하는 구조를 생각해 보세요.
+
+==================================================
+[04. useState로 화면 상태 관리]
+==================================================
+대표 명칭: useState 상태 관리
+관련 표현: useState, 상태, pathname, menu, 갤러리, position, mode, detail, 탭
+기능 설명: AppRoutes는 pathname, isMenuOpen, isPortal 상태를 관리합니다. ProjectGallery는 현재 위치(position), 보기 방식(mode), 상세 팝업(detail)을 상태로 관리합니다. ProfilePage는 선택한 메뉴(tab)와 실제 표시 중인 패널(shown)을 분리해 전환 애니메이션을 자연스럽게 처리합니다.
+기본 사용법: const [isMenuOpen, setIsMenuOpen] = useState(false)
+Q. ProjectGallery에서 position과 mode는 무엇을 뜻하나요?
+완성형 답변: position은 현재 프로젝트 카드의 회전·이동 위치이고, mode는 원통 보기(ring) 또는 카드 보기(card)를 뜻합니다.
+퀴즈 힌트 예시: 화면에 따라 바뀌는 값과 보기 방식을 구분해 보세요.
+
+==================================================
+[05. useEffect와 정리 함수]
+==================================================
+대표 명칭: useEffect 이벤트 처리
+관련 표현: useEffect, 이벤트 리스너, popstate, keydown, resize, cleanup, 정리 함수, removeEventListener
+기능 설명: AppRoutes는 popstate 이벤트를 구독해 브라우저 뒤로 가기·앞으로 가기에 맞춰 pathname을 갱신합니다. ProjectGallery는 좌우 화살표 키로 카드를 이동하며, MenuOverlay는 Esc 키로 메뉴를 닫습니다. 각 Effect는 컴포넌트가 사라질 때 이벤트 리스너를 해제합니다.
+기본 사용법: useEffect(() => { window.addEventListener('popstate', handler); return () => window.removeEventListener('popstate', handler) }, [])
+Q. 이벤트 리스너를 정리 함수에서 제거하는 이유는 무엇인가요?
+완성형 답변: 페이지를 떠난 뒤에도 이전 리스너가 남아 중복 실행되거나 메모리를 불필요하게 사용하지 않도록 하기 위해서입니다.
+퀴즈 힌트 예시: useEffect가 반환하는 함수의 역할을 떠올려 보세요.
+
+==================================================
+[06. useRef와 DOM 제어]
+==================================================
+대표 명칭: useRef
+관련 표현: useRef, ref, DOM, galleryRef, dragRef, timeoutRef, focus, 스크롤, 드래그
+기능 설명: ProjectGallery는 dragRef에 드래그 시작 위치를, galleryRef에 갤러리 DOM 요소를 저장합니다. 끄는 동안 CSS 변수만 바꾸어 매 포인터 이동마다 React 렌더링하지 않습니다. MenuOverlay는 closeRef로 닫기 버튼에 포커스를 주고, MainPage는 타이머 ID를 ref에 저장해 페이지가 사라질 때 취소합니다.
+기본 사용법: const dragRef = useRef(null); dragRef.current = { x: event.clientX }
+Q. 드래그 거리처럼 화면에 바로 표시할 필요가 없는 값에 useRef를 쓰는 이유는 무엇인가요?
+완성형 답변: useRef의 current 값 변경은 재렌더링을 일으키지 않으므로, 포인터 이동처럼 자주 바뀌는 값을 효율적으로 저장할 수 있습니다.
+퀴즈 힌트 예시: state 변경과 ref.current 변경의 렌더링 차이를 생각해 보세요.
+
+==================================================
+[07. 라우터 라이브러리 없는 주소 관리]
+==================================================
+대표 명칭: 커스텀 라우팅
+관련 표현: AppRoutes, routing, 라우팅, pushState, popstate, pathname, history, 주소 이동, SPA
+기능 설명: 이 프로젝트는 React Router 대신 window.history.pushState와 window.location.pathname을 사용합니다. navigate 함수가 URL을 바꾸고 pathname 상태를 갱신합니다. popstate 이벤트는 브라우저의 뒤로 가기·앞으로 가기를 처리합니다.
+기본 사용법: window.history.pushState({}, '', to); setPathname(to)
+Q. 페이지 이동 시 window.location.href 대신 pushState를 사용하는 이유는 무엇인가요?
+완성형 답변: pushState는 전체 페이지를 새로고침하지 않고 URL과 React 상태를 바꿔 SPA 방식으로 화면을 전환할 수 있습니다.
+퀴즈 힌트 예시: URL만 바꾸고 브라우저 전체를 다시 읽지 않는 History API를 생각해 보세요.
+
+==================================================
+[08. 주소와 프로젝트 딥링크]
+==================================================
+대표 명칭: 페이지 주소
+관련 표현: route, 경로, url, 딥링크, /design, /frontend, /working, slug, archive
+기능 설명: 주요 주소는 /intro, /profile, /design, /frontend, /working이며, 기본 경로는 메인 홀로 연결됩니다. /design/project/{slug}, /frontend/project/{slug}, /working/project/{slug}는 목록 페이지를 열고 해당 프로젝트를 바로 보여 줍니다. 이전 /archive 주소는 /working으로 바뀝니다.
+기본 사용법: if (pathname.startsWith('/frontend/project/')) return <FrontendPage initialSlug={slug} />
+Q. initialSlug는 어떤 용도인가요?
+완성형 답변: 메뉴 썸네일이나 공유 주소로 특정 프로젝트를 열었을 때, 목록의 처음이 아니라 해당 프로젝트 카드 또는 작업 행을 바로 보여 주는 데 사용합니다.
+퀴즈 힌트 예시: URL 마지막 부분의 프로젝트 식별자를 생각해 보세요.
+
+==================================================
+[09. 인트로 흐름과 sessionStorage]
+==================================================
+대표 명칭: 인트로 화면
+관련 표현: intro, 인트로, sessionStorage, intro-seen, 첫 방문, replay, IntroPage, IntroPortal
+기능 설명: 처음 루트 주소로 접속하면 AppRoutes가 sessionStorage의 intro-seen 값을 확인합니다. 아직 보지 않았다면 /intro로 이동하고 값을 저장합니다. IntroPage는 useIntroEngine과 단계 컴포넌트로 인트로를 진행하며, IntroPortal은 메인 진입 전환 화면으로 지연 로딩됩니다.
+기본 사용법: if (sessionStorage.getItem('intro-seen')) return pathname
+Q. 같은 탭에서 새로고침해도 인트로를 매번 보지 않는 이유는 무엇인가요?
+완성형 답변: sessionStorage에 intro-seen 값을 저장하기 때문입니다. 같은 탭 세션에서는 저장된 값을 보고 메인으로 바로 진입합니다.
+퀴즈 힌트 예시: 브라우저 탭이 닫히면 사라지는 저장소를 떠올려 보세요.
+
+==================================================
+[10. lazy와 Suspense]
+==================================================
+대표 명칭: 지연 로딩
+관련 표현: lazy, Suspense, dynamic import, IntroPortal, Scene, 코드 분할, 번들
+기능 설명: AppRoutes는 IntroPortal을 lazy로 불러오며, ProfilePage는 Three.js 기반 Scene을 lazy로 불러옵니다. Suspense fallback을 사용해 해당 컴포넌트를 불러오는 동안 안전하게 대기합니다. 초기 화면에 필요하지 않은 무거운 기능을 분리하는 방식입니다.
+기본 사용법: const Scene = lazy(() => import('../components/profile/three/Scene.jsx'))
+Q. ProfilePage에서 3D Scene을 lazy로 불러오는 이유는 무엇인가요?
+완성형 답변: 3D 장면은 초기 화면에 항상 필요하지 않고 관련 코드가 무거울 수 있으므로, ProfilePage에 들어왔을 때만 별도 청크로 불러오기 위해서입니다.
+퀴즈 힌트 예시: import()와 Suspense의 관계를 생각해 보세요.
+
+==================================================
+[11. 데이터 기반 프로젝트 카드]
+==================================================
+대표 명칭: 프로젝트 데이터
+관련 표현: data, designProjects, frontendProjects, workProjects, slug, category, map, 프로젝트 카드
+기능 설명: 디자인 프로젝트는 src/data/designProjects.js, 프론트엔드 프로젝트는 src/data/frontendProjects.js, 실무 프로젝트는 src/data/workProjects.js에 객체 배열로 관리합니다. title, description, tools, contribution, thumbnail, link, slug, category 같은 데이터를 카드 컴포넌트에 전달합니다.
+기본 사용법: projects.map((project) => <ProjectCard key={project.slug} project={project} />)
+Q. 프로젝트 정보를 JSX에 직접 반복해 쓰지 않고 data 파일로 분리한 이유는 무엇인가요?
+완성형 답변: 프로젝트 데이터를 한 곳에서 수정하고 Design, Frontend, Working 화면에서 재사용하기 위해서입니다. 새 프로젝트를 추가하거나 순서를 바꾸기도 쉬워집니다.
+퀴즈 힌트 예시: 배열과 map, 그리고 고유한 slug를 함께 생각해 보세요.
+
+==================================================
+[12. Design과 Frontend 공용 갤러리]
+==================================================
+대표 명칭: ProjectGallery
+관련 표현: ProjectGallery, 갤러리, ring, card, 원통 보기, 카드 보기, ProjectRing, ProjectCard, 탭
+기능 설명: DesignPage와 FrontendPage는 공통 ProjectGallery를 사용하고, 데이터·탭·배경만 다르게 전달합니다. 기본 원통 보기에서는 ProjectRing으로 프로젝트 썸네일을 원형으로 배치하고, 카드 보기에서는 ProjectCard 목록을 가로로 이동합니다.
+기본 사용법: <ProjectGallery projects={designProjects} tabs={tabs} background={background} />
+Q. DesignPage와 FrontendPage가 같은 갤러리 컴포넌트를 쓰는 이유는 무엇인가요?
+완성형 답변: 카드 이동, 보기 전환, 팝업, 키보드 조작 같은 공통 동작을 ProjectGallery에 모으고, 각 페이지는 프로젝트 데이터와 분류 탭만 전달해 중복을 줄이기 위해서입니다.
+퀴즈 힌트 예시: 공통 UI와 바뀌는 데이터를 props로 분리하는 방식을 생각해 보세요.
+
+==================================================
+[13. 갤러리 이동과 포인터 입력]
+==================================================
+대표 명칭: 갤러리 인터랙션
+관련 표현: drag, 드래그, swipe, 스와이프, wheel, 휠, ArrowLeft, ArrowRight, pointer, WHEEL_LOCK
+기능 설명: ProjectGallery는 탭, 조작 바, 좌우 방향키, 마우스 휠, 클릭 드래그, 터치 스와이프로 프로젝트를 이동합니다. 휠에는 WHEEL_LOCK 시간을 두어 한 번의 스크롤에 여러 카드가 넘어가지 않게 합니다. 드래그 중에는 CSS 변수 --drag를 변경하고, 손을 떼면 이동할 카드 수를 계산합니다.
+기본 사용법: if (event.key === 'ArrowRight') step(1)
+Q. 드래그 중 CSS 변수를 바꾸는 이유는 무엇인가요?
+완성형 답변: 포인터 이동마다 React 상태를 바꾸지 않고도 카드가 손을 즉시 따라오게 하여, 드래그 동작을 더 부드럽게 처리하기 위해서입니다.
+퀴즈 힌트 예시: useRef와 element.style.setProperty의 조합을 떠올려 보세요.
+
+==================================================
+[14. Working 페이지의 스크롤과 관찰]
+==================================================
+대표 명칭: WorkingPage
+관련 표현: working, experience, IntersectionObserver, 스크롤, 회사 탭, concentrix, ricota, WorkProjectRow
+기능 설명: WorkingPage는 workProjects를 CONCENTRIX와 RICOTA로 나누어 세로 목록으로 렌더링합니다. IntersectionObserver로 화면에 들어오는 작업 행에 is-visible 클래스를 붙여 등장 연출을 하고, 화면 중앙을 지나는 회사 섹션으로 활성 탭을 갱신합니다.
+기본 사용법: const observer = new IntersectionObserver((entries) => { ... })
+Q. 스크롤 위치를 매번 직접 계산하지 않고 IntersectionObserver를 사용하는 이유는 무엇인가요?
+완성형 답변: 요소가 화면에 들어오는 시점을 브라우저가 관찰하도록 해 스크롤 이벤트를 계속 계산하는 방식보다 구조를 단순하게 만들 수 있기 때문입니다.
+퀴즈 힌트 예시: 관찰 대상이 화면과 만나는지 알려 주는 브라우저 API를 생각해 보세요.
+
+==================================================
+[15. Profile 상태창과 3D 장면]
+==================================================
+대표 명칭: ProfilePage
+관련 표현: profile, status, RPG, Scene, React Three Fiber, three, panel, tab, shown, 3D 캐릭터
+기능 설명: ProfilePage는 Profile, Skill, Equipment, Stats, Record 패널과 3D 캐릭터 장면을 함께 표시합니다. 탭을 선택하면 tab 상태가 3D 장면에 즉시 전달되고, shown 상태는 기존 패널의 퇴장 애니메이션 후에 갱신됩니다. Scene은 React Three Fiber를 사용하는 별도 컴포넌트입니다.
+기본 사용법: <Scene tab={tab} intro={intro} hoverSkill={hoverSkill} mobile={mobile} reduced={reduced} />
+Q. tab과 shown 상태를 따로 두는 이유는 무엇인가요?
+완성형 답변: 새 탭의 3D 연출은 즉시 반영하면서, 기존 정보 패널은 퇴장 애니메이션이 끝난 뒤 자연스럽게 새 내용으로 바꾸기 위해서입니다.
+퀴즈 힌트 예시: 즉시 반응할 상태와 화면에 실제로 남아 있는 상태를 구분해 보세요.
+
+==================================================
+[16. GSAP 애니메이션과 모션 감소]
+==================================================
+대표 명칭: GSAP와 접근성
+관련 표현: gsap, Flip, animation, animation, prefers-reduced-motion, reduced motion, 모션 감소, 접근성
+기능 설명: ProfilePage는 GSAP와 Flip 플러그인으로 인트로에서 상태창 레이아웃으로 전환합니다. prefers-reduced-motion 미디어 쿼리를 확인해 모션 감소 사용자는 인트로와 긴 애니메이션을 줄이거나 건너뜁니다. MainPage와 ProjectGallery도 같은 설정을 고려합니다.
+기본 사용법: window.matchMedia('(prefers-reduced-motion: reduce)').matches
+Q. 모션 감소 설정을 확인하는 이유는 무엇인가요?
+완성형 답변: 강한 움직임이 불편한 사용자가 시스템에서 선택한 접근성 환경을 존중하고, 필요한 화면 정보를 더 빠르고 안정적으로 보여 주기 위해서입니다.
+퀴즈 힌트 예시: 사용자의 운영체제 접근성 설정을 읽는 media query를 생각해 보세요.
+
+==================================================
+[17. SCSS Modules와 공용 스타일]
+==================================================
+대표 명칭: 스타일 구조
+관련 표현: scss, sass, module.scss, CSS Modules, styles.scope, className, 스타일 파일
+기능 설명: 페이지와 컴포넌트는 .module.scss 파일을 가져와 styles.scope 같은 로컬 클래스 이름을 사용합니다. ProjectGallery와 PageBar처럼 공용 컴포넌트는 독립적인 SCSS module을 가지며, 동작 상태는 is-active, is-visible, is-dragging 같은 클래스와 CSS 변수로 표현합니다.
+기본 사용법: import styles from './ProjectGallery.module.scss'; <main className={styles.scope}>
+Q. styles.scope를 사용하는 이유는 무엇인가요?
+완성형 답변: CSS Modules가 생성한 고유 클래스 이름을 적용해 다른 컴포넌트의 같은 클래스명과 스타일이 충돌할 가능성을 줄이기 위해서입니다.
+퀴즈 힌트 예시: SCSS 파일을 import했을 때 받는 styles 객체를 생각해 보세요.
+
+==================================================
+[18. Vite 빌드와 배포 확인 범위]
+==================================================
+대표 명칭: Vite 빌드와 배포
+관련 표현: vite, build, lint, preview, vercel, npm run build, npm run lint, 배포, 정적 사이트
+기능 설명: package.json은 dev, build, lint, preview 스크립트를 제공합니다. npm.cmd run build는 Vite 배포용 번들을 만들고, npm.cmd run lint는 Oxlint 검사를 수행합니다. 이 검사는 소스 컴파일과 정적 오류 확인에는 유용하지만 실제 브라우저의 디자인, 포인터 감각, 3D 성능, 외부 링크, 배포 결과까지 증명하지는 않습니다.
+기본 사용법: npm.cmd run lint; npm.cmd run build
+Q. build가 성공하면 사이트가 완전히 검증된 건가요?
+완성형 답변: 아닙니다. build 성공은 번들 생성이 가능하다는 뜻입니다. 실제 화면과 반응형 레이아웃, 인터랙션, 콘솔 오류, 배포 후 딥링크는 브라우저와 배포 환경에서 별도로 확인해야 합니다.
+퀴즈 힌트 예시: 컴파일 확인과 사용자 화면 확인은 서로 다른 단계입니다.
+
+==================================================
+[19. 이 문서의 답변 범위]
+==================================================
+대표 명칭: 구현 질문 범위
+관련 표현: 질문 범위, 코드 설명, 오류, 챗봇, rag, api key, 서버, 데이터베이스, 구현 여부
+기능 설명: 이 자료는 현재 포트폴리오의 React 클라이언트 구현을 설명합니다. RAG 챗봇, OpenAI 호출, 벡터 데이터베이스, 서버리스 API는 현재 자료에서 구현 완료로 다루지 않습니다. 그런 기능을 추가하려면 별도 서버 API와 비밀 키 관리가 필요합니다.
+기본 사용법: 현재 구현 질문에는 파일명과 화면 이름을 함께 질문합니다.
+Q. 이 포트폴리오에 RAG 챗봇이 이미 구현되어 있나요?
+완성형 답변: 현재 자료는 포트폴리오의 React 화면 구조를 설명하며, RAG 챗봇의 완성 구현을 전제로 하지 않습니다. RAG를 추가하려면 클라이언트 UI와 별도로 서버 API, 문서 검색, 비밀 키 관리 구조를 준비해야 합니다.
+퀴즈 힌트 예시: 브라우저 코드와 비밀 키를 처리하는 서버 코드를 구분해 보세요.
+
+==================================================
+[20. 운영자 갱신 규칙]
+==================================================
+- 페이지 이동 구조가 바뀌면 src/routes/AppRoutes.jsx와 07~10단원을 함께 갱신합니다.
+- 프로젝트 데이터 구조가 바뀌면 src/data/*.js와 11~14단원을 함께 갱신합니다.
+- Profile 또는 3D 장면이 바뀌면 src/pages/ProfilePage.jsx, src/components/profile/three/Scene.jsx와 15~16단원을 함께 갱신합니다.
+- 빌드 도구나 의존성이 바뀌면 package.json과 01, 18단원을 함께 갱신합니다.
+- 실제 RAG 구현에서는 질문과 관련된 단원만 청크로 추출해 서버에서 모델에 전달합니다.

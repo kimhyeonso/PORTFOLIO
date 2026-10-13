@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { designProjects } from '../../data/designProjects.js'
 import { frontendProjects } from '../../data/frontendProjects.js'
 import { workProjects } from '../../data/workProjects.js'
+import Icon from './Icon.jsx'
 import styles from './MenuOverlay.module.scss'
 
 // 메뉴 섹션. projects가 있으면 제목 아래에 썸네일 목록을 보여주고, 썸네일은 base/project/{slug}로 간다
@@ -103,7 +104,7 @@ export default function MenuOverlay({ isOpen, onClose, onNavigate }) {
   return (
     <div className={`${styles.scope} menu-overlay`} role="dialog" aria-modal="true" aria-label="Navigation menu">
       <button className="menu-overlay-close" type="button" ref={closeRef} onClick={onClose} aria-label="메뉴 닫기">
-        <span /><span />
+        <Icon name="close" className="menu-overlay-close-icon" />
       </button>
 
       <div className="menu-overlay-body">

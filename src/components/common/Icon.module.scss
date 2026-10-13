@@ -1,0 +1,10 @@
+// :where()로 우선순위를 0으로 낮춰, 버튼 쪽에서 준 width · height가 항상 이기도록
+:where(.icon) {
+    display: inline-block;
+    flex: none;
+    width: 1em;
+    height: 1em;
+    background: currentColor;
+    -webkit-mask: var(--icon-src) center / contain no-repeat;
+    mask: var(--icon-src) center / contain no-repeat;
+}

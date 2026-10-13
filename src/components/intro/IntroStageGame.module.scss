@@ -56,6 +56,14 @@
     .sg-title small {
         font-size: .55em;
     }
+    /* 위쪽 가운데: SKIP INTRO와 같은 높이 (IntroPage.module.scss의 .intro-skip top과 같은 값) */
+    .sg-top-center {
+        position: absolute;
+        z-index: 10;
+        top: clamp(22px, 4vw, 56px);
+        left: 50%;
+        transform: translateX(-50%);
+    }
     .sg-side {
         position: absolute;
         z-index: 8;
@@ -96,6 +104,74 @@
     .sg.is-playing .sg-hint {
         opacity: 0;
         animation: none;
+    }
+
+    /*
+     * 왼쪽 아래 인벤토리: 이번 스테이지 아이템이 처음부터 흐린 회색으로 자리만 보이고,
+     * 먹을 때마다 하나씩 원래 색으로 채워진다 (이전 스테이지에서 먹은 것은 앞쪽에 채워진 채로)
+     */
+    .sg-inventory {
+        --slot: clamp(34px, 6.4vh, 60px);
+        position: absolute;
+        z-index: 8;
+        bottom: clamp(14px, 3vh, 36px);
+        left: clamp(18px, 2.8vw, 56px);
+        max-width: min(46vw, 640px);
+        pointer-events: none;
+    }
+    .sg-inventory-title {
+        margin: 0 0 8px;
+        color: #fff;
+        font-family: 'Press Start 2P', monospace;
+        font-size: clamp(.5rem, .75vw, .75rem);
+        letter-spacing: .08em;
+        text-shadow: 2px 2px 0 rgba(12, 42, 74, .6);
+    }
+    .sg-inventory-title span {
+        color: #fff6b0;
+    }
+    .sg-inventory ul {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+    }
+    .sg-inventory li {
+        display: grid;
+        place-items: center;
+        width: var(--slot);
+        height: var(--slot);
+    }
+    /* 이미지마다 그림 주변 여백이 달라서 size(u)로 키워, 칸 안에서 실제 그림 크기가 같아 보이게 한다 */
+    .sg-inventory img {
+        width: calc(78% * var(--scale, 1));
+        max-width: none;
+        height: auto;
+        image-rendering: pixelated;
+        /* 아직 안 먹은 아이템: 흑백 + 반투명 */
+        filter: grayscale(1) brightness(1.15);
+        opacity: .35;
+        transition: filter .3s steps(3), opacity .3s steps(3);
+    }
+    .sg-inventory li.is-got img {
+        filter: drop-shadow(2px 2px 0 rgba(12, 42, 74, .45));
+        opacity: 1;
+        animation: sg-inventory-got .4s steps(4) both;
+    }
+    /* 이전 스테이지에서 이미 먹은 것은 스테이지가 바뀔 때 다시 튀지 않게 */
+    .sg-inventory li.is-kept img {
+        animation: none;
+    }
+    .sg.is-smooth .sg-inventory img {
+        image-rendering: auto;
+    }
+    /* 먹은 순간 살짝 커졌다 제자리로 */
+    @keyframes :global(sg-inventory-got) {
+        50% {
+            transform: scale(1.25);
+        }
     }
 
     /* World */
@@ -194,8 +270,51 @@
         image-rendering: pixelated;
         filter: drop-shadow(6px 9px 0 rgba(10, 29, 37, .22));
     }
-    .sg:not([data-phase='ready'], [data-phase='title']) .sg-hero[data-pose='run']:not(.is-entering) .sg-hero-sprite {
+    /* 달리기 이미지가 한 장뿐인 스테이지: 위아래로 들썩여서 달리는 느낌을 낸다 */
+    .sg:not([data-phase='ready'], [data-phase='title']) .sg-hero[data-pose='run']:not(.is-entering) .sg-hero-sprite:not(.is-pose-frames) {
         animation: sg-run .32s steps(2) infinite;
+    }
+    /*
+     * 자세별 프레임이 여러 장인 스테이지(sprites.runFrames · jumpFrames · landFrames):
+     * 같은 자리에 전부 겹쳐 두고 한 장씩 차례로 보여준다. 프레임 그림에 동작이 다 들어 있어서 위의 들썩임은 주지 않는다.
+     *   --frame-time  한 장이 보이는 시간 — IntroStageGame.jsx에서 넣는다
+     *                 (달리기 RUN_FRAME_TIME, 점프 JUMP_TIME ÷ 장수, 착지 LAND_TIME ÷ 장수)
+     *   자세가 바뀌면 프레임 img가 새로 그려져 첫 장부터 다시 시작한다
+     *   준비 중(ready · title)에는 첫 장에 멈춰 있다
+     */
+    .sg-pose-frames {
+        --frame-time: .1s;
+        position: relative;
+        display: block;
+        width: 100%;
+        height: 100%;
+    }
+    .sg-pose-frames img {
+        position: absolute;
+        inset: 0;
+        opacity: 0;
+    }
+    .sg-pose-frames img:first-child {
+        opacity: 1;
+    }
+    .sg:not([data-phase='ready'], [data-phase='title']) .sg-hero:not(.is-entering) .sg-pose-frames img {
+        /* i번째 장은 (i / 장수) 지점부터 보이도록 시작 시점을 당긴다 */
+        animation-duration: calc(var(--frame-time) * var(--frames));
+        animation-timing-function: step-end;
+        animation-iteration-count: infinite;
+        animation-delay: calc(var(--frame-time) * (var(--i) - var(--frames)));
+    }
+    .sg-pose-frames[data-frame-count='2'] img {
+        animation-name: sg-pose-frame-2;
+    }
+    .sg-pose-frames[data-frame-count='3'] img {
+        animation-name: sg-pose-frame-3;
+    }
+    .sg-pose-frames[data-frame-count='4'] img {
+        animation-name: sg-pose-frame-4;
+    }
+    .sg-pose-frames[data-frame-count='5'] img {
+        animation-name: sg-pose-frame-5;
     }
     .sg-hero.is-entering .sg-hero-sprite {
         animation: sg-enter .8s ease-in forwards;
@@ -455,6 +574,38 @@
             transform: translateY(calc(var(--u) * -.8)) rotate(-2deg);
         }
     }
+    @keyframes :global(sg-pose-frame-2) {
+        0%, 50% {
+            opacity: 1;
+        }
+        50.001%, 100% {
+            opacity: 0;
+        }
+    }
+    @keyframes :global(sg-pose-frame-3) {
+        0%, 33.333% {
+            opacity: 1;
+        }
+        33.334%, 100% {
+            opacity: 0;
+        }
+    }
+    @keyframes :global(sg-pose-frame-4) {
+        0%, 25% {
+            opacity: 1;
+        }
+        25.001%, 100% {
+            opacity: 0;
+        }
+    }
+    @keyframes :global(sg-pose-frame-5) {
+        0%, 20% {
+            opacity: 1;
+        }
+        20.001%, 100% {
+            opacity: 0;
+        }
+    }
     @keyframes :global(sg-float) {
         50% {
             transform: translateY(calc(var(--u) * -1.6)) rotate(3deg);
@@ -572,6 +723,20 @@
     }
 
     @media (max-width: 760px) {
+        /* 모바일: 한 줄 제목이 SKIP INTRO와 겹쳐서 'STAGE 01 :'(작은 글씨) / 이름 두 줄로 나눈다.
+           760px 이하에서 제목 글자 크기는 clamp 최솟값 .9rem으로 고정 */
+        .sg-title {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 6px;
+        }
+        /* 재생/멈춤은 두 줄 제목 바로 아래(같은 왼쪽 선)
+           top = 제목 top + 제목 높이(작은 줄 .55em + 6px + 이름 줄 1em) + 틈 10px */
+        .sg-top-center {
+            top: calc(clamp(22px, 4vw, 56px) + .9rem * 1.55 + 6px + 10px);
+            left: clamp(18px, 2.8vw, 56px);
+            transform: none;
+        }
         .sg-side {
             gap: 18px;
         }

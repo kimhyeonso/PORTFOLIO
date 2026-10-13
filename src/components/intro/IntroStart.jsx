@@ -16,7 +16,8 @@ export default function IntroStart({ onStart, onSkip, onSelectStage }) {
                 <h1 id="intro-stage-title">UNIVERSITY</h1>
                 <p>디자인을 사랑하는 한 학생의 이야기,<br />여기서부터 시작 되었습니다</p>
             </div>
-            <IntroStageMenu className="intro-start-menu" current={0} onSelect={onSelectStage} />
+            {/* 시작 화면은 아직 어느 스테이지도 아니라서 현재 표시(밑줄)를 하지 않는다 */}
+            <IntroStageMenu className="intro-start-menu" current={-1} onSelect={onSelectStage} />
             <img className="intro-start-character" src={character} alt="Pixel character standing at the university" />
             <img className="intro-start-item intro-start-ps" src={ps} alt="Photoshop" />
             <img className="intro-start-item intro-start-ai" src={ai} alt="Illustrator" />

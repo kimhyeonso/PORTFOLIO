@@ -329,6 +329,17 @@ $octagon: polygon(30% 0, 70% 0, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0 70%, 0
             padding-left: clamp(8px, 1.5vw, 28px);
             justify-self: end;
         }
+        /*
+         * PC: 오른쪽 아래 챗봇 고양이(GuideChatbot.module.scss)와 겹치지 않게 패널을 왼쪽으로 민다.
+         * 챗봇의 right + 너비 + 틈 12px에서 레이아웃 오른쪽 여백을 뺀 만큼 (챗봇 크기를 바꾸면 여기도 같이)
+         */
+        @media (min-width: 901px) {
+            .st-side {
+                --chatbot-clear: calc(clamp(18px, 3vw, 42px) + clamp(88px, 9vw, 120px) + 12px - clamp(20px, 3.4vw, 64px));
+                width: calc(100% - var(--chatbot-clear));
+                margin-right: var(--chatbot-clear);
+            }
+        }
 
         /* ───────── 메뉴 (위에 금색 장식) ───────── */
         /* box02.png (위아래 투명 여백은 음수 여백으로 덜어낸다) */

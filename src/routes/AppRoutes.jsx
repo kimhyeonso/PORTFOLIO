@@ -1,4 +1,5 @@
 import { Suspense, cloneElement, lazy, useEffect, useState } from 'react'
+import GuideChatbot from '../components/chatbot/GuideChatbot.jsx'
 import MenuOverlay from '../components/common/MenuOverlay.jsx'
 import WorkingPage from '../pages/WorkingPage.jsx'
 import DesignPage from '../pages/DesignPage.jsx'
@@ -95,6 +96,7 @@ export default function AppRoutes() {
   if (isIntro) return <>{page}{portal}</>
 
   // 모든 페이지가 전체 화면 장면이라 헤더/푸터 없이 각자 메뉴 버튼(PageBar · 메인 홀)으로 메뉴를 연다
-  return <><MenuOverlay isOpen={isMenuOpen} onClose={() => setIsMenuOpen(false)} onNavigate={navigate} />{cloneElement(page, { onMenuToggle: () => setIsMenuOpen(true) })}{portal}</>
+  // 가이드 챗봇은 인트로(위에서 먼저 return)와 인트로 → 메인 전환 화면이 떠 있는 동안에는 띄우지 않는다
+  return <><MenuOverlay isOpen={isMenuOpen} onClose={() => setIsMenuOpen(false)} onNavigate={navigate} />{cloneElement(page, { onMenuToggle: () => setIsMenuOpen(true) })}{portal}{!isPortal && <GuideChatbot />}</>
 }
 

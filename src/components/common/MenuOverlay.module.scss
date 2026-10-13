@@ -26,40 +26,50 @@
         font-family: 'Inter', 'Noto Sans KR', sans-serif;
         animation: menu-overlay-in .35s ease both;
     }
-    @keyframes :global(menu-overlay-in) {
+    // :global(...)을 Sass 문자열 보간으로 감싸면 VS Code SCSS 검사기 오류 없이 같은 CSS(@keyframes :global(이름))가 나온다
+    @keyframes #{':global(menu-overlay-in)'} {
         from {
             opacity: 0;
         }
     }
 
-    /* 오른쪽 위 닫기 */
+    /* 오른쪽 위 닫기: 햄버거 버튼(MenuButton.module.scss)과 같은 top · right · 크기라서
+       두 아이콘의 중심이 정확히 겹친다. 햄버거 쪽 값을 바꾸면 여기도 같이 바꿀 것 */
     .menu-overlay-close {
         position: absolute;
         z-index: 1;
-        top: clamp(28px, 3.2vw, 60px);
-        right: clamp(18px, 2.4vw, 46px);
-        width: clamp(30px, 2vw, 40px);
-        height: clamp(30px, 2vw, 40px);
+        top: clamp(22px, 4vw, 56px);
+        right: clamp(18px, 3.2vw, 64px);
+        width: 40px;
+        height: 40px;
+        display: grid;
+        place-items: center;
         border: 0;
         padding: 0;
+        color: #fff;
         background: none;
+        cursor: pointer;
         transition: transform .3s ease;
     }
-    .menu-overlay-close span {
-        position: absolute;
-        top: 50%;
-        left: 0;
-        width: 100%;
-        height: 2px;
-        background: #fff;
+    @media (max-width: 900px) {
+        .menu-overlay-close {
+            width: 20px;
+            height: 20px;
+        }
+        /* 햄버거 버튼과 똑같이 누르는 영역만 사방 12px씩 넓힌다 (20 + 24 = 44px) */
+        .menu-overlay-close::before {
+            content: "";
+            position: absolute;
+            inset: -12px;
+        }
     }
-    .menu-overlay-close span:first-child {
-        transform: rotate(45deg);
-    }
-    .menu-overlay-close span:last-child {
-        transform: rotate(-45deg);
+    /* X 모양 SVG는 안쪽 여백이 있어 130%로 키워야 햄버거 줄과 비슷한 크기로 보인다 */
+    .menu-overlay-close-icon {
+        width: 130%;
+        height: 130%;
     }
     .menu-overlay-close:hover, .menu-overlay-close:focus-visible {
+        color: #fff;
         background: none;
         transform: rotate(90deg);
     }
@@ -75,7 +85,7 @@
         animation: menu-overlay-rise .5s cubic-bezier(.2, .75, .25, 1) both;
         animation-delay: calc(var(--i) * 60ms + 80ms);
     }
-    @keyframes :global(menu-overlay-rise) {
+    @keyframes #{':global(menu-overlay-rise)'} {
         from {
             opacity: 0;
             transform: translateY(18px);

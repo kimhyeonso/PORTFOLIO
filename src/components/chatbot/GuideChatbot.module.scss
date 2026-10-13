@@ -1,0 +1,358 @@
+﻿@import url('https://fonts.googleapis.com/css2?family=Silkscreen&display=swap');
+
+.chatbot {
+  position: fixed;
+  z-index: 60;
+  right: clamp(18px, 3vw, 42px);
+  bottom: clamp(18px, 3vw, 42px);
+  font-family: Inter, "Noto Sans KR", sans-serif;
+}
+
+// 고양이 일러스트 톤: 진한 갈색 외곽선 + 크림 바탕 + 태비 줄무늬
+$cat-line: #4a2a1e;
+$cat-brown: #7a4a2e;
+$cat-tabby: #b8794a;
+$cat-cream: #fff8ec;
+$cat-white: #fffdf8;
+$cat-text: #3a2219;
+// 사이트 공통 픽셀 톤: Silkscreen 영문 라벨 + 번짐 없는 계단식 그림자
+$pixel: 'Silkscreen', monospace;
+
+.panel {
+  width: min(360px, calc(100vw - 36px));
+  margin: 0 0 14px auto;
+  overflow: hidden;
+  border: 3px solid $cat-line;
+  border-radius: 18px;
+  background: $cat-cream;
+  box-shadow: 6px 6px 0 $cat-line;
+  animation: panelIn .3s steps(4, end);
+  transform-origin: 100% 100%;
+}
+
+@keyframes panelIn {
+  from { opacity: 0; transform: translateY(12px) scale(.92); }
+  to { opacity: 1; transform: none; }
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 14px 14px 13px;
+  border-bottom: 3px solid $cat-line;
+  color: $cat-white;
+  // 태비 줄무늬 무늬
+  background:
+    repeating-linear-gradient(112deg, transparent 0 16px, rgba(43, 22, 12, .2) 16px 23px),
+    linear-gradient(135deg, #9a6038, $cat-brown 55%, #5c3520);
+
+  p { margin: 0 0 4px; color: #f7dcae; font-family: $pixel; font-size: 10px; letter-spacing: .08em; }
+  h2 { margin: 0; font-size: 17px; text-shadow: 2px 2px 0 $cat-line; }
+}
+
+.headerTitle { flex: 1; min-width: 0; }
+
+// 고양이 얼굴만 보이도록 이미지를 확대해 원 안에 크롭
+.avatar {
+  position: relative;
+  flex: none;
+  width: 34px;
+  height: 34px;
+  overflow: hidden;
+  border: 2px solid $cat-line;
+  border-radius: 50%;
+  background: #f3dfc4;
+
+  img {
+    position: absolute;
+    top: -22%;
+    left: -64%;
+    width: 230%;
+    max-width: none;
+  }
+}
+
+.headerAvatar {
+  width: 44px;
+  height: 44px;
+  border-width: 3px;
+  background: $cat-cream;
+}
+
+.closeButton, .launcher, .form button {
+  border: 0;
+  cursor: pointer;
+}
+
+.closeButton {
+  display: grid;
+  place-items: center;
+  flex: none;
+  padding: 0;
+  width: 30px;
+  height: 30px;
+  border: 2px solid $cat-line;
+  border-radius: 50%;
+  color: $cat-line;
+  background: $cat-white;
+  box-shadow: 2px 2px 0 $cat-line;
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1;
+  transition: transform .2s steps(3, end);
+
+  &:hover, &:focus-visible { color: $cat-line; background: #f7dcae; transform: rotate(90deg); }
+}
+
+.closeIcon { width: 22px; height: 22px; }
+
+.messages {
+  display: flex;
+  min-height: 190px;
+  max-height: 320px;
+  flex-direction: column;
+  gap: 12px;
+  overflow-y: auto;
+  padding: 16px 14px;
+  scrollbar-color: #d6b48f transparent;
+  scrollbar-width: thin;
+}
+
+.assistantRow {
+  display: flex;
+  align-items: flex-end;
+  gap: 7px;
+  align-self: flex-start;
+  max-width: 92%;
+}
+
+.assistantMessage, .userMessage {
+  width: fit-content;
+  margin: 0;
+  padding: 10px 13px;
+  border: 2px solid $cat-line;
+  border-radius: 18px;
+  font-size: 13px;
+  line-height: 1.55;
+  white-space: pre-wrap;
+}
+
+// speak.png처럼 하얗고 살짝 광택 있는 말풍선
+.assistantMessage {
+  border-bottom-left-radius: 5px;
+  color: $cat-text;
+  background: linear-gradient(180deg, #fff 0%, $cat-white 60%, #f6eee2 100%);
+  box-shadow: inset 0 2px 0 rgba(255, 255, 255, .9), 3px 3px 0 rgba(74, 42, 30, .25);
+}
+
+.userMessage {
+  align-self: flex-end;
+  max-width: 84%;
+  border-bottom-right-radius: 5px;
+  color: $cat-white;
+  background: linear-gradient(180deg, #c98a56, $cat-tabby);
+  box-shadow: inset 0 2px 0 rgba(255, 255, 255, .25), 3px 3px 0 rgba(74, 42, 30, .3);
+  font-weight: 600;
+}
+
+// 답변 대기 중 "..." 점 애니메이션
+.typing {
+  display: flex;
+  gap: 5px;
+  padding: 13px 15px;
+
+  span[aria-hidden] {
+    width: 8px;
+    height: 8px;
+    // 픽셀처럼 네모난 점이 뚝뚝 끊기며 튀도록
+    background: #5a2e1c;
+    animation: typingDot .9s steps(1, end) infinite;
+
+    &:nth-of-type(3) { animation-delay: .15s; }
+    &:nth-of-type(4) { animation-delay: .3s; }
+  }
+}
+
+@keyframes typingDot {
+  0%, 60%, 100% { transform: translateY(0); }
+  30% { transform: translateY(-4px); }
+}
+
+.form {
+  display: flex;
+  gap: 8px;
+  padding: 12px;
+  // 4px 네모 점선 구분선
+  background: repeating-linear-gradient(90deg, #d9bf9f 0 4px, transparent 4px 8px) top / 100% 3px no-repeat;
+
+  input {
+    min-width: 0;
+    flex: 1;
+    border: 2px solid $cat-line;
+    border-radius: 999px;
+    padding: 10px 14px;
+    color: $cat-text;
+    background: $cat-white;
+    font: inherit;
+    font-size: 12px;
+
+    &::placeholder { color: #b39a83; }
+    &:focus { outline: none; box-shadow: 3px 3px 0 $cat-tabby; }
+  }
+
+  button {
+    border: 2px solid $cat-line;
+    border-radius: 999px;
+    padding: 0 15px;
+    color: $cat-white;
+    background: $cat-brown;
+    box-shadow: 3px 3px 0 $cat-line;
+    font: inherit;
+    font-size: 12px;
+    font-weight: 800;
+
+    &:hover:not(:disabled), &:focus-visible { color: $cat-white; background: #8c5634; }
+    &:active:not(:disabled) { box-shadow: 1px 1px 0 $cat-line; transform: translate(2px, 2px); }
+    &:disabled { cursor: not-allowed; opacity: .45; }
+  }
+}
+
+.launcher {
+  position: relative;
+  display: grid;
+  width: clamp(88px, 9vw, 120px);
+  aspect-ratio: 1184 / 1323;
+  margin-left: auto;
+  place-items: center;
+  padding: 0;
+  color: $cat-line;
+  background: none;
+  font-size: 32px;
+  isolation: isolate;
+  transition: transform .2s ease;
+
+  // 고양이 뒤에 깔리는 크림빛 원형 후광 — 배경과 구분되도록 은은하게 숨쉬듯 밝아졌다 어두워진다
+  &::before {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    inset: 4% -14% -6%;
+    border-radius: 50%;
+    background: radial-gradient(closest-side, rgba(255, 243, 220, .95) 0%, rgba(255, 228, 184, .6) 55%, rgba(255, 220, 170, 0) 100%);
+    animation: launcherGlow 2.8s ease-in-out infinite;
+    pointer-events: none;
+  }
+
+  &:hover, &:focus-visible {
+    transform: translateY(-3px);
+    color: $cat-line;
+    background: none;
+
+    &::before { animation: none; opacity: 1; transform: scale(1.08); }
+
+    .launcherIcon { opacity: 0; }
+    .launcherHoverIcon { opacity: 1; }
+    .launcherBubble { opacity: 1; transform: scale(-1, 1); }
+    .launcherTalk { opacity: 0; transform: scale(.85); }
+  }
+
+  // 챗봇이 열려 있는 동안엔 × 대신 cat02를 그대로 보여주고, 누르면 닫힌다
+  &.isOpen {
+    .launcherIcon { opacity: 0; }
+    .launcherHoverIcon { opacity: 1; }
+  }
+}
+
+@keyframes launcherGlow {
+  0%, 100% { opacity: .75; transform: scale(.94); }
+  50% { opacity: 1; transform: scale(1.04); }
+}
+
+// 일정 시간마다 고양이 왼쪽에 랜덤으로 뜨는 말풍선 (호버 시엔 "..." 말풍선으로 교체)
+.launcherTalk {
+  position: absolute;
+  top: 16%;
+  right: 96%;
+  padding: 9px 13px;
+  border: 2px solid #4a2a1e;
+  border-radius: 16px;
+  color: #3a2219;
+  background: #fffdf8;
+  box-shadow: 3px 3px 0 #4a2a1e;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.45;
+  text-align: left;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transform: scale(.6);
+  transform-origin: 100% 50%;
+  transition: opacity .2s ease, transform .2s ease;
+
+  &.isTalking {
+    opacity: 1;
+    transform: scale(1);
+    transition: opacity .2s ease, transform .45s cubic-bezier(.34, 1.56, .64, 1);
+  }
+
+  // 고양이를 향하는 꼬리
+  &::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    right: -7px;
+    width: 10px;
+    height: 10px;
+    border-top: 2px solid #4a2a1e;
+    border-right: 2px solid #4a2a1e;
+    background: #fffdf8;
+    transform: translateY(-50%) rotate(45deg);
+  }
+}
+
+// 평소엔 cat01, 호버 시 같은 자리에 겹쳐 둔 cat02로 교체
+.launcherIcon {
+  grid-area: 1 / 1;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+  transform-origin: 50% 100%;
+  // 바닥 그림자로 배경에서 살짝 떠 보이게
+  filter: drop-shadow(0 6px 8px rgba(58, 34, 25, .35));
+  transition: opacity .15s ease;
+}
+
+.launcherHoverIcon { opacity: 0; }
+
+// 호버 시 고양이 왼쪽 귀 위에 나타나는 말풍선 (꼬리가 귀를 향하도록 좌우 반전)
+.launcherBubble {
+  position: absolute;
+  top: -14%;
+  left: -24%;
+  width: 56%;
+  height: auto;
+  opacity: 0;
+  pointer-events: none;
+  transform: scale(-.4, .4);
+  transform-origin: 50% 100%;
+  transition: opacity .2s ease, transform .3s cubic-bezier(.34, 1.56, .64, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .launcher, .launcherIcon, .launcherBubble, .launcherTalk, .launcherTalk.isTalking { transition: none; }
+  .launcher::before { animation: none; }
+}
+
+:global(.sr-only) {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}
