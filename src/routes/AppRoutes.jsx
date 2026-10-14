@@ -62,8 +62,10 @@ function getPage(pathname, onNavigate, onEnterMain) {
 export default function AppRoutes() {
   const [pathname, setPathname] = useState(getInitialPath)
   const [isMenuOpen, setIsMenuOpen] = useState(false)
-  // 인트로 → 메인 전환 화면이 떠 있는지
-  const [isPortal, setIsPortal] = useState(false)
+  // 인트로 → 메인 전환 화면: null이면 닫힘, 열리면 인트로가 넘긴 정보
+  // ({ warp: true }면 워프 터널로 시작, { skip: true }면 질문 없이 바로 메인으로)
+  const [portalInfo, setPortalInfo] = useState(null)
+  const isPortal = portalInfo !== null
 
   useEffect(() => {
     const onPopState = () => setPathname(redirectOldPath(window.location.pathname))
@@ -84,12 +86,12 @@ export default function AppRoutes() {
     if (isIntro) loadIntroPortal()
   }, [isIntro])
 
-  const page = getPage(pathname, navigate, () => setIsPortal(true))
+  const page = getPage(pathname, navigate, (info) => setPortalInfo(info ?? {}))
   // 전환 화면은 페이지 바깥에 띄워서, 중간에 메인으로 바뀌어도 끊기지 않고 사라지며 메인을 드러낸다
   // (화면 구성이 달라져도 같은 key라 다시 마운트되지 않는다)
   const portal = isPortal && (
     <Suspense key="intro-portal" fallback={null}>
-      <IntroPortal onEnter={() => navigate('/')} onDone={() => setIsPortal(false)} />
+      <IntroPortal warp={Boolean(portalInfo.warp)} skip={Boolean(portalInfo.skip)} onEnter={() => navigate('/')} onDone={() => setPortalInfo(null)} />
     </Suspense>
   )
 

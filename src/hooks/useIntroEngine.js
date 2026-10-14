@@ -16,8 +16,9 @@ export function useIntroEngine({ onEnterMain }) {
     setRunId((id) => id + 1)
   }, [])
 
+  // SKIP INTRO: 전환 화면의 질문 없이 바로 메인으로 ({ skip: true })
   const skip = useCallback(() => {
-    onEnterMain()
+    onEnterMain({ skip: true })
   }, [onEnterMain])
 
   const start = useCallback(() => {
@@ -30,10 +31,11 @@ export function useIntroEngine({ onEnterMain }) {
     setPhase(stages[0])
   }, [])
 
-  const clearStage = useCallback(() => {
+  // 마지막 스테이지를 지나면 그 스테이지가 넘긴 정보(포털을 지났으면 { warp: true } → 워프 터널로 시작)를 전환 화면에 넘긴다
+  const clearStage = useCallback((info) => {
     const nextIndex = stages.indexOf(phase) + 1
     if (nextIndex < stages.length) goToStage(nextIndex)
-    else onEnterMain()
+    else onEnterMain(info)
   }, [goToStage, onEnterMain, phase])
 
   return { start, restart, skip, clearStage, goToStage, started, phase, runId }

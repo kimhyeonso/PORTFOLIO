@@ -24,7 +24,7 @@ const config = {
     // run · jump · land 한 장짜리는 프레임이 없을 때의 대표 이미지 (미리 불러오기 · 단일 스프라이트 판별용)
     sprites: { run: run01, runFrames: [run01, run02, run03, run04, run05], jump: jump03, jumpFrames: [jump01, jump02, jump03, jump04], land: jump05 },
     items: introItems.stage01,
-    door: { src: door, distance: 425, size: 44, sink: 0.6 },
+    door: { src: door, distance: 432, size: 44, sink: 0.6 },
     readyTime: 1,
     exclaim: true,
     hint: true,

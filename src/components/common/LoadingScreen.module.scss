@@ -1,0 +1,107 @@
+.scope {
+    isolation: isolate;
+}
+
+:global {
+    /* 화면 전체를 덮는 검은 로딩 화면 (인트로 → 메인 전환 화면 z-index 9999보다 위) */
+    .loading-screen {
+        position: fixed;
+        z-index: 10000;
+        inset: 0;
+        background: #000;
+        transition: opacity .5s ease;
+    }
+    .loading-screen.is-done {
+        opacity: 0;
+        pointer-events: none;
+    }
+
+    /* 막대(가로 약 74%)와 그 위를 달리는 캐릭터 */
+    .loading-track {
+        position: absolute;
+        top: 82.8%;
+        left: 50%;
+        width: min(74.5%, 1500px);
+        transform: translateX(-50%);
+    }
+    .loading-bar {
+        position: relative;
+        height: 3px;
+        border-radius: 3px;
+        background: #555;
+        overflow: hidden;
+    }
+    /* 채워진(불러온) 쪽은 흰색, 남은 쪽은 회색 */
+    .loading-bar-passed {
+        position: absolute;
+        inset: 0 auto 0 0;
+        width: 0;
+        background: #fff;
+    }
+    /* 캐릭터는 막대 가운데 위에서 제자리 달리기 */
+    .loading-runner {
+        position: absolute;
+        bottom: calc(100% + clamp(10px, 1.6vh, 22px));
+        left: 50%;
+        width: clamp(96px, 18vh, 220px);
+        transform: translateX(-50%);
+    }
+
+    /* 인트로 STAGE 01과 같은 달리기: 5장을 겹쳐 두고 0.1초씩 차례로 보여준다 */
+    .loading-run-frames {
+        --frame-time: .1s;
+        position: relative;
+        display: block;
+        width: 100%;
+        aspect-ratio: 356 / 348;
+    }
+    .loading-run-frames img {
+        position: absolute;
+        inset: 0;
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        object-position: bottom center;
+        opacity: 0;
+        image-rendering: pixelated;
+        animation: loading-run-frame calc(var(--frame-time) * var(--frames)) step-end infinite;
+        animation-delay: calc(var(--frame-time) * (var(--i) - var(--frames)));
+    }
+
+    .loading-text {
+        position: absolute;
+        top: 88.2%;
+        left: 50%;
+        margin: 0;
+        transform: translate(-50%, -50%);
+        color: #fff;
+        font-family: 'Pretendard', 'Noto Sans KR', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+        font-size: clamp(.95rem, 1.6vw, 1.6rem);
+        font-weight: 400;
+        letter-spacing: -.01em;
+        white-space: nowrap;
+    }
+    .loading-text span {
+        font-variant-numeric: tabular-nums;
+    }
+
+    /* step-end라 0% → 20% 직전까지 보이고 20%에서 바로 꺼진다 (경계에서 앞뒤 두 장이 겹쳐 보이지 않게) */
+    @keyframes #{':global(loading-run-frame)'} {
+        0% {
+            opacity: 1;
+        }
+        20%, 100% {
+            opacity: 0;
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .loading-run-frames img {
+            animation: none;
+        }
+        .loading-run-frames img:first-child {
+            opacity: 1;
+        }
+    }
+}

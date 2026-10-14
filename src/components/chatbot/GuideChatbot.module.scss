@@ -329,6 +329,19 @@ $pixel: 'Silkscreen', monospace;
 
 .launcherHoverIcon { opacity: 0; }
 
+// 모션 프레임(정사각 캔버스)을 예전 cat01(세로로 긴 캔버스)과 같은 크기 · 자리에 보이게 맞춘다
+// 고양이 키 · 바닥 · 앉은 가로 위치를 두 이미지에서 재서 맞춘 값 — 높이 98.7%, 바닥 1.1% 위, 가로 3.1% 오른쪽
+.launcherMotion {
+  position: absolute;
+  bottom: 1.1%;
+  left: 50%;
+  width: auto;
+  height: 98.7%;
+  aspect-ratio: 1;
+  // --motion-shift: 동작마다 첫 장이 같은 자리에 오도록 JS가 넣는 보정값
+  transform: translateX(calc(-46.9% + var(--motion-shift, 0%)));
+}
+
 // 호버 시 고양이 왼쪽 귀 위에 나타나는 말풍선 (꼬리가 귀를 향하도록 좌우 반전)
 .launcherBubble {
   position: absolute;
@@ -341,6 +354,21 @@ $pixel: 'Silkscreen', monospace;
   transform: scale(-.4, .4);
   transform-origin: 50% 100%;
   transition: opacity .2s ease, transform .3s cubic-bezier(.34, 1.56, .64, 1);
+}
+
+// 모바일: 화면을 덜 가리도록 고양이를 줄이고, 옆 말풍선(여백 · 글자 · 꼬리)도 PC보다 2px씩 작게
+@media (max-width: 760px) {
+  .launcher { width: 64px; }
+  .launcherTalk {
+    padding: 7px 11px;
+    font-size: 11px;
+
+    &::after {
+      right: -6px;
+      width: 8px;
+      height: 8px;
+    }
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

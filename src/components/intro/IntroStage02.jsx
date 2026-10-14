@@ -26,7 +26,7 @@ const config = {
     // 착지는 STAGE 01처럼 한 장으로 LAND_TIME 동안 보여준다 (여러 장이면 장당 0.05초라 깜빡이기만 한다)
     sprites: { run: run01, runFrames: [run01, run02, run03, run04, run05], jump: jump03, jumpFrames: [jump01, jump02, jump03, jump04], land: jump05 },
     items: introItems.stage02,
-    door: { src: door, distance: 365, size: 44, sink: 4.5 },
+    door: { src: door, distance: 375, size: 44, sink: 4.5 },
     readyTime: 0.3,
     titleCard: true,
     arriving: true,

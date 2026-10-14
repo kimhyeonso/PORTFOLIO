@@ -24,16 +24,128 @@ const TALK_MESSAGES = [
 const TALK_SHOW_MS = 4000
 const TALK_HIDE_MS = 3500
 
+/*
+ * 고양이 모션 프레임 (home/cat-motion — 원본 PNG를 320px WebP로 줄인 것). 모든 동작은 같은 앉은 자세(01)에서 시작한다.
+ *   stretch 기지개 · groom 그루밍 · yawn 하품 · joke 장난(앞발 흔들기): 닫혀 있을 때 ACTION_INTERVAL마다 하나를 무작위로, 끝까지 갔다가 되돌아온다
+ *   sleep 잠들기: SLEEP_AFTER 동안 고양이를 누르지(올리지) 않으면 마지막으로 잠들고, 깨울 때까지 잠든 자세로 있다
+ */
+const motionFrames = Object.entries(import.meta.glob('../../assets/image/home/cat-motion/*.webp', { eager: true, import: 'default' }))
+  .sort(([a], [b]) => a.localeCompare(b))
+  .reduce((groups, [path, src]) => {
+    const kind = path.match(/([a-z]+)\d+\.webp$/)[1]
+    groups[kind] = [...(groups[kind] ?? []), src]
+    return groups
+  }, {})
+const SIT_FRAME = motionFrames.stretch[0]
+/*
+ * 동작: holdAt번째 장(0부터)에서 hold ms 멈춘다.
+ *   returns: 프레임에 되돌아오는 장까지 들어 있으면 true (그대로 끝까지), 아니면 멈춘 장 앞까지를 거꾸로 되돌아온다
+ *   shift: 동작마다 첫 장(앉은 자세)이 놓인 가로 위치가 조금씩 달라서, 평소 자세(stretch 01)와 같은 자리에 오도록 옮기는 양 (이미지 너비 %)
+ * 기지개 8장: 01 앉음 → 05 앞발을 쭉 뻗고 고개를 든 자세에서 2초 → 06~08(= 03 · 02 · 01)로 다시 앉음
+ * 장난(joke) 7장: 01 앉음 → 05 고개를 갸웃하며 앞발을 높이 든 자세에서 잠깐 → 06 · 08로 다시 앉음 (07번 그림은 없다)
+ */
+const ACTIONS = [
+  { frames: motionFrames.stretch, frameTime: 180, holdAt: 4, hold: 2000, returns: true, shift: '0%' },
+  { frames: motionFrames.groom, frameTime: 120, holdAt: motionFrames.groom.length - 1, hold: 300, shift: '3.3%' },
+  { frames: motionFrames.yawn, frameTime: 140, holdAt: motionFrames.yawn.length - 1, hold: 450, shift: '1.4%' },
+  { frames: motionFrames.joke, frameTime: 150, holdAt: 4, hold: 800, returns: true, shift: '2.7%' },
+]
+const SLEEP_SHIFT = '-1.4%'
+const ACTION_INTERVAL = 10000 // ms, 랜덤 동작 사이 간격
+const SLEEP_AFTER = 180000 // ms, 이만큼(3분) 고양이에 마우스를 올리거나 누르지 않으면 잠든다
+const SLEEP_FRAME_TIME = 170 // ms, 잠드는 프레임 한 장
+const WAKE_FRAME_TIME = 50 // ms, 깰 때는 잠든 프레임을 거꾸로 빠르게
+
 export default function GuideChatbot() {
   const [isOpen, setIsOpen] = useState(false)
   const [messages, setMessages] = useState([INITIAL_MESSAGE])
   const [question, setQuestion] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [talk, setTalk] = useState({ text: TALK_MESSAGES[0], isVisible: false })
+  const [isSleeping, setIsSleeping] = useState(false)
+  const [reduced] = useState(() => window.matchMedia('(prefers-reduced-motion: reduce)').matches)
   const messagesRef = useRef(null)
+  const motionRef = useRef(null)
+  const lastTouchRef = useRef(0)
+  const wokeRef = useRef(false)
+
+  // 모션 프레임은 미리 받아 디코딩해 둔다 (처음 재생 때 깜빡이지 않게)
+  useEffect(() => {
+    const images = Object.values(motionFrames).flat().map((src) => {
+      const image = new Image()
+      image.src = src
+      image.decode?.().catch(() => {})
+      return image
+    })
+    return () => images.splice(0)
+  }, [])
+
+  /*
+   * 고양이 모션: 프레임은 img src만 바꿔 넘긴다 (React 리렌더링 없음).
+   * 닫혀 있고 깨어 있는 동안 ACTION_INTERVAL마다 랜덤 동작, SLEEP_AFTER 동안 마우스를 올리거나 누르지 않으면 잠들기(isSleeping)로 끝낸다.
+   */
+  useEffect(() => {
+    if (isOpen || isSleeping || reduced) return undefined
+    const image = motionRef.current
+    let timer
+    let lastAction = null
+    if (!lastTouchRef.current) lastTouchRef.current = Date.now()
+
+    // frames를 frameTime 간격으로 차례로 보여주고 done (shift만큼 옆으로 옮겨 첫 장을 평소 자세 자리에 맞춘다)
+    const play = (frames, frameTime, done, shift = '0%') => {
+      image.style.setProperty('--motion-shift', shift)
+      let index = 0
+      const step = () => {
+        image.src = frames[index]
+        index += 1
+        timer = index < frames.length ? setTimeout(step, frameTime) : setTimeout(done, frameTime)
+      }
+      step()
+    }
+    // 앉은 자세로 돌아와 다음 동작을 기다린다
+    const sitAndWait = () => {
+      image.style.setProperty('--motion-shift', '0%')
+      image.src = SIT_FRAME
+      timer = setTimeout(next, ACTION_INTERVAL)
+    }
+    const next = () => {
+      if (Date.now() - lastTouchRef.current >= SLEEP_AFTER) {
+        play(motionFrames.sleep, SLEEP_FRAME_TIME, () => setIsSleeping(true), SLEEP_SHIFT)
+        return
+      }
+      const choices = ACTIONS.filter((action) => action !== lastAction)
+      const action = choices[Math.floor(Math.random() * choices.length)]
+      lastAction = action
+      // holdAt 장까지 가서 멈췄다가, 되돌아오는 장(또는 지나온 장을 거꾸로)으로 앉은 자세로
+      const { frames, frameTime, holdAt, hold, returns, shift } = action
+      const way = frames.slice(0, holdAt + 1)
+      const back = returns ? frames.slice(holdAt + 1) : frames.slice(0, holdAt).reverse()
+      play(way, frameTime, () => {
+        timer = setTimeout(() => play(back, frameTime, sitAndWait, shift), hold)
+      }, shift)
+    }
+
+    // 막 깨어났으면 잠든 프레임을 거꾸로 빠르게 돌려 일어난 뒤 시작
+    if (wokeRef.current) {
+      wokeRef.current = false
+      play([...motionFrames.sleep].reverse(), WAKE_FRAME_TIME, sitAndWait, SLEEP_SHIFT)
+    } else {
+      sitAndWait()
+    }
+    return () => clearTimeout(timer)
+  }, [isOpen, isSleeping, reduced])
+
+  // 고양이를 누르거나 올리면 잠든 시간을 새로 세고, 자고 있었으면 깨운다
+  const touchCat = () => {
+    lastTouchRef.current = Date.now()
+    if (isSleeping) {
+      wokeRef.current = true
+      setIsSleeping(false)
+    }
+  }
 
   useEffect(() => {
-    if (isOpen) return undefined
+    if (isOpen || isSleeping) return undefined
 
     let timer
     let lastIndex = -1
@@ -55,7 +167,8 @@ export default function GuideChatbot() {
       clearTimeout(timer)
       setTalk((previous) => ({ ...previous, isVisible: false }))
     }
-  }, [isOpen])
+    // 자는 동안에는 말을 걸지 않는다
+  }, [isOpen, isSleeping])
 
   useEffect(() => {
     const messagesElement = messagesRef.current
@@ -149,8 +262,20 @@ export default function GuideChatbot() {
         </section>
       )}
 
-      <button type="button" className={`${styles.launcher} ${isOpen ? styles.isOpen : ''}`} onClick={() => setIsOpen((previous) => !previous)} aria-expanded={isOpen} aria-label={isOpen ? '가이드 챗봇 닫기' : '가이드 챗봇 열기'}>
-        <img className={styles.launcherIcon} src={launcherIcon} alt="" aria-hidden="true" />
+      <button
+        type="button"
+        className={`${styles.launcher} ${isOpen ? styles.isOpen : ''}`}
+        onClick={() => {
+          touchCat()
+          setIsOpen((previous) => !previous)
+        }}
+        onPointerEnter={touchCat}
+        onFocus={touchCat}
+        aria-expanded={isOpen}
+        aria-label={isOpen ? '가이드 챗봇 닫기' : '가이드 챗봇 열기'}
+      >
+        {/* 평소 앉은 자세 + 랜덤 동작 · 잠들기 프레임 (src는 모션 effect가 직접 바꾼다) */}
+        <img className={`${styles.launcherIcon} ${styles.launcherMotion}`} src={SIT_FRAME} ref={motionRef} alt="" aria-hidden="true" />
         <img className={`${styles.launcherIcon} ${styles.launcherHoverIcon}`} src={launcherHoverIcon} alt="" aria-hidden="true" />
         {!isOpen && (
           <>

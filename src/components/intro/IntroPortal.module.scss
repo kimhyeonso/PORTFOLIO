@@ -16,20 +16,45 @@
         grid-area: 1 / 1;
     }
 
-    /* 인트로 위로 차오르는 짙은 바다색 (인트로 배경 #0e4775에서 이어지게) */
+    /*
+     * 질문 화면 배경: 워프 터널(warpShader.js)과 같은 색 — 가운데 화이트 → 화이트블루 → 스카이블루 → 바깥 딥블루.
+     * 그 위에 아주 옅은 방사형 빛줄기 결을 깔아 터널에서 빠져나온 공간처럼 이어지게 한다 (가운데는 비워 둔다)
+     */
     .intro-portal-veil {
         position: absolute;
         inset: 0;
-        background: radial-gradient(circle at 50% 50%, #0e4775 0%, #0b3558 55%, #071f36 100%);
+        background: radial-gradient(circle at 50% 50%, #fff 0%, #dbf0f7 32%, #9fd3e8 68%, #4f9cc2 100%);
         opacity: 0;
     }
-    /* 떠날 때 화면을 채우는 크림빛 (메인 홀 색으로 이어지게) */
-    .intro-portal-glow {
+    .intro-portal-veil::after {
         position: absolute;
         inset: 0;
-        background: radial-gradient(circle at 50% 50%, #fffaf0 0%, #fff3e0 50%, #f3e6d2 100%);
+        content: '';
+        background: repeating-conic-gradient(from 0deg at 50% 50%, rgba(23, 92, 135, .1) 0deg .6deg, transparent .6deg 2.3deg, rgba(23, 92, 135, .05) 2.3deg 3deg, transparent 3deg 4.4deg);
+        -webkit-mask-image: radial-gradient(circle at 50% 50%, transparent 18%, #000 70%);
+        mask-image: radial-gradient(circle at 50% 50%, transparent 18%, #000 70%);
+    }
+    /* 떠날 때 화면을 채우는 화이트블루 빛 (워프 터널의 화이트 플래시와 같은 색감) */
+    .intro-portal-glow {
+        position: absolute;
+        /* 터널 도중에 SKIP해도 빛이 워프 터널(.warp-tunnel) 위를 덮도록 */
+        z-index: 2;
+        inset: 0;
+        background: radial-gradient(circle at 50% 50%, #fff 0%, #eef8fc 45%, #cde9f5 100%);
         opacity: 0;
         pointer-events: none;
+    }
+    /* 화이트블루 빛이 다 찬 뒤 그 위로 옅게 덮이는 크림빛 — 메인 홀(크림 배경)로 색이 이어지게 */
+    .intro-portal-glow.is-warm {
+        background: radial-gradient(circle at 50% 50%, #fffdf8 0%, #fff7ea 55%, #f8eddd 100%);
+    }
+    /* 오른쪽 위 SKIP INTRO: 밝은 배경 위라 딥블루 글자 */
+    .intro-portal .intro-portal-skip {
+        color: #175c87;
+        text-shadow: 2px 2px 0 rgba(255, 255, 255, .7);
+    }
+    .intro-portal .intro-portal-skip:hover, .intro-portal .intro-portal-skip:focus-visible {
+        color: #2f8fc2;
     }
 
     /* 링: 화면 가운데에 겹쳐 두고 gsap이 크기·회전·투명도를 바꾼다 */
@@ -68,12 +93,12 @@
         justify-items: center;
         gap: clamp(18px, 2.6vw, 36px);
         padding: 0 16px;
-        color: #fff;
+        color: #0f4467;
         text-align: center;
     }
     .intro-portal-label {
         margin: 0;
-        color: #ffe47b;
+        color: #2f8fc2;
         font-family: 'Press Start 2P', monospace;
         font-size: clamp(.62rem, 1vw, .95rem);
         letter-spacing: .2em;
@@ -86,42 +111,14 @@
         font-weight: 700;
         letter-spacing: -.02em;
         line-height: 1.35;
-        text-shadow: 0 4px 0 rgba(7, 34, 61, .45), 0 0 28px rgba(143, 208, 255, .45);
+        text-shadow: 0 3px 0 rgba(255, 255, 255, .85), 0 0 28px rgba(255, 255, 255, .9);
         word-break: keep-all;
     }
     .intro-portal-question h2 .is-pixel {
-        color: #ffe47b;
+        color: #2f8fc2;
         font-family: 'Press Start 2P', monospace;
         font-size: .82em;
         font-weight: 400;
         letter-spacing: 0;
-    }
-    /* 인트로의 PRESS START / ENTER 버튼과 같은 모양 */
-    .intro-portal-enter {
-        min-width: clamp(220px, 22vw, 420px);
-        margin-top: clamp(6px, 1vw, 16px);
-        border: 0;
-        border-radius: 18px;
-        padding: clamp(17px, 1.9vw, 28px) 28px;
-        color: #1f3045;
-        background: #fff;
-        box-shadow: 0 12px 0 rgba(7, 34, 61, .35);
-        font-family: 'Noto Sans KR', sans-serif;
-        font-size: clamp(1rem, 1.4vw, 1.4rem);
-        font-weight: 700;
-        line-height: 1.25;
-        cursor: pointer;
-        transition: transform .2s ease, box-shadow .2s ease;
-    }
-    .intro-portal-enter:hover, .intro-portal-enter:focus-visible {
-        color: #fff;
-        background: #274e77;
-        outline: 3px solid #ffe47b;
-        transform: translateY(-3px);
-        box-shadow: 0 15px 0 rgba(7, 34, 61, .35);
-    }
-    .intro-portal-enter:active {
-        transform: translateY(6px);
-        box-shadow: 0 6px 0 rgba(7, 34, 61, .35);
     }
 }

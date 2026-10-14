@@ -1,0 +1,22 @@
+.scope {
+    isolation: isolate;
+}
+
+:global {
+    /* 화면 전체를 덮는 셰이더 캔버스. 로딩 중에는 앞 장면(Stage04 끝의 흰 화면)과 이어지도록 흰 바탕 */
+    .warp-tunnel {
+        position: fixed;
+        z-index: 1;
+        inset: 0;
+        background: #fff;
+        transition: opacity .9s ease;
+    }
+    .warp-tunnel canvas {
+        display: block;
+    }
+    /* 끝난 뒤 흰 화면에서 질문 화면으로 걷힌다 */
+    .warp-tunnel.is-done {
+        opacity: 0;
+        pointer-events: none;
+    }
+}

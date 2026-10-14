@@ -27,7 +27,7 @@ const config = {
     // 달리기 순서는 STAGE 01의 흐름(넓은 보폭 → 넓은 보폭 → 다리 모음 → 다리 모음 → 넓은 보폭)에 맞춰 03 · 02를 바꿔 둔다
     sprites: { run: run01, runFrames: [run01, run02, run03, run04, run05], jump: jump03, jumpFrames: [jump01, jump02, jump03, jump04], land: jump05 },
     items: introItems.stage03,
-    door: { src: door, distance: 305, size: 44, sink: 2 },
+    door: { src: door, distance: 320, size: 44, sink: 2 },
     readyTime: 0.3,
     titleCard: true,
     arriving: true,

@@ -93,12 +93,12 @@
     }
 
     /*
-     * 왼쪽 아래 인벤토리: 인트로 전체 아이템(15개)이 처음부터 흐린 회색으로 자리만 보이고,
+     * 왼쪽 아래 인벤토리: 인트로 전체 아이템(16개)이 처음부터 흐린 회색으로 자리만 보이고,
      * 먹을 때마다 하나씩 원래 색으로 채워진다.
-     * PC에서는 한 줄로 늘어놓는다 — 칸 크기를 화면 너비(2.9vw)로도 묶어 좁은 PC 화면에서도 줄이 넘치지 않게 한다
+     * PC에서는 한 줄로 늘어놓는다 — 칸 크기를 화면 너비(3.5vw)로도 묶어 좁은 PC 화면에서도 줄이 넘치지 않게 한다
      */
     .sg-inventory {
-        --slot: clamp(28px, min(5.6vh, 2.9vw), 52px);
+        --slot: clamp(32px, min(6.8vh, 3.5vw), 64px);
         position: absolute;
         z-index: 8;
         bottom: clamp(14px, 3vh, 36px);
@@ -188,11 +188,18 @@
         /* y는 PC 화면 기준 세로 위치(%). 잔디선(--ground)에서의 높이를 월드 비율만큼 줄여, 작은 캐릭터의 점프 높이에 맞춘다 */
         top: calc(100% - var(--ground) - (100% - var(--y) - var(--ground)) * var(--world-scale));
         left: 0;
-        width: calc(var(--w) * var(--size, 15));
-        margin: calc(var(--w) * var(--size, 15) / -2) 0 0 calc(var(--w) * var(--size, 15) / -2);
+        /* size: 그림 면적을 맞춘 기본 너비(인벤토리도 이 값으로 맞춘다), item-scale: 공중에서만 키우거나 줄이는 배율 */
+        --item-width: calc(var(--w) * var(--size, 15) * var(--item-scale, 1));
+        width: var(--item-width);
+        margin: calc(var(--item-width) / -2) 0 0 calc(var(--item-width) / -2);
         transform: translate3d(200vw, 0, 0);
         pointer-events: none;
         will-change: transform;
+    }
+    /* 닿지 못하고 지나간 아이템: 흐리게 흘러가 사라진다 (인벤토리 칸은 회색으로 남는다) */
+    .sg-item.is-missed {
+        opacity: .45;
+        transition: opacity .3s ease;
     }
     .sg-item-art {
         animation: sg-float 1.8s ease-in-out infinite;
@@ -226,8 +233,22 @@
         text-shadow: 3px 3px 0 rgba(8, 33, 69, .6);
         transform: translateX(-50%);
     }
+    /* 먹으면 제자리 그림은 숨기고, 같은 그림(.sg-fly)이 인벤토리 칸으로 날아간다 (IntroStageGame.jsx flyToInventory) */
     .sg-item.is-collected .sg-item-art {
-        animation: sg-collect .8s cubic-bezier(.2, .8, .3, 1) forwards;
+        visibility: hidden;
+        animation: none;
+    }
+    .sg-fly {
+        position: absolute;
+        z-index: 12;
+        display: block;
+        pointer-events: none;
+        image-rendering: pixelated;
+        filter: drop-shadow(0 0 calc(var(--w) * 1.4) rgba(255, 236, 160, .75)) drop-shadow(5px 7px 0 rgba(8, 33, 69, .35));
+        will-change: transform;
+    }
+    .sg.is-smooth .sg-fly {
+        image-rendering: auto;
     }
     .sg-item.is-collected .sg-item-burst {
         animation: sg-burst .75s ease-out both;
@@ -624,16 +645,6 @@
             transform: translateY(calc(var(--w) * -1.6)) rotate(3deg);
         }
     }
-    @keyframes #{':global(sg-collect)'} {
-        30% {
-            opacity: 1;
-            transform: translateY(calc(var(--w) * -2)) scale(1.25) rotate(-8deg);
-        }
-        100% {
-            opacity: 0;
-            transform: translateY(calc(var(--w) * -12)) scale(.4) rotate(18deg);
-        }
-    }
     @keyframes #{':global(sg-burst)'} {
         0% {
             opacity: 0;
@@ -743,10 +754,16 @@
             align-items: flex-start;
             gap: 6px;
         }
+        /* SKIP INTRO는 두 줄 제목의 세로 가운데에 맞춘다
+           제목 높이 = 작은 줄 .55em + 6px + 이름 줄 1em (.9rem 기준) → 그 절반 지점에 SKIP의 가운데 */
+        .sg .intro-skip {
+            top: calc(clamp(22px, 4vw, 56px) + (.9rem * 1.55 + 6px) / 2);
+            transform: translateY(-50%);
+        }
         /* 재생/멈춤은 두 줄 제목 바로 아래(같은 왼쪽 선)
-           top = 제목 top + 제목 높이(작은 줄 .55em + 6px + 이름 줄 1em) + 틈 10px */
+           top = 제목 top + 제목 높이(작은 줄 .55em + 6px + 이름 줄 1em) + 틈 20px */
         .sg-top-center {
-            top: calc(clamp(22px, 4vw, 56px) + .9rem * 1.55 + 6px + 10px);
+            top: calc(clamp(22px, 4vw, 56px) + .9rem * 1.55 + 6px + 20px);
             left: clamp(18px, 2.8vw, 56px);
             align-items: flex-start;
             transform: none;
@@ -757,7 +774,7 @@
             --hero-size: clamp(112px, 27vw, 144px);
             --hero-left: 8%;
         }
-        /* 인벤토리: 한 줄에 8칸씩 고정해 15칸이 항상 두 줄(8 + 7)로 나온다.
+        /* 인벤토리: 한 줄에 8칸씩 고정해 16칸이 항상 두 줄(8 + 8)로 나온다.
            칸 크기는 좌우 여백 18px씩 · 칸 사이 4px × 7을 뺀 너비의 1/8 (최대 34px) */
         .sg-inventory {
             --slot: min(34px, (100vw - 36px - 28px) / 8);
