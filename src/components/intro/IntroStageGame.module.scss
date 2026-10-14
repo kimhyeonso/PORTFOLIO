@@ -11,9 +11,15 @@
 :global {
     .sg {
         --u: 1vh;
+        /* 월드 단위: 아이템 · 문 · 포털 · 효과 크기. PC에서는 --u와 같고, 캐릭터가 작아지는 모바일에서는 JS가 그 비율만큼 줄여 넣는다 */
+        --w: 1vh;
+        --world-scale: 1;
         --ground: 19.2%;
         --door-size: 44;
         --door-sink: .6;
+        /* 캐릭터 크기 · 왼쪽 위치. JS는 그려진 캐릭터 크기를 읽어 판정에 쓰므로 여기서만 바꾸면 된다 */
+        --hero-size: calc(var(--u) * 27);
+        --hero-left: 18%;
         position: relative;
         width: 100%;
         height: 100dvh;
@@ -62,37 +68,17 @@
         z-index: 10;
         top: clamp(22px, 4vw, 56px);
         left: 50%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: clamp(10px, 1.4vw, 18px);
         transform: translateX(-50%);
     }
-    .sg-side {
-        position: absolute;
-        z-index: 8;
-        top: calc(clamp(22px, 4vw, 56px) + clamp(40px, 5vw, 80px));
-        right: clamp(18px, 4vw, 74px);
-        display: grid;
-        justify-items: end;
-        gap: clamp(28px, 5vh, 72px);
-    }
-    .sg-menu {
-        display: grid;
-        justify-items: end;
-        gap: clamp(8px, 2.4vh, 34px);
-        margin: 0;
-        padding: 0;
-        color: #fff;
-        font-family: 'Jersey 10', 'Press Start 2P', monospace;
-        font-size: clamp(1.2rem, 2.3vw, 2.5rem);
-        line-height: 1;
-        list-style: none;
-        text-shadow: 3px 3px 0 rgba(12, 42, 74, .5);
-    }
+    /* 조작 안내: 재생/멈춤 버튼 바로 밑 (.sg-top-center 안). 첫 아이템을 먹으면 사라진다 */
     .sg-hint {
-        position: absolute;
-        z-index: 8;
-        bottom: 6%;
-        left: 50%;
         margin: 0;
-        transform: translateX(-50%);
+        white-space: nowrap;
+        pointer-events: none;
         color: #fff;
         font-family: 'Press Start 2P', monospace;
         font-size: clamp(.5rem, .8vw, .8rem);
@@ -107,16 +93,16 @@
     }
 
     /*
-     * 왼쪽 아래 인벤토리: 이번 스테이지 아이템이 처음부터 흐린 회색으로 자리만 보이고,
-     * 먹을 때마다 하나씩 원래 색으로 채워진다 (이전 스테이지에서 먹은 것은 앞쪽에 채워진 채로)
+     * 왼쪽 아래 인벤토리: 인트로 전체 아이템(15개)이 처음부터 흐린 회색으로 자리만 보이고,
+     * 먹을 때마다 하나씩 원래 색으로 채워진다.
+     * PC에서는 한 줄로 늘어놓는다 — 칸 크기를 화면 너비(2.9vw)로도 묶어 좁은 PC 화면에서도 줄이 넘치지 않게 한다
      */
     .sg-inventory {
-        --slot: clamp(34px, 6.4vh, 60px);
+        --slot: clamp(28px, min(5.6vh, 2.9vw), 52px);
         position: absolute;
         z-index: 8;
         bottom: clamp(14px, 3vh, 36px);
         left: clamp(18px, 2.8vw, 56px);
-        max-width: min(46vw, 640px);
         pointer-events: none;
     }
     .sg-inventory-title {
@@ -132,8 +118,7 @@
     }
     .sg-inventory ul {
         display: flex;
-        flex-wrap: wrap;
-        gap: 6px;
+        gap: 4px;
         margin: 0;
         padding: 0;
         list-style: none;
@@ -167,8 +152,12 @@
     .sg.is-smooth .sg-inventory img {
         image-rendering: auto;
     }
+    /*
+     * 키프레임 이름은 :global 블록에서 이름 그대로 부르므로 전역으로 둔다.
+     * `@keyframes :global(이름)`을 VS Code SCSS 검사기가 문법 오류로 표시해서 #{'...'} 보간으로 감싼다 (빌드 결과는 같다)
+     */
     /* 먹은 순간 살짝 커졌다 제자리로 */
-    @keyframes :global(sg-inventory-got) {
+    @keyframes #{':global(sg-inventory-got)'} {
         50% {
             transform: scale(1.25);
         }
@@ -178,9 +167,9 @@
     .sg-door {
         position: absolute;
         z-index: 2;
-        bottom: calc(var(--ground) - var(--u) * var(--door-sink));
+        bottom: calc(var(--ground) - var(--w) * var(--door-sink));
         left: 0;
-        width: calc(var(--u) * var(--door-size));
+        width: calc(var(--w) * var(--door-size));
         transform: translate3d(200vw, 0, 0);
         will-change: transform;
     }
@@ -196,10 +185,11 @@
     .sg-item {
         position: absolute;
         z-index: 3;
-        top: var(--y);
+        /* y는 PC 화면 기준 세로 위치(%). 잔디선(--ground)에서의 높이를 월드 비율만큼 줄여, 작은 캐릭터의 점프 높이에 맞춘다 */
+        top: calc(100% - var(--ground) - (100% - var(--y) - var(--ground)) * var(--world-scale));
         left: 0;
-        width: calc(var(--u) * var(--size, 15));
-        margin: calc(var(--u) * var(--size, 15) / -2) 0 0 calc(var(--u) * var(--size, 15) / -2);
+        width: calc(var(--w) * var(--size, 15));
+        margin: calc(var(--w) * var(--size, 15) / -2) 0 0 calc(var(--w) * var(--size, 15) / -2);
         transform: translate3d(200vw, 0, 0);
         pointer-events: none;
         will-change: transform;
@@ -212,7 +202,7 @@
         display: block;
         width: 100%;
         image-rendering: pixelated;
-        filter: drop-shadow(0 0 calc(var(--u) * 1.4) rgba(255, 236, 160, .75)) drop-shadow(5px 7px 0 rgba(8, 33, 69, .35));
+        filter: drop-shadow(0 0 calc(var(--w) * 1.4) rgba(255, 236, 160, .75)) drop-shadow(5px 7px 0 rgba(8, 33, 69, .35));
     }
     .sg-item-burst {
         position: absolute;
@@ -251,9 +241,9 @@
         position: absolute;
         z-index: 4;
         bottom: var(--ground);
-        left: 18%;
-        width: calc(var(--u) * 27);
-        height: calc(var(--u) * 27);
+        left: var(--hero-left);
+        width: var(--hero-size);
+        height: var(--hero-size);
         will-change: transform;
     }
     .sg-hero-sprite {
@@ -316,6 +306,22 @@
     .sg-pose-frames[data-frame-count='5'] img {
         animation-name: sg-pose-frame-5;
     }
+    /*
+     * 점프 · 착지(is-once)는 반복하지 않고 한 번만 넘긴다: i번째 장은 (i × 장당 시간)부터 한 장 시간만 보이고,
+     * 마지막 장은 자세가 바뀔 때까지 남는다. 반복하면 프레임이 조금이라도 늦어질 때 착지 직전에 첫 장으로 되돌아간다
+     */
+    .sg:not([data-phase='ready'], [data-phase='title']) .sg-hero:not(.is-entering) .sg-pose-frames.is-once img {
+        animation-name: sg-pose-once;
+        animation-duration: var(--frame-time);
+        animation-delay: calc(var(--frame-time) * var(--i));
+        animation-iteration-count: 1;
+    }
+    .sg:not([data-phase='ready'], [data-phase='title']) .sg-hero:not(.is-entering) .sg-pose-frames.is-once img:first-child {
+        opacity: 0;
+    }
+    .sg:not([data-phase='ready'], [data-phase='title']) .sg-hero:not(.is-entering) .sg-pose-frames.is-once img:last-child {
+        animation-fill-mode: forwards;
+    }
     .sg-hero.is-entering .sg-hero-sprite {
         animation: sg-enter .8s ease-in forwards;
     }
@@ -339,8 +345,9 @@
         position: absolute;
         z-index: 3;
         bottom: calc(var(--ground) - .6%);
-        left: calc(18% - var(--u) * 8);
-        width: calc(var(--u) * 22);
+        /* 착지 먼지: 캐릭터 크기에 맞춰 (캐릭터 27 기준 왼쪽 8 · 너비 22) */
+        left: calc(var(--hero-left) - var(--hero-size) * 8 / 27);
+        width: calc(var(--hero-size) * 22 / 27);
         image-rendering: pixelated;
         pointer-events: none;
         animation: sg-dust .65s ease-out both;
@@ -465,10 +472,10 @@
     }
     .sg-portal-ring {
         inset: 7%;
-        border: calc(var(--u) * 1.6) solid rgba(235, 245, 255, .95);
-        outline: calc(var(--u) * .7) dashed rgba(255, 255, 255, .55);
-        outline-offset: calc(var(--u) * 1.2);
-        box-shadow: 0 0 calc(var(--u) * 2.4) #bfe0ff, inset 0 0 calc(var(--u) * 3) #8fc0ff;
+        border: calc(var(--w) * 1.6) solid rgba(235, 245, 255, .95);
+        outline: calc(var(--w) * .7) dashed rgba(255, 255, 255, .55);
+        outline-offset: calc(var(--w) * 1.2);
+        box-shadow: 0 0 calc(var(--w) * 2.4) #bfe0ff, inset 0 0 calc(var(--w) * 3) #8fc0ff;
         animation: sg-spin 7s linear infinite reverse;
     }
     .sg-portal-core {
@@ -480,9 +487,9 @@
         position: absolute;
         top: 50%;
         left: 50%;
-        width: calc(var(--u) * 1.2);
-        height: calc(var(--u) * 1.2);
-        margin: calc(var(--u) * -.6) 0 0 calc(var(--u) * -.6);
+        width: calc(var(--w) * 1.2);
+        height: calc(var(--w) * 1.2);
+        margin: calc(var(--w) * -.6) 0 0 calc(var(--w) * -.6);
         background: #eef7ff;
         box-shadow: 0 0 6px #9fd0ff;
         opacity: 0;
@@ -506,12 +513,12 @@
         animation: sg-flash .55s ease-in 1.4s both;
     }
 
-    @keyframes :global(sg-spin) {
+    @keyframes #{':global(sg-spin)'} {
         to {
             transform: rotate(360deg);
         }
     }
-    @keyframes :global(sg-pulse) {
+    @keyframes #{':global(sg-pulse)'} {
         from {
             opacity: .7;
             transform: scale(.96);
@@ -521,10 +528,10 @@
             transform: scale(1.04);
         }
     }
-    @keyframes :global(sg-pull) {
+    @keyframes #{':global(sg-pull)'} {
         0% {
             opacity: 0;
-            transform: rotate(var(--a)) translateX(calc(var(--u) * 32)) scale(1);
+            transform: rotate(var(--a)) translateX(calc(var(--w) * 32)) scale(1);
         }
         25% {
             opacity: 1;
@@ -534,13 +541,13 @@
             transform: rotate(calc(var(--a) + 170deg)) translateX(0) scale(.2);
         }
     }
-    @keyframes :global(sg-portal-open) {
+    @keyframes #{':global(sg-portal-open)'} {
         to {
             transform: scale(1.05);
             filter: brightness(1.15);
         }
     }
-    @keyframes :global(sg-portal-burst) {
+    @keyframes #{':global(sg-portal-burst)'} {
         60% {
             transform: scale(1.15);
             filter: brightness(1.4);
@@ -551,7 +558,7 @@
         }
     }
     /* 포털 쪽으로 몸이 쏠림 → 회전하며 끌려감 → 중심에서 사라짐 */
-    @keyframes :global(sg-suck) {
+    @keyframes #{':global(sg-suck)'} {
         0% {
             transform: none;
         }
@@ -569,59 +576,65 @@
             filter: brightness(2.5);
         }
     }
-    @keyframes :global(sg-run) {
+    @keyframes #{':global(sg-run)'} {
         50% {
-            transform: translateY(calc(var(--u) * -.8)) rotate(-2deg);
+            transform: translateY(calc(var(--w) * -.8)) rotate(-2deg);
         }
     }
-    @keyframes :global(sg-pose-frame-2) {
-        0%, 50% {
+    /* step-end라 0% → 경계 직전까지 보이고 경계 지점에서 바로 꺼진다 (경계에서 앞뒤 두 장이 겹쳐 보이지 않게) */
+    @keyframes #{':global(sg-pose-frame-2)'} {
+        0% {
             opacity: 1;
         }
-        50.001%, 100% {
+        50%, 100% {
             opacity: 0;
         }
     }
-    @keyframes :global(sg-pose-frame-3) {
-        0%, 33.333% {
+    @keyframes #{':global(sg-pose-frame-3)'} {
+        0% {
             opacity: 1;
         }
-        33.334%, 100% {
+        33.333%, 100% {
             opacity: 0;
         }
     }
-    @keyframes :global(sg-pose-frame-4) {
-        0%, 25% {
+    @keyframes #{':global(sg-pose-frame-4)'} {
+        0% {
             opacity: 1;
         }
-        25.001%, 100% {
+        25%, 100% {
             opacity: 0;
         }
     }
-    @keyframes :global(sg-pose-frame-5) {
-        0%, 20% {
+    @keyframes #{':global(sg-pose-frame-5)'} {
+        0% {
             opacity: 1;
         }
-        20.001%, 100% {
+        20%, 100% {
             opacity: 0;
         }
     }
-    @keyframes :global(sg-float) {
+    @keyframes #{':global(sg-pose-once)'} {
+        from, to {
+            opacity: 1;
+        }
+    }
+    @keyframes #{':global(sg-float)'} {
         50% {
-            transform: translateY(calc(var(--u) * -1.6)) rotate(3deg);
+            transform: translateY(calc(var(--w) * -1.6)) rotate(3deg);
         }
     }
-    @keyframes :global(sg-collect) {
+    @keyframes #{':global(sg-collect)'} {
         30% {
             opacity: 1;
-            transform: translateY(calc(var(--u) * -2)) scale(1.25) rotate(-8deg);
+            transform: translateY(calc(var(--w) * -2)) scale(1.25) rotate(-8deg);
         }
         100% {
             opacity: 0;
-            transform: translateY(calc(var(--u) * -12)) scale(.4) rotate(18deg);
+            transform: translateY(calc(var(--w) * -12)) scale(.4) rotate(18deg);
         }
     }
-    @keyframes :global(sg-burst) {
+    @keyframes #{':global(sg-burst)'} {
         0% {
             opacity: 0;
             transform: translate(-50%, -54%) scale(.2) rotate(0);
@@ -635,7 +648,7 @@
             transform: translate(-50%, -54%) scale(1.35) rotate(24deg);
         }
     }
-    @keyframes :global(sg-label) {
+    @keyframes #{':global(sg-label)'} {
         0% {
             opacity: 0;
             transform: translate(-50%, 10px) scale(.8);
@@ -649,7 +662,7 @@
             transform: translate(-50%, -24px) scale(1);
         }
     }
-    @keyframes :global(sg-spark) {
+    @keyframes #{':global(sg-spark)'} {
         0% {
             opacity: 0;
             transform: scale(.4);
@@ -663,7 +676,7 @@
             transform: scale(1.2) translateY(-12px);
         }
     }
-    @keyframes :global(sg-dust) {
+    @keyframes #{':global(sg-dust)'} {
         0% {
             opacity: .95;
             transform: translateX(0) scale(.6);
@@ -671,11 +684,11 @@
         }
         100% {
             opacity: 0;
-            transform: translateX(calc(var(--u) * -8)) scale(1);
+            transform: translateX(calc(var(--w) * -8)) scale(1);
             transform-origin: right bottom;
         }
     }
-    @keyframes :global(sg-exclaim) {
+    @keyframes #{':global(sg-exclaim)'} {
         from {
             opacity: 0;
             transform: translateY(12px) scale(.5);
@@ -685,30 +698,30 @@
             transform: translateY(0) scale(1);
         }
     }
-    @keyframes :global(sg-portal) {
+    @keyframes #{':global(sg-portal)'} {
         to {
-            filter: drop-shadow(0 0 calc(var(--u) * 3) rgba(140, 170, 255, .9)) brightness(1.15);
+            filter: drop-shadow(0 0 calc(var(--w) * 3) rgba(140, 170, 255, .9)) brightness(1.15);
         }
     }
-    @keyframes :global(sg-enter) {
+    @keyframes #{':global(sg-enter)'} {
         to {
             opacity: 0;
-            transform: scale(.35) translateY(calc(var(--u) * -6));
+            transform: scale(.35) translateY(calc(var(--w) * -6));
         }
     }
-    @keyframes :global(sg-clear-pop) {
+    @keyframes #{':global(sg-clear-pop)'} {
         from {
             opacity: 0;
             transform: translate(-50%, -30%) scale(.7);
         }
     }
-    @keyframes :global(sg-card-pop) {
+    @keyframes #{':global(sg-card-pop)'} {
         from {
             opacity: 0;
             transform: translateY(20px) scale(.7);
         }
     }
-    @keyframes :global(sg-flash) {
+    @keyframes #{':global(sg-flash)'} {
         from {
             opacity: 0;
         }
@@ -716,7 +729,7 @@
             opacity: 1;
         }
     }
-    @keyframes :global(sg-blink) {
+    @keyframes #{':global(sg-blink)'} {
         50% {
             opacity: .3;
         }
@@ -735,13 +748,23 @@
         .sg-top-center {
             top: calc(clamp(22px, 4vw, 56px) + .9rem * 1.55 + 6px + 10px);
             left: clamp(18px, 2.8vw, 56px);
+            align-items: flex-start;
             transform: none;
         }
-        .sg-side {
-            gap: 18px;
+        /* 캐릭터: 인트로 시작 화면(IntroStart.module.scss 모바일 .intro-start-character)과 같은 크기 · 왼쪽 위치.
+           세로는 스테이지마다 배경의 잔디선(--ground)에 발을 맞춘다 */
+        .sg {
+            --hero-size: clamp(112px, 27vw, 144px);
+            --hero-left: 8%;
         }
-        .sg-menu {
-            font-size: 1.1rem;
+        /* 인벤토리: 한 줄에 8칸씩 고정해 15칸이 항상 두 줄(8 + 7)로 나온다.
+           칸 크기는 좌우 여백 18px씩 · 칸 사이 4px × 7을 뺀 너비의 1/8 (최대 34px) */
+        .sg-inventory {
+            --slot: min(34px, (100vw - 36px - 28px) / 8);
+        }
+        .sg-inventory ul {
+            display: grid;
+            grid-template-columns: repeat(8, var(--slot));
         }
     }
 }

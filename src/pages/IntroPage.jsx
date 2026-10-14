@@ -17,11 +17,16 @@ export default function IntroPage({ onEnterMain }) {
     const collectItem = useCallback((item) => {
         setInventory((items) => (items.some(({ id }) => id === item.id) ? items : [...items, item]))
     }, [])
+    // 시작 화면으로 돌아가면 처음부터 다시 하는 것이라 먹은 아이템도 비운다
+    const restart = useCallback(() => {
+        setInventory([])
+        engine.restart()
+    }, [engine])
 
     return (
         <div className={`${styles.scope} intro-page`}>
             {!engine.started && <IntroStart onSkip={engine.skip} onStart={engine.start} onSelectStage={engine.goToStage} />}
-            {engine.started && <Stage key={engine.runId} onClear={engine.clearStage} onSkip={engine.skip} onSelectStage={engine.goToStage} inventory={inventory} onCollect={collectItem} />}
+            {engine.started && <Stage key={engine.runId} onClear={engine.clearStage} onSkip={engine.skip} onSelectStage={engine.goToStage} onRestart={restart} inventory={inventory} onCollect={collectItem} />}
         </div>
     )
 }

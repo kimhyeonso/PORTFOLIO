@@ -3,11 +3,13 @@ import burst from '../../assets/image/intro/item/item_light.png'
 import sparkle from '../../assets/image/intro/item/character_light.png'
 import dust from '../../assets/image/intro/item/jump.png'
 import exclamation from '../../assets/image/intro/item/exclamation.png'
+import { allIntroItems } from '../../data/introItems.js'
 import IntroPauseButton from './IntroPauseButton.jsx'
-import IntroStageMenu from './IntroStageMenu.jsx'
+import IntroPauseModal from './IntroPauseModal.jsx'
 import styles from './IntroStageGame.module.scss'
 
-// 모든 거리 단위는 화면 높이의 1% (u). 배경이 높이 기준으로 깔리므로 지면/아이템 위치가 어떤 화면비에서도 맞는다.
+// 화면 높이의 1% (u). 배경이 높이 기준으로 깔리므로 지면/아이템 위치가 어떤 화면비에서도 맞는다.
+// 아이템 · 문 · 점프 · 속도는 월드 단위(w)로 잰다 — PC에서는 w = u, 캐릭터가 작아지는 모바일에서는 그 비율만큼 작다.
 const SPEED = 42 // u / s
 const JUMP_TIME = 0.78 // s
 const JUMP_HEIGHT = 15 // u
@@ -17,18 +19,19 @@ const TITLE_TIME = 2.2 // s, 타이틀 카드 노출 시간
 const ENTER_TIME = 1.3 // s, 문 진입 → 화면 전환
 const PORTAL_ENTER_TIME = 2 // s, 포털에 빨려 들어감 → 화면 전환
 const PORTAL_BITS = Array.from({ length: 12 }, (_, index) => index)
-const HERO_SIZE = 27 // u
-const HERO_LEFT = 0.18 // 화면 너비 비율
+// 캐릭터 크기 · 왼쪽 위치는 CSS(--hero-size · --hero-left, 모바일은 따로)에서 정하고, 판정에는 그려진 크기를 읽어 쓴다
+const HERO_BASE = 27 // u, PC 캐릭터 크기 (CSS --hero-size 기본값과 같다) — 월드 단위(w)의 기준
 const HIT_OFFSET = 0.62 // 점프 스프라이트의 손 위치 (캐릭터 너비 비율)
 
 
 /**
  * 횡스크롤 스테이지 공용 컴포넌트.
  * config: { number, name, background, bgScale, bgOffset, bgPanAspect, ground, sprites, items, door, readyTime, exclaim, titleCard, hint, arriving, clearMessage }
- * inventory: 지금까지(이전 스테이지 포함) 먹은 아이템 [{ id, src, name, size }] → 왼쪽 아래 인벤토리에 나열
+ * inventory: 지금까지(이전 스테이지 포함) 먹은 아이템 [{ id, src, name, size }] → 왼쪽 아래 인벤토리(전체 아이템 칸)에서 이 아이템들만 색으로 채운다
  * onCollect: 아이템을 먹을 때 (item)
+ * onRestart: 일시정지 모달의 BACK TO START — Press Start 전 시작 화면으로
  */
-export default function IntroStageGame({ config, onClear, onSkip, onSelectStage, inventory = [], onCollect }) {
+export default function IntroStageGame({ config, onClear, onSkip, onSelectStage, onRestart, inventory = [], onCollect }) {
     const { number, name, background, bgScale = 1, bgOffset = 0, bgPanAspect, ground, sprites, items, door, readyTime = 1, exclaim, titleCard, hint, arriving, clearMessage } = config
     const rootRef = useRef(null)
     const bgRef = useRef(null)
@@ -56,17 +59,21 @@ export default function IntroStageGame({ config, onClear, onSkip, onSelectStage,
         onCollectRef.current = onCollect
     }, [onClear, onCollect])
 
-    // 첫 점프 때 이미지 로딩으로 캐릭터가 깜빡이지 않도록 스프라이트를 미리 불러온다
+    // 자세가 바뀔 때(점프 → 착지 등) 새로 붙는 이미지가 로딩 · 디코딩 중이라 캐릭터가 잠깐 사라지지 않도록
+    // 스프라이트를 미리 불러와 디코딩까지 해 두고, 스테이지에 있는 동안 참조를 잡아 둔다
     useEffect(() => {
-        Object.values(sprites).flat().forEach((src) => {
+        const images = Object.values(sprites).flat().map((src) => {
             const image = new Image()
             image.src = src
+            image.decode?.().catch(() => {})
+            return image
         })
+        return () => images.splice(0)
     }, [sprites])
 
     useEffect(() => {
         const root = rootRef.current
-        const game = { time: 0, scroll: 0, walk: 0, phase: titleCard ? 'title' : 'ready', jumpTime: -1, landTime: 0, enterTime: 0, pose: 'run', collected: new Set(), unit: 0 }
+        const game = { time: 0, scroll: 0, walk: 0, phase: titleCard ? 'title' : 'ready', jumpTime: -1, landTime: 0, enterTime: 0, pose: 'run', collected: new Set(), unit: 0, width: 0, heroLeft: 0, heroWidth: 0, world: 0 }
         const readyEnd = (titleCard ? TITLE_TIME : 0) + readyTime
         let last = performance.now()
         let frame = 0
@@ -105,15 +112,24 @@ export default function IntroStageGame({ config, onClear, onSkip, onSelectStage,
             last = now
             const unit = root.clientHeight / 100
             const width = root.clientWidth
-            if (unit !== game.unit) {
+            if (unit !== game.unit || width !== game.width) {
                 game.unit = unit
+                game.width = width
                 root.style.setProperty('--u', `${unit}px`)
+                // 화면 크기가 바뀔 때만 캐릭터의 실제 위치 · 크기를 다시 읽는다 (transform은 offset 값에 영향이 없다)
+                game.heroLeft = heroRef.current.offsetLeft
+                game.heroWidth = heroRef.current.offsetWidth
+                // 월드 단위(w): 캐릭터가 PC 크기(HERO_BASE u)보다 작게 그려지는 화면(모바일)에서는 그 비율만큼 줄인다.
+                // 아이템 · 문 · 점프 · 속도를 w로 재서, 작은 캐릭터에도 PC와 같은 비율 · 같은 타이밍으로 보이게 한다
+                const scale = Math.min(1, game.heroWidth / (HERO_BASE * unit))
+                game.world = unit * scale
+                root.style.setProperty('--w', `${game.world}px`)
+                root.style.setProperty('--world-scale', scale)
             }
-            const heroLeft = width * HERO_LEFT
-            const heroWidth = HERO_SIZE * unit
+            const { heroLeft, heroWidth, world: w } = game
             const hitX = heroLeft + heroWidth * HIT_OFFSET
-            const doorHalf = (door.size / 2) * unit
-            const doorStopX = Math.max(width - doorHalf - 8 * unit, heroLeft + heroWidth + doorHalf)
+            const doorHalf = (door.size / 2) * w
+            const doorStopX = Math.max(width - doorHalf - 8 * w, heroLeft + heroWidth + doorHalf)
             game.time += dt
 
             if (game.phase === 'title' && game.time >= TITLE_TIME) changePhase('ready')
@@ -142,26 +158,26 @@ export default function IntroStageGame({ config, onClear, onSkip, onSelectStage,
             items.forEach((item, index) => {
                 const node = itemRefs.current[index]
                 if (!node || game.collected.has(item.id)) return
-                const x = hitX + (item.distance - game.scroll) * unit
+                const x = hitX + (item.distance - game.scroll) * w
                 node.style.transform = `translate3d(${x}px, 0, 0)`
-                const distance = (x - hitX) / unit
+                const distance = (x - hitX) / w
                 if (game.phase === 'run' && game.jumpTime < 0 && distance > 0 && distance <= (SPEED * JUMP_TIME) / 2) startJump()
                 if ((progress > 0.3 && Math.abs(distance) < 6) || distance < -5) collect(item, node)
             })
 
-            const doorX = hitX + (door.distance - game.scroll) * unit
+            const doorX = hitX + (door.distance - game.scroll) * w
             // 아이템을 모두 먹기 전에는 스크롤을 멈추지 않는다 (넓은 화면에서 문이 먼저 멈추는 것 방지)
             if (game.phase === 'run' && doorX <= doorStopX && game.collected.size === items.length) changePhase('walk')
             if (game.phase === 'walk' && game.jumpTime < 0) {
                 game.walk += SPEED * dt
-                const heroCenterX = heroLeft + heroWidth / 2 + game.walk * unit
+                const heroCenterX = heroLeft + heroWidth / 2 + game.walk * w
                 // 포털은 가장자리에 닿는 순간부터 빨려 들어가고, 문은 중앙까지 걸어간다
                 if (heroCenterX >= doorX - (door.portal ? doorHalf * 0.6 : 0)) {
                     if (door.portal) {
                         // 캐릭터 중심 → 포털 중심까지의 벡터를 CSS 애니메이션에 넘긴다
-                        const portalCenterY = (door.size / 2 - door.sink) * unit
+                        const portalCenterY = (door.size / 2 - door.sink) * w
                         heroRef.current.style.setProperty('--suck-x', `${doorX - heroCenterX}px`)
-                        heroRef.current.style.setProperty('--suck-y', `${(HERO_SIZE / 2) * unit - portalCenterY}px`)
+                        heroRef.current.style.setProperty('--suck-y', `${heroWidth / 2 - portalCenterY}px`)
                     }
                     changePhase('enter')
                 }
@@ -176,13 +192,13 @@ export default function IntroStageGame({ config, onClear, onSkip, onSelectStage,
             }
 
             const elevation = progress >= 0 ? 4 * JUMP_HEIGHT * progress * (1 - progress) : 0
-            heroRef.current.style.transform = `translate3d(${game.walk * unit}px, ${-elevation * unit}px, 0)`
+            heroRef.current.style.transform = `translate3d(${game.walk * w}px, ${-elevation * w}px, 0)`
             doorRef.current.style.transform = `translate3d(${doorX - doorHalf}px, 0, 0)`
             // 배경은 반복하지 않고 한 장을 스테이지 시작 → 문 앞 정지 지점까지 왼쪽 끝에서 오른쪽 끝으로 한 번 훑는다
             // bgPanAspect가 있으면 배경을 그 비율(가로 ÷ 세로) 너비까지만 훑는다 — 유난히 긴 배경이 빨리 지나가지 않게
             const panAspect = bgPanAspect ? Math.min(bgAspect, bgPanAspect) : bgAspect
             const bgRange = Math.max(0, panAspect * 100 * bgScale * unit - width)
-            const stopScroll = door.distance - (doorStopX - hitX) / unit
+            const stopScroll = door.distance - (doorStopX - hitX) / w
             const bgProgress = Math.min(1, Math.max(0, game.scroll / stopScroll))
             bgRef.current.style.backgroundPositionX = `${-bgRange * bgProgress}px`
             frame = requestAnimationFrame(tick)
@@ -197,7 +213,7 @@ export default function IntroStageGame({ config, onClear, onSkip, onSelectStage,
         setPaused(pausedRef.current)
     }
 
-    // 스페이스 바: 멈춤/재생 (점프는 ↑ · W 키나 화면 탭)
+    // 스페이스 바: 멈춤(일시정지 모달 열기)/재생, Esc: 모달이 떠 있으면 재생 (점프는 ↑ · W 키나 화면 탭)
     useEffect(() => {
         const onKeyDown = (event) => {
             if (event.code === 'Space') {
@@ -208,7 +224,13 @@ export default function IntroStageGame({ config, onClear, onSkip, onSelectStage,
                 setPaused(pausedRef.current)
                 return
             }
-            if (!['ArrowUp', 'KeyW'].includes(event.code)) return
+            if (event.code === 'Escape' && pausedRef.current) {
+                pausedRef.current = false
+                setPaused(false)
+                return
+            }
+            // 일시정지 중에는 점프하지 않는다
+            if (pausedRef.current || !['ArrowUp', 'KeyW'].includes(event.code)) return
             if (event.target.closest?.('button')) return
             event.preventDefault()
             jumpRequestRef.current = true
@@ -226,17 +248,23 @@ export default function IntroStageGame({ config, onClear, onSkip, onSelectStage,
     }, [])
 
     const handlePointerDown = (event) => {
-        if (event.target.closest('button')) return
+        // 버튼 · 일시정지 모달을 누른 것은 점프가 아니다
+        if (pausedRef.current || event.target.closest('button')) return
         jumpRequestRef.current = true
     }
 
-    // 인벤토리 칸: 이전 스테이지에서 먹은 것 + 이번 스테이지 아이템 전부(아직 안 먹은 건 흐린 회색으로 미리 자리만 보인다)
+    // 인벤토리 칸: 인트로 전체 아이템이 처음부터 흐린 회색으로 자리만 보이고, 먹을 때마다 원래 색으로 채워진다
+    // (이전 스테이지에서 먹은 것은 kept — 스테이지가 바뀔 때 다시 튀지 않게)
     const stageItemIds = new Set(items.map((item) => item.id))
     const gotIds = new Set(inventory.map((item) => item.id))
-    const inventorySlots = [
-        ...inventory.filter((item) => !stageItemIds.has(item.id)).map((item) => ({ ...item, got: true, kept: true })),
-        ...items.map((item) => ({ id: item.id, src: item.src, name: item.label.replace(' GET!', ''), size: item.size ?? 15, got: gotIds.has(item.id) })),
-    ]
+    const inventorySlots = allIntroItems.map((item) => ({
+        id: item.id,
+        src: item.src,
+        name: item.label.replace(' GET!', ''),
+        size: item.size ?? 15,
+        got: gotIds.has(item.id),
+        kept: gotIds.has(item.id) && !stageItemIds.has(item.id),
+    }))
 
     const clearing = phase === 'enter' || phase === 'done'
     const rootClass = [styles.scope, 'sg', paused && 'is-paused', collectedCount > 0 && 'is-playing', clearing && 'is-clearing', arriving && 'is-arriving', door.portal && 'is-portal', config.smoothSprites && 'is-smooth'].filter(Boolean).join(' ')
@@ -247,16 +275,14 @@ export default function IntroStageGame({ config, onClear, onSkip, onSelectStage,
             <div className="sg-bg" ref={bgRef} />
 
             <h1 className="sg-title"><small>STAGE {number} :</small> {name}</h1>
-            {/* 위쪽 가운데: 왼쪽 제목과 오른쪽 SKIP INTRO 사이에 재생/멈춤 (아이콘 + STOP/PLAY) */}
+            {/* 위쪽 가운데: 왼쪽 제목과 오른쪽 SKIP INTRO 사이에 재생/멈춤 (아이콘 + STOP/PLAY), 그 바로 밑에 조작 안내 */}
             <div className="sg-top-center">
                 <IntroPauseButton paused={paused} onToggle={togglePause} />
+                {hint && <p className="sg-hint" aria-hidden="true">TAP : JUMP / SPACE : PAUSE</p>}
             </div>
             <button className="intro-skip" type="button" onClick={onSkip}>
                 SKIP INTRO <span aria-hidden="true">▶</span>
             </button>
-            <div className="sg-side">
-                <IntroStageMenu className="sg-menu" current={Number(number) - 1} onSelect={onSelectStage} />
-            </div>
 
             <div className={`sg-door ${phase === 'walk' || clearing ? 'is-open' : ''}`} ref={doorRef}>
                 {door.portal ? (
@@ -288,7 +314,7 @@ export default function IntroStageGame({ config, onClear, onSkip, onSelectStage,
                 {sparkKey > 0 && <img className="sg-spark" key={sparkKey} src={sparkle} alt="" />}
                 <div className={`sg-hero-sprite ${poseFrames ? 'is-pose-frames' : ''}`}>
                     {poseFrames ? (
-                        <span className="sg-pose-frames" role="img" aria-label={`Kim Hyeonsoo ${pose} character`} data-frame-count={poseFrames.length} style={{ '--frames': poseFrames.length, '--frame-time': `${poseFrameTime}s` }}>
+                        <span className={`sg-pose-frames ${poseDuration ? 'is-once' : ''}`} role="img" aria-label={`Kim Hyeonsoo ${pose} character`} data-frame-count={poseFrames.length} style={{ '--frames': poseFrames.length, '--frame-time': `${poseFrameTime}s` }}>
                             {poseFrames.map((src, index) => <img src={src} alt="" key={src} style={{ '--i': index }} />)}
                         </span>
                     ) : <img src={sprites[pose]} alt="Kim Hyeonsoo game character" />}
@@ -302,7 +328,6 @@ export default function IntroStageGame({ config, onClear, onSkip, onSelectStage,
                 </p>
             )}
             {clearing && <p className="sg-clear">STAGE {number} CLEAR!{clearMessage && <small>{clearMessage}</small>}</p>}
-            {hint && <p className="sg-hint" aria-hidden="true">TAP : JUMP / SPACE : PAUSE</p>}
 
             <div className="sg-inventory" aria-label="먹은 프로그램">
                 <p className="sg-inventory-title">ITEMS <span>{inventorySlots.filter((slot) => slot.got).length} / {inventorySlots.length}</span></p>
@@ -314,6 +339,8 @@ export default function IntroStageGame({ config, onClear, onSkip, onSelectStage,
                     ))}
                 </ul>
             </div>
+
+            {paused && <IntroPauseModal current={Number(number) - 1} onResume={togglePause} onRestart={onRestart} onSelectStage={onSelectStage} onSkip={onSkip} />}
         </section>
     )
 }

@@ -1,8 +1,5 @@
 .scope {
     isolation: isolate;
-    :global(.intro-start-character) {
-        animation: intro-idle 1.3s steps(2) infinite;
-    }
     :global(.intro-start-item) {
         animation: intro-float 2.2s ease-in-out infinite;
     }
@@ -11,11 +8,6 @@
     }
 }
 
-@keyframes intro-idle {
-    50% {
-        transform: translateY(-6px);
-    }
-}
 
 @keyframes intro-float {
     50% {
@@ -128,6 +120,28 @@
         image-rendering: pixelated;
         filter: drop-shadow(7px 7px 0 rgba(13, 49, 65, .25));
     }
+    .intro-start-walk-frames {
+        --frame-time: .24s; // 걷기 프레임 한 장이 보이는 시간
+        position: relative;
+        display: block;
+        width: 100%;
+        aspect-ratio: 356 / 348;
+    }
+    .intro-start-walk-frames img {
+        position: absolute;
+        inset: 0;
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        opacity: 0;
+        image-rendering: pixelated;
+        animation: intro-start-walk-frame calc(var(--frame-time) * var(--frames)) step-end infinite;
+        animation-delay: calc(var(--frame-time) * (var(--i) - var(--frames)));
+    }
+    .intro-start-walk-frames img:first-child {
+        opacity: 1;
+    }
     .intro-start-item {
         position: absolute;
         z-index: 3;
@@ -161,12 +175,17 @@
         border: 0;
         border-radius: 18px;
         padding: clamp(17px, 1.9vw, 31px) 28px;
+        // Press Start 2P는 글자 바닥이 기준선보다 약 .14em 위에 있어 글자가 위로 떠 보인다 → 위아래 여백을 .07em씩 옮겨 상자 가운데에 맞춘다
+        padding-top: calc(clamp(17px, 1.9vw, 31px) + .07em);
+        padding-bottom: calc(clamp(17px, 1.9vw, 31px) - .07em);
         color: #4e4e4e;
         background: #fff;
         box-shadow: 0 12px 0 rgba(7, 34, 61, .25);
         font-family: 'Press Start 2P', monospace;
         font-size: clamp(.82rem, 1.45vw, 1.55rem);
         line-height: 1.25;
+        // 버튼 초기화(index.css)가 text-align: inherit라 그대로 두면 상자가 글자보다 넓을 때 글자가 왼쪽에 붙는다
+        text-align: center;
     }
     .intro-press-start:hover, .intro-press-start:focus-visible {
         color: #fff;
@@ -206,5 +225,21 @@
             left: 69%;
             width: clamp(58px, 14vw, 82px);
         }
+    }
+}
+
+// 걷기 프레임은 :global 블록 안에서 이름으로 부르므로 키프레임 이름도 전역으로 둔다 (그대로 두면 CSS Modules가 이름을 바꿔 애니메이션이 안 붙는다)
+// step-end라 0% → 20% 직전까지 보이고 20%에서 바로 꺼진다 (경계에서 앞뒤 두 장이 겹쳐 보이지 않게)
+@keyframes #{':global(intro-start-walk-frame)'} {
+    0% { opacity: 1; }
+    20%, 100% { opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .scope :global(.intro-start-walk-frames img) {
+        animation: none;
+    }
+    .scope :global(.intro-start-walk-frames img:not(:first-child)) {
+        display: none;
     }
 }

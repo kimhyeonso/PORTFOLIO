@@ -1,21 +1,21 @@
 import background from '../../assets/image/intro/background/stage04-background.png'
-import run from '../../assets/image/intro/character/stage04_run.png'
+// 달리기 5장 · 점프 5장 모두 STAGE 01과 같은 356×348 캔버스에 발 위치도 같다
 import run01 from '../../assets/image/intro/character/stage04_run01.png'
 import run02 from '../../assets/image/intro/character/stage04_run02.png'
 import run03 from '../../assets/image/intro/character/stage04_run03.png'
 import run04 from '../../assets/image/intro/character/stage04_run04.png'
 import run05 from '../../assets/image/intro/character/stage04_run05.png'
-import jump from '../../assets/image/intro/character/stage04_jump.png'
-import land from '../../assets/image/intro/character/stage04_landing.png'
-import git from '../../assets/image/intro/item/item_git.png'
-import react from '../../assets/image/intro/item/item_react.png'
-import next from '../../assets/image/intro/item/item_next.png'
+// 점프: STAGE 01과 같은 구성 — 01 도약 → 02 상승 → 03 정점 → 04 하강 / 05 착지(웅크림)
+import jump01 from '../../assets/image/intro/character/stage04_jump01.png'
+import jump02 from '../../assets/image/intro/character/stage04_jump02.png'
+import jump03 from '../../assets/image/intro/character/stage04_jump03.png'
+import jump04 from '../../assets/image/intro/character/stage04_jump04.png'
+import jump05 from '../../assets/image/intro/character/stage04_jump05.png'
+import { introItems } from '../../data/introItems.js'
 import IntroStageGame from './IntroStageGame.jsx'
 
-// distance: 캐릭터로부터의 거리(u), y: 아이템 중심의 세로 위치(%)
-// size: 이미지 너비(u). 이미지마다 여백이 달라서, 실제 그림 면적이 약 13u×13u로 같아 보이도록 이미지별로 계산한 값
+// 아이템(위치 · 크기)은 data/introItems.js에서 스테이지별로 정한다
 // 마지막 스테이지: 문 대신 포털(door.portal)에 빨려 들어가며 인트로가 끝난다.
-// 캐릭터가 도트가 아닌 일러스트라 smoothSprites로 부드럽게 축소한다.
 const config = {
     number: '04',
     name: 'FRONTEND',
@@ -26,19 +26,15 @@ const config = {
     // 다른 스테이지와 같은 너비까지만 훑어 같은 속도로 보이게 한다 (오른쪽 나머지 부분은 보이지 않는다)
     bgPanAspect: 2.32,
     ground: 19.5,
-    sprites: { run, runFrames: [run01, run02, run03, run04, run05], jump, land },
-    smoothSprites: true,
-    items: [
-        { id: 'git', src: git, label: 'GITHUB GET!', distance: 75, y: 39, size: 14.4 },
-        { id: 'react', src: react, label: 'REACT GET!', distance: 135, y: 44, size: 16.4 },
-        { id: 'next', src: next, label: 'NEXT.JS GET!', distance: 195, y: 39, size: 16 },
-    ],
+    // 달리기 순서는 STAGE 01의 흐름(넓은 보폭 → 넓은 보폭 → 다리 모음 → 다리 모음 → 넓은 보폭)에 맞춰 03 · 02를 바꿔 둔다
+    sprites: { run: run01, runFrames: [run01, run02, run03, run04, run05], jump: jump03, jumpFrames: [jump01, jump02, jump03, jump04], land: jump05 },
+    items: introItems.stage04,
     door: { portal: true, distance: 305, size: 46, sink: 0 },
     readyTime: 0.3,
     titleCard: true,
     arriving: true,
 }
 
-export default function IntroStage04({ onClear, onSkip, onSelectStage, inventory, onCollect }) {
-    return <IntroStageGame config={config} onClear={onClear} onSkip={onSkip} onSelectStage={onSelectStage} inventory={inventory} onCollect={onCollect} />
+export default function IntroStage04({ onClear, onSkip, onSelectStage, onRestart, inventory, onCollect }) {
+    return <IntroStageGame config={config} onClear={onClear} onSkip={onSkip} onSelectStage={onSelectStage} onRestart={onRestart} inventory={inventory} onCollect={onCollect} />
 }

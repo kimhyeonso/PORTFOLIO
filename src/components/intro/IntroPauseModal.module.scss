@@ -1,0 +1,145 @@
+.scope {
+    isolation: isolate;
+}
+
+:global {
+    /* 게임 화면 전체를 어둡게 덮고 가운데에 패널 (스테이지 클리어 문구 · 타이틀 카드와 같은 남색 계열) */
+    .sg-pause-modal {
+        position: absolute;
+        z-index: 30;
+        inset: 0;
+        display: grid;
+        place-items: center;
+        padding: 16px;
+        background: rgba(8, 22, 40, .58);
+        cursor: default;
+        animation: sg-pause-fade .2s ease-out both;
+    }
+    /* 일시정지 중에는 .sg.is-paused *가 모든 애니메이션을 멈추는데, 모달은 멈춘 상태에서 뜨는 것이라 예외로 돌린다 */
+    .sg.is-paused .sg-pause-modal, .sg.is-paused .sg-pause-modal * {
+        animation-play-state: running !important;
+    }
+    .sg-pause-panel {
+        position: relative;
+        display: grid;
+        justify-items: center;
+        gap: clamp(16px, 2.6vh, 28px);
+        width: min(100%, 440px);
+        padding: clamp(24px, 4vh, 44px) clamp(20px, 3vw, 40px);
+        border: 4px solid #fff;
+        border-radius: 18px;
+        color: #fff;
+        background: rgba(5, 34, 62, .9);
+        box-shadow: 0 12px 0 rgba(7, 34, 61, .35);
+        animation: sg-pause-pop .3s cubic-bezier(.2, .9, .3, 1.3) both;
+    }
+    /* 오른쪽 위 닫기(✕) — 누르면 PLAY와 같이 이어서 하기 */
+    .sg-pause-close {
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        display: grid;
+        place-items: center;
+        width: 40px;
+        height: 40px;
+        border: 0;
+        border-radius: 10px;
+        padding: 0;
+        color: #fff;
+        background: none;
+        font-family: 'Press Start 2P', monospace;
+        font-size: 1rem;
+        line-height: 1;
+        cursor: pointer;
+        transition: color .15s ease, background .15s ease;
+    }
+    .sg-pause-close:hover {
+        color: #ffe47b;
+        background: rgba(255, 255, 255, .1);
+    }
+    .sg-pause-close:focus-visible {
+        outline: 3px solid #ffe47b;
+        outline-offset: 2px;
+    }
+    .sg-pause-title {
+        margin: 0;
+        font-family: 'Press Start 2P', monospace;
+        font-size: clamp(1.3rem, 2.6vw, 2.2rem);
+        font-weight: 400;
+        line-height: 1;
+        text-shadow: 4px 4px 0 rgba(12, 42, 74, .6);
+    }
+    .sg-pause-actions {
+        display: grid;
+        gap: 12px;
+        width: 100%;
+    }
+    /* 시작 화면 Press Start 버튼과 같은 모양 (흰 바탕 · 둥근 모서리 · 아래 그림자) */
+    .sg-pause-button {
+        width: 100%;
+        border: 3px solid #fff;
+        border-radius: 14px;
+        padding: 14px 16px;
+        color: #fff;
+        background: none;
+        font-family: 'Press Start 2P', monospace;
+        font-size: clamp(.68rem, 1.05vw, .95rem);
+        line-height: 1.25;
+        text-align: center;
+        cursor: pointer;
+        transition: color .15s ease, background .15s ease;
+    }
+    .sg-pause-button.is-primary {
+        color: #4e4e4e;
+        background: #fff;
+        box-shadow: 0 6px 0 rgba(7, 34, 61, .35);
+    }
+    .sg-pause-button:hover {
+        color: #fff;
+        background: #274e77;
+    }
+    /* 모달이 열리면 PLAY에 포커스가 가므로, 포커스는 노란 테두리만 (흰 PLAY 버튼 모양은 그대로) */
+    .sg-pause-button:focus-visible {
+        outline: 3px solid #ffe47b;
+        outline-offset: 2px;
+    }
+    /* 맨 아래 SKIP INTRO: 스테이지 메뉴와 조금 떨어뜨린다 */
+    .sg-pause-button.is-skip {
+        margin-top: 6px;
+    }
+    .sg-pause-label {
+        margin: 6px 0 0;
+        color: #fff6b0;
+        font-family: 'Press Start 2P', monospace;
+        font-size: clamp(.55rem, .8vw, .75rem);
+        letter-spacing: .08em;
+    }
+    /* 스테이지 메뉴: 픽셀 글꼴(Jersey 10 — IntroStageGame.module.scss에서 불러옴), 가운데 정렬 */
+    .sg-pause-menu {
+        display: grid;
+        justify-items: center;
+        gap: clamp(8px, 1.6vh, 16px);
+        margin: 0;
+        padding: 0;
+        font-family: 'Jersey 10', 'Press Start 2P', monospace;
+        font-size: clamp(1.2rem, 2vw, 1.9rem);
+        line-height: 1;
+        list-style: none;
+        text-align: center;
+        text-shadow: 3px 3px 0 rgba(12, 42, 74, .5);
+    }
+    .sg-pause-menu button:hover, .sg-pause-menu button:focus-visible {
+        transform: none;
+    }
+    @keyframes #{':global(sg-pause-fade)'} {
+        from {
+            opacity: 0;
+        }
+    }
+    @keyframes #{':global(sg-pause-pop)'} {
+        from {
+            opacity: 0;
+            transform: scale(.9);
+        }
+    }
+}

@@ -24,11 +24,17 @@ export function useIntroEngine({ onEnterMain }) {
     goToStage(0)
   }, [goToStage])
 
+  // Press Start 누르기 전의 시작 화면으로 돌아간다 (일시정지 모달의 BACK TO START)
+  const restart = useCallback(() => {
+    setStarted(false)
+    setPhase(stages[0])
+  }, [])
+
   const clearStage = useCallback(() => {
     const nextIndex = stages.indexOf(phase) + 1
     if (nextIndex < stages.length) goToStage(nextIndex)
     else onEnterMain()
   }, [goToStage, onEnterMain, phase])
 
-  return { start, skip, clearStage, goToStage, started, phase, runId }
+  return { start, restart, skip, clearStage, goToStage, started, phase, runId }
 }
