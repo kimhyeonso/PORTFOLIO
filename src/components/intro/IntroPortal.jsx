@@ -23,7 +23,7 @@ function addVortex(timeline, rings, position, { duration = RING_DURATION, stagge
  *  1. 인트로가 가운데로 확대·흐려지며 빨려 들고, 워프 터널과 같은 화이트블루 빛이 차오르며 링 소용돌이가 퍼져 나온다
  *  2. "다음 STAGE는 어딜까?" 질문이 떠오르고 QUESTION_TIME 동안 보여준다
  *  3. 자동으로 소용돌이가 한 번 더 터지고 화이트블루 빛이 화면을 채운 뒤 옅은 크림빛으로 넘어가며 onEnter(메인으로 이동) →
- *     메인 홀이 살짝 확대·흐림에서 내려앉고, 이 화면이 사라지면 onDone을 부른다
+ *     메인 홀은 제자리에서 흐림만 걷히고, 이 화면이 사라지면 onDone을 부른다
  * 메인이 나오기 전까지 오른쪽 위 SKIP INTRO로 언제든(소용돌이 · 터널 중에도) 바로 3으로 넘어갈 수 있다.
  * 메인으로 바뀐 뒤에도 끊기지 않도록 AppRoutes에서 페이지 바깥에 띄운다.
  *
@@ -166,9 +166,9 @@ export default function IntroPortal({ warp: warpRequested = false, skip: skipReq
     )
 }
 
-// 메인 홀은 살짝 확대·흐림에서 제자리로 내려앉는다 (이동 직후엔 아직 안 그려졌을 수 있어 몇 프레임 기다린다)
+// 메인 홀은 제자리에 그대로 둔 채 흐림만 걷힌다 (이동 직후엔 아직 안 그려졌을 수 있어 몇 프레임 기다린다)
 function settleHall(tries = 0) {
     const hall = document.querySelector('.main-hall')
-    if (hall) gsap.fromTo(hall, { scale: 1.12, filter: 'blur(6px)' }, { scale: 1, filter: 'blur(0px)', duration: 1.3, ease: 'power3.out', clearProps: 'transform,filter' })
+    if (hall) gsap.fromTo(hall, { filter: 'blur(6px)' }, { filter: 'blur(0px)', duration: 1.3, ease: 'power3.out', clearProps: 'filter' })
     else if (tries < 30) requestAnimationFrame(() => settleHall(tries + 1))
 }

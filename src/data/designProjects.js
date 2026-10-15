@@ -198,7 +198,7 @@ export const allDesignProjects = [
     ],
     description: '한우자조금의 캐릭터를 이용하여 한우 먹는날을 1년의 4종 컨셉에 대한 KV를 제작하고 그에 맞는 광고 배너 및 검색광고를 제작하였습니다',
     thumbnail: hanwooThumbnail,
-    tools: ['Photoshop', 'Illustrator', 'PowerPoint'],
+    tools: ['Photoshop', 'Illustrator', 'PowerPoint', 'Gemini'],
     link: '',
     images: [], // 세부정보 팝업은 components/details/HanwooDetail.jsx (코드로 만든 상세페이지)
   },
@@ -218,7 +218,7 @@ export const allDesignProjects = [
     ],
     description: '청소년 샴푸의 타겟을 청소년과 학부모 2가지를 선정하고 타겟의 맞는 KV과 검색 광고 디자인을 제작하였습니다',
     thumbnail: teenatureThumbnail,
-    tools: ['Photoshop'],
+    tools: ['Photoshop', 'Gemini'],
     link: '',
     images: [], // 세부정보 팝업은 components/details/TeenatureDetail.jsx (코드로 만든 상세페이지)
   },

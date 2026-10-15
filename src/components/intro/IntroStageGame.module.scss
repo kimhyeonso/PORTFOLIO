@@ -74,9 +74,14 @@
         gap: clamp(10px, 1.4vw, 18px);
         transform: translateX(-50%);
     }
-    /* 조작 안내: 재생/멈춤 버튼 바로 밑 (.sg-top-center 안). 첫 아이템을 먹으면 사라진다 */
+    /* 조작 안내: 캐릭터 머리 위 가운데 (준비 중 뜨는 느낌표 .sg-exclaim보다 위). 첫 아이템을 먹고 2초 뒤 사라진다 (IntroStageGame.jsx HINT_LINGER) */
     .sg-hint {
+        position: absolute;
+        z-index: 8;
+        bottom: calc(var(--ground) + var(--hero-size) * 1.35);
+        left: calc(var(--hero-left) + var(--hero-size) / 2);
         margin: 0;
+        transform: translateX(-50%);
         white-space: nowrap;
         pointer-events: none;
         color: #fff;
@@ -87,7 +92,7 @@
         animation: sg-blink 1.1s steps(2) infinite;
         transition: opacity .6s ease;
     }
-    .sg.is-playing .sg-hint {
+    .sg.is-hint-done .sg-hint {
         opacity: 0;
         animation: none;
     }
@@ -773,6 +778,10 @@
         .sg {
             --hero-size: clamp(112px, 27vw, 144px);
             --hero-left: 8%;
+        }
+        /* 조작 안내는 모바일에서 보여주지 않는다 */
+        .sg-hint {
+            display: none;
         }
         /* 인벤토리: 한 줄에 8칸씩 고정해 16칸이 항상 두 줄(8 + 8)로 나온다.
            칸 크기는 좌우 여백 18px씩 · 칸 사이 4px × 7을 뺀 너비의 1/8 (최대 34px) */

@@ -142,4 +142,17 @@
         height: 60vh;
         background: #f9f9f9;
     }
+
+    /* 모바일: 닫기(X) 버튼을 32px → 24px로 줄이고 가장자리에 더 붙인다 (아래 음수 여백 = 버튼 + 위 여백, 내용 위에 겹쳐 뜨게) */
+    @media (max-width: 900px) {
+        .project-modal-close {
+            top: 10px;
+            width: 24px;
+            height: 24px;
+            margin: 10px 10px -34px auto;
+        }
+        .is-pdf .project-modal-close {
+            margin: 8px 8px 8px auto;
+        }
+    }
 }

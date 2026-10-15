@@ -203,5 +203,25 @@
         .work-row-card {
             min-height: 0;
         }
+        /*
+         * 이미지 위 버튼: Design/Frontend 카드 모바일(ProjectCard.module.scss)과 같은 모양 · 크기.
+         * 테두리 없이 흰 바탕 · 검정 글씨, 누르면 바탕이 살짝 어두워진다
+         */
+        .work-row-overlay {
+            gap: 8px;
+            padding: 4%;
+        }
+        .work-row-action {
+            min-width: 70px;
+            border: 0;
+            padding: 9px 10px;
+            color: #111;
+            background: #fff;
+            font-size: .75rem;
+        }
+        .work-row-action:hover, .work-row-action:focus-visible, .work-row-action:active {
+            color: #111;
+            background: #ddd;
+        }
     }
 }

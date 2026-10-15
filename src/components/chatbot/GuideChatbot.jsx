@@ -23,6 +23,10 @@ const TALK_MESSAGES = [
 ]
 const TALK_SHOW_MS = 4000
 const TALK_HIDE_MS = 3500
+// 잠든 동안엔 말 대신 가끔 코 고는 말풍선 (평소보다 짧게 보이고 오래 쉰다)
+const SNORE_TEXT = 'Zzz...'
+const SNORE_SHOW_MS = 2500
+const SNORE_HIDE_MS = 8000
 
 /*
  * 고양이 모션 프레임 (home/cat-motion — 원본 PNG를 320px WebP로 줄인 것). 모든 동작은 같은 앉은 자세(01)에서 시작한다.
@@ -51,6 +55,9 @@ const ACTIONS = [
   { frames: motionFrames.joke, frameTime: 150, holdAt: 4, hold: 800, returns: true, shift: '2.7%' },
 ]
 const SLEEP_SHIFT = '-1.4%'
+// 잠드는 11장마다 아래로 내리는 양 (이미지 높이 %). 08장부터 몸을 눕히며 그림 속 발 · 몸 아래선이 위로 올라가서,
+// 앉은 자세의 발 위치(바닥)에 닿도록 그만큼 내린다 (320px 프레임에서 잰 값: 발 아래선 315 → 285 · 265 · 250 · 242)
+const SLEEP_DROPS = ['0%', '0%', '0%', '0%', '0%', '0%', '0%', '9%', '15.5%', '20.5%', '23%']
 const ACTION_INTERVAL = 10000 // ms, 랜덤 동작 사이 간격
 const SLEEP_AFTER = 180000 // ms, 이만큼(3분) 고양이에 마우스를 올리거나 누르지 않으면 잠든다
 const SLEEP_FRAME_TIME = 170 // ms, 잠드는 프레임 한 장
@@ -92,11 +99,13 @@ export default function GuideChatbot() {
     if (!lastTouchRef.current) lastTouchRef.current = Date.now()
 
     // frames를 frameTime 간격으로 차례로 보여주고 done (shift만큼 옆으로 옮겨 첫 장을 평소 자세 자리에 맞춘다)
-    const play = (frames, frameTime, done, shift = '0%') => {
+    // drops: 장마다 아래로 내리는 양 (잠들기 · 깨기에서 누운 고양이를 바닥에 붙인다)
+    const play = (frames, frameTime, done, shift = '0%', drops = null) => {
       image.style.setProperty('--motion-shift', shift)
       let index = 0
       const step = () => {
         image.src = frames[index]
+        image.style.setProperty('--motion-drop', drops ? drops[index] : '0%')
         index += 1
         timer = index < frames.length ? setTimeout(step, frameTime) : setTimeout(done, frameTime)
       }
@@ -105,12 +114,13 @@ export default function GuideChatbot() {
     // 앉은 자세로 돌아와 다음 동작을 기다린다
     const sitAndWait = () => {
       image.style.setProperty('--motion-shift', '0%')
+      image.style.setProperty('--motion-drop', '0%')
       image.src = SIT_FRAME
       timer = setTimeout(next, ACTION_INTERVAL)
     }
     const next = () => {
       if (Date.now() - lastTouchRef.current >= SLEEP_AFTER) {
-        play(motionFrames.sleep, SLEEP_FRAME_TIME, () => setIsSleeping(true), SLEEP_SHIFT)
+        play(motionFrames.sleep, SLEEP_FRAME_TIME, () => setIsSleeping(true), SLEEP_SHIFT, SLEEP_DROPS)
         return
       }
       const choices = ACTIONS.filter((action) => action !== lastAction)
@@ -128,7 +138,7 @@ export default function GuideChatbot() {
     // 막 깨어났으면 잠든 프레임을 거꾸로 빠르게 돌려 일어난 뒤 시작
     if (wokeRef.current) {
       wokeRef.current = false
-      play([...motionFrames.sleep].reverse(), WAKE_FRAME_TIME, sitAndWait, SLEEP_SHIFT)
+      play([...motionFrames.sleep].reverse(), WAKE_FRAME_TIME, sitAndWait, SLEEP_SHIFT, [...SLEEP_DROPS].reverse())
     } else {
       sitAndWait()
     }
@@ -144,30 +154,37 @@ export default function GuideChatbot() {
     }
   }
 
+  // 깨어 있으면 랜덤 말풍선, 자는 동안에는 말을 걸지 않고 가끔 Zzz... 말풍선
   useEffect(() => {
-    if (isOpen || isSleeping) return undefined
+    if (isOpen) return undefined
 
     let timer
     let lastIndex = -1
+    const showMs = isSleeping ? SNORE_SHOW_MS : TALK_SHOW_MS
+    const hideMs = isSleeping ? SNORE_HIDE_MS : TALK_HIDE_MS
     const showTalk = () => {
-      let nextIndex
-      do nextIndex = Math.floor(Math.random() * TALK_MESSAGES.length)
-      while (TALK_MESSAGES.length > 1 && nextIndex === lastIndex)
-      lastIndex = nextIndex
-      setTalk({ text: TALK_MESSAGES[nextIndex], isVisible: true })
-      timer = setTimeout(hideTalk, TALK_SHOW_MS)
+      if (isSleeping) {
+        setTalk({ text: SNORE_TEXT, isVisible: true })
+      } else {
+        let nextIndex
+        do nextIndex = Math.floor(Math.random() * TALK_MESSAGES.length)
+        while (TALK_MESSAGES.length > 1 && nextIndex === lastIndex)
+        lastIndex = nextIndex
+        setTalk({ text: TALK_MESSAGES[nextIndex], isVisible: true })
+      }
+      timer = setTimeout(hideTalk, showMs)
     }
     const hideTalk = () => {
       setTalk((previous) => ({ ...previous, isVisible: false }))
-      timer = setTimeout(showTalk, TALK_HIDE_MS)
+      timer = setTimeout(showTalk, hideMs)
     }
 
-    timer = setTimeout(showTalk, 800)
+    // 막 잠들었을 때는 조금 있다가 첫 Zzz
+    timer = setTimeout(showTalk, isSleeping ? 2500 : 800)
     return () => {
       clearTimeout(timer)
       setTalk((previous) => ({ ...previous, isVisible: false }))
     }
-    // 자는 동안에는 말을 걸지 않는다
   }, [isOpen, isSleeping])
 
   useEffect(() => {
@@ -280,7 +297,7 @@ export default function GuideChatbot() {
         {!isOpen && (
           <>
             <img className={styles.launcherBubble} src={bubbleIcon} alt="" aria-hidden="true" />
-            <span className={`${styles.launcherTalk} ${talk.isVisible ? styles.isTalking : ''}`} aria-hidden="true">{talk.text}</span>
+            <span className={`${styles.launcherTalk} ${talk.isVisible ? styles.isTalking : ''} ${isSleeping ? styles.isSnoring : ''}`} aria-hidden="true">{talk.text}</span>
           </>
         )}
       </button>

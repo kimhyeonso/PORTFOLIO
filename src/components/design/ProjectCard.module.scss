@@ -32,21 +32,35 @@
     .project-card-thumb.is-empty {
         background: #fff5f5;
     }
+    /* 도구 아이콘: 썸네일 오른쪽 위 (실무 뱃지 WorkBadge는 왼쪽 위) */
     .project-card-tools {
+        --tool-size: clamp(27px, 2.7vw, 56px);
+        --tool-gap: .8vw;
         position: absolute;
         z-index: 2; /* 호버 오버레이 위에 */
+        top: 4%;
         right: 3%;
-        bottom: 4%;
         display: flex;
-        gap: .8vw;
+        justify-content: flex-end;
+        gap: var(--tool-gap);
         margin: 0;
         padding: 0;
         list-style: none;
     }
+    /*
+     * 아이콘이 5개 이상이면 두 줄 (ProjectCard.jsx TOOLS_TWO_ROWS), 데이터에 toolCols가 있으면 한 줄에 그 개수씩.
+     * 적힌 순서대로 윗줄부터 채우고, 너비를 아이콘 --tool-cols개로 묶어 넘치는 것은 아랫줄로.
+     * 모든 줄을 오른쪽 끝에 맞춘다
+     */
+    .project-card-tools.is-wrapped {
+        flex-wrap: wrap;
+        /* +1px: 소수점 반올림으로 윗줄 마지막 아이콘이 미리 내려가지 않게 */
+        width: calc(var(--tool-cols) * var(--tool-size) + (var(--tool-cols) - 1) * var(--tool-gap) + 1px);
+    }
     .project-card-tools img {
         display: block;
-        width: clamp(34px, 3.4vw, 72px);
-        height: clamp(34px, 3.4vw, 72px);
+        width: var(--tool-size);
+        height: var(--tool-size);
         border-radius: 18%;
         box-shadow: 0 .3vw .8vw rgba(0, 0, 0, .18);
     }
@@ -60,17 +74,17 @@
 
     /*
      * 썸네일 호버 오버레이: 이미지가 어두워지며 가운데에 흰 테두리 버튼이 나타난다 (앞에 있는 카드만)
-     * 키보드로 버튼에 포커스해도 나타난다
+     * 키보드로 버튼에 포커스해도 나타난다. 버튼은 줄(.project-card-action-row)마다 가운데에 쌓는다
      */
     .project-card-overlay {
         position: absolute;
         z-index: 1;
         inset: 0;
         display: flex;
-        flex-wrap: wrap;
-        align-content: center;
+        flex-direction: column;
+        align-items: center;
         justify-content: center;
-        gap: clamp(10px, 1.1vw, 18px);
+        gap: clamp(8px, .8vw, 14px);
         padding: 6%;
         background: rgba(12, 12, 12, .72);
         opacity: 0;
@@ -82,19 +96,31 @@
         opacity: 1;
         pointer-events: auto;
     }
+    /*
+     * 버튼 한 줄 (세부정보 · 미리보기 · 홈페이지 등, 링크가 2개 이상이면 링크는 다음 줄).
+     * 줄바꿈 없이 내용 너비 그대로 두고, 칸을 넘치면 ProjectCard.jsx ActionRow가 그 줄만 zoom으로 줄인다
+     */
+    .project-card-action-row {
+        display: flex;
+        flex-shrink: 0;
+        gap: clamp(8px, .8vw, 14px);
+        width: max-content;
+    }
     .project-card-action {
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        min-width: clamp(96px, 8vw, 150px);
+        /* 버튼 3개(세부정보 · 미리보기 · 홈페이지)가 모바일 카드 너비에도 한 줄로 들어가는 크기 */
+        flex-shrink: 0;
+        min-width: clamp(76px, 6.6vw, 128px);
         box-sizing: border-box;
         border: 1.5px solid #fff;
         border-radius: 4px;
-        padding: clamp(9px, .8vw, 14px) clamp(16px, 1.4vw, 26px);
+        padding: clamp(9px, .8vw, 14px) clamp(10px, 1vw, 22px);
         color: #fff;
         background: transparent;
         font-family: 'Noto Sans KR', 'Inter', sans-serif;
-        font-size: clamp(.85rem, 1vw, 1.2rem);
+        font-size: clamp(.75rem, .85vw, 1rem);
         font-weight: 700;
         letter-spacing: .12em;
         line-height: 1;
@@ -114,7 +140,7 @@
     /* 호버가 없는 터치 기기에선 앞 카드의 버튼을 이미지 아래쪽에 항상 보여준다 */
     @media (hover: none) {
         .project-card.is-active .project-card-overlay {
-            align-content: flex-end;
+            justify-content: flex-end;
             background: linear-gradient(transparent 55%, rgba(12, 12, 12, .6));
             opacity: 1;
             pointer-events: auto;
@@ -154,6 +180,46 @@
         margin-top: clamp(14px, 2.4vw, 52px);
         color: #666;
         font-size: calc(clamp(.8rem, 1.05vw, 1.35rem) - 1px);
+    }
+    /*
+     * 체험 계정 (data의 account): 기간 · 기여도 · 역할 아래 한 줄. 이메일 · 비밀번호마다 [복사] 버튼
+     * 모바일은 제목 / 이메일 / 비밀번호를 세로로 나눈다
+     */
+    .project-card-account {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: .3em 1em;
+    }
+    .project-card-account-title {
+        font-weight: 700;
+    }
+    .project-card-account-field {
+        display: inline-flex;
+        align-items: center;
+        gap: .4em;
+        white-space: nowrap;
+    }
+    .project-card-account-field b {
+        font-weight: 700;
+    }
+    .project-card-account button {
+        padding: .25em .6em;
+        border: 1px solid currentColor;
+        border-radius: 3px;
+        color: inherit;
+        background: transparent;
+        font: inherit;
+        font-size: .85em;
+        line-height: 1.2;
+        cursor: pointer;
+        /* PC 정보 칸은 마우스가 이미지로 통과하게 막아 두었으므로 버튼만 다시 켠다 */
+        pointer-events: auto;
+        transition: background .2s ease, color .2s ease;
+    }
+    .project-card-account button:hover, .project-card-account button:focus-visible {
+        color: #111;
+        background: #fff;
     }
     .project-card-description {
         margin-top: clamp(14px, 2.6vw, 56px) !important;
@@ -234,27 +300,17 @@
                 linear-gradient(transparent 55%, rgba(0, 0, 0, .25));
         }
 
-        /* 도구 아이콘: 글자 쪽 위 */
+        /* 도구 아이콘: 글자 쪽과 상관없이 오른쪽 위 */
         .project-card-tools {
+            --tool-size: clamp(28px, 2.2vw, 48px);
+            --tool-gap: .5vw;
             top: 2.2vw;
-            bottom: auto;
-            gap: .5vw;
-        }
-        .project-card.is-text-right .project-card-tools {
             right: 2.6vw;
         }
-        .project-card.is-text-left .project-card-tools {
-            right: auto;
-            left: 2.6vw;
-        }
-        .project-card-tools img {
-            width: clamp(30px, 2.4vw, 52px);
-            height: clamp(30px, 2.4vw, 52px);
-        }
-        /* 글자가 왼쪽인 카드는 뱃지를 오른쪽 위로 옮겨 아이콘과 겹치지 않게 */
-        .project-card.is-text-left .work-badge {
-            right: clamp(8px, .9vw, 18px);
-            left: auto;
+        /* PC는 카드가 넓어서 개수(toolCols · 5개 이상)와 상관없이 한 줄로 늘어놓는다. 여러 줄은 모바일에서만 */
+        .project-card-tools.is-wrapped {
+            flex-wrap: nowrap;
+            width: auto;
         }
 
         /* 글자: 글자 쪽 아래. 호버 오버레이(z-index 1)가 위를 덮도록 z-index 없이, 마우스는 이미지로 통과 */
@@ -278,6 +334,9 @@
         }
         .project-card-meta {
             margin-top: clamp(12px, 1.6vw, 36px);
+        }
+        .project-card.is-text-right .project-card-account {
+            justify-content: flex-end;
         }
         .project-card-description {
             margin-top: clamp(12px, 1.6vw, 36px) !important;
@@ -306,17 +365,25 @@
             opacity: 0;
             transition: grid-template-rows .4s ease, opacity .3s ease;
         }
+        /* 버튼 줄들을 위아래로 쌓는다 (글자 쪽에 맞춰 왼쪽 · 오른쪽 정렬) */
         .project-card-actions > div {
             display: flex;
+            flex-direction: column;
+            align-items: flex-start;
             gap: clamp(8px, .7vw, 14px);
             min-height: 0;
             overflow: hidden;
         }
         .project-card.is-text-right .project-card-actions > div {
-            justify-content: flex-end;
+            align-items: flex-end;
+        }
+        .project-card-actions .project-card-action-row {
+            gap: clamp(8px, .7vw, 14px);
+        }
+        .project-card-actions .project-card-action-row:first-child {
+            margin-top: clamp(14px, 1.6vw, 36px);
         }
         .project-card-actions .project-card-action {
-            margin-top: clamp(14px, 1.6vw, 36px);
             text-shadow: none;
             pointer-events: auto;
         }
@@ -342,10 +409,49 @@
         }
     }
     @media (max-width: 900px) {
+        /*
+         * 위 썸네일 · 아래 글. 카드는 모두 갤러리 카드 영역 높이와 같고(트랙에서 stretch),
+         * 썸네일은 그대로 두고 글 칸이 남는 높이를 채워, 넘치면 카드 안에서 세로 스크롤된다 (ProjectGallery.module.scss 모바일 카드 보기)
+         */
         .project-card {
-            grid-template-columns: 1fr;
+            display: flex;
+            flex-direction: column;
+            /* 썸네일 · 글 칸을 카드 너비로 채운다 (글 칸은 container-type이라 늘려 주지 않으면 너비가 0이 된다) */
+            align-items: stretch;
             gap: 20px;
             padding: 20px;
+        }
+        .project-card-media {
+            flex-shrink: 0;
+        }
+        .project-card-info {
+            flex: 1 1 0;
+            min-height: 0;
+            overflow-y: auto;
+            overscroll-behavior: contain;
+        }
+        /* 체험 계정: 제목 / 이메일 / 비밀번호를 한 줄씩. 흰 카드 위라 버튼 호버는 어두운 색으로 */
+        .project-card-account {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        .project-card-account button:hover, .project-card-account button:focus-visible {
+            color: #fff;
+            background: #444;
+        }
+        /* 좁은 폰(360px)에서도 버튼 3개가 한 줄에 들어가도록 오버레이 여백 · 버튼 최소 너비를 줄인다 */
+        .project-card-overlay {
+            padding: 4%;
+        }
+        /* 이미지 위 버튼이 썸네일에 묻히지 않게 테두리 없이 흰 바탕 · 검정 글씨. 누르면 바탕이 살짝 어두워진다 */
+        .project-card-action {
+            min-width: 70px;
+            border: 0;
+            color: #111;
+            background: #fff;
+        }
+        .project-card-action:hover, .project-card-action:focus-visible, .project-card-action:active {
+            background: #ddd;
         }
     }
 }

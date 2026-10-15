@@ -264,12 +264,18 @@ $pixel: 'Silkscreen', monospace;
   }
 }
 
+// Zzz...가 나타나며 살짝 위로 떠오른다 (SNORE_SHOW_MS 2.5초 동안)
+@keyframes snoreFloat {
+  from { translate: 0 6px; }
+  to { translate: 0 -6px; }
+}
+
 @keyframes launcherGlow {
   0%, 100% { opacity: .75; transform: scale(.94); }
   50% { opacity: 1; transform: scale(1.04); }
 }
 
-// 일정 시간마다 고양이 왼쪽에 랜덤으로 뜨는 말풍선 (호버 시엔 "..." 말풍선으로 교체)
+// 일정 시간마다 고양이 왼쪽(모바일은 위쪽)에 랜덤으로 뜨는 말풍선 (호버 시엔 "..." 말풍선으로 교체)
 .launcherTalk {
   position: absolute;
   top: 16%;
@@ -296,6 +302,24 @@ $pixel: 'Silkscreen', monospace;
     opacity: 1;
     transform: scale(1);
     transition: opacity .2s ease, transform .45s cubic-bezier(.34, 1.56, .64, 1);
+  }
+
+  // 잠든 동안의 Zzz...: 말풍선(테두리 · 바탕 · 꼬리) 없이 글자만, 누운 고양이 머리 높이(런처 위에서 약 48%, SLEEP_DROPS로 내려간 자리)에.
+  // 어떤 배경 위에서도 보이도록 흰 외곽선을 두르고, 떠 있는 동안 천천히 위로 떠오른다
+  &.isSnoring {
+    top: 42%;
+    padding: 0;
+    border: 0;
+    background: none;
+    box-shadow: none;
+    color: #4a2a1e;
+    font-size: 16px;
+    font-style: italic;
+    letter-spacing: .08em;
+    text-shadow: -1.5px 0 #fffdf8, 1.5px 0 #fffdf8, 0 -1.5px #fffdf8, 0 1.5px #fffdf8, 0 2px 4px rgba(58, 34, 25, .25);
+
+    &::after { display: none; }
+    &.isTalking { animation: snoreFloat 2.5s ease-out both; }
   }
 
   // 고양이를 향하는 꼬리
@@ -339,7 +363,8 @@ $pixel: 'Silkscreen', monospace;
   height: 98.7%;
   aspect-ratio: 1;
   // --motion-shift: 동작마다 첫 장이 같은 자리에 오도록 JS가 넣는 보정값
-  transform: translateX(calc(-46.9% + var(--motion-shift, 0%)));
+  // --motion-drop: 잠든 자세에서 누운 몸을 앉은 자세의 발 위치(바닥)까지 내리는 값 (GuideChatbot.jsx SLEEP_DROPS)
+  transform: translate(calc(-46.9% + var(--motion-shift, 0%)), var(--motion-drop, 0%));
 }
 
 // 호버 시 고양이 왼쪽 귀 위에 나타나는 말풍선 (꼬리가 귀를 향하도록 좌우 반전)
@@ -356,17 +381,37 @@ $pixel: 'Silkscreen', monospace;
   transition: opacity .2s ease, transform .3s cubic-bezier(.34, 1.56, .64, 1);
 }
 
-// 모바일: 화면을 덜 가리도록 고양이를 줄이고, 옆 말풍선(여백 · 글자 · 꼬리)도 PC보다 2px씩 작게
+// 모바일: 화면을 덜 가리도록 고양이를 줄이고, 말풍선(여백 · 글자 · 꼬리)도 PC보다 2px씩 작게.
+// 말풍선은 옆(아래 조작 바 쪽) 대신 고양이 머리 위에 띄우고, 꼬리가 아래로 고양이를 가리킨다.
+// 오른쪽 끝을 고양이 오른쪽에 맞춰 왼쪽으로 펼치고, 길면 화면 안에서 줄을 바꾼다
 @media (max-width: 760px) {
   .launcher { width: 64px; }
   .launcherTalk {
+    top: auto;
+    right: 0;
+    bottom: calc(100% + 10px);
+    width: max-content;
+    max-width: calc(100vw - 36px);
     padding: 7px 11px;
     font-size: 11px;
+    white-space: normal;
+    transform-origin: 85% 100%;
+
+    // 잠든 동안엔 누운 고양이 머리 바로 위 (위에서 약 48% 지점)
+    &.isSnoring {
+      top: auto;
+      bottom: calc(52% + 6px);
+    }
 
     &::after {
-      right: -6px;
+      top: auto;
+      right: 22px;
+      bottom: -6px;
       width: 8px;
       height: 8px;
+      border-top: 0;
+      border-bottom: 2px solid #4a2a1e;
+      transform: rotate(45deg);
     }
   }
 }

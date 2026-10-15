@@ -29,6 +29,7 @@ const SINGLE_ITEM_MAX = 42
 const HERO_REACH = 25 // w
 const RUN_FRAME_TIME = 0.1 // s, 달리기 프레임(runFrames) 한 장이 보이는 시간
 const TITLE_TIME = 2.2 // s, 타이틀 카드 노출 시간
+const HINT_LINGER = 2000 // ms, 첫 아이템을 먹은 뒤에도 조작 안내를 더 보여주는 시간
 const ENTER_TIME = 1.3 // s, 문 진입 → 화면 전환
 const PORTAL_ENTER_TIME = 2 // s, 포털에 빨려 들어감 → 화면 전환
 const PORTAL_BITS = Array.from({ length: 12 }, (_, index) => index)
@@ -67,6 +68,8 @@ export default function IntroStageGame({ config, onClear, onSkip, onSelectStage,
     const [pose, setPose] = useState('run')
     const [paused, setPaused] = useState(false)
     const [collectedCount, setCollectedCount] = useState(0)
+    // 조작 안내는 첫 아이템을 먹고도 HINT_LINGER 동안 더 보여준 뒤 사라진다
+    const [hintDone, setHintDone] = useState(false)
     const [dustKey, setDustKey] = useState(0)
     const [sparkKey, setSparkKey] = useState(0)
     // 이번 점프가 땅에 닿기까지 걸리는 시간 — 점프 프레임을 그 동안 한 번에 다 넘긴다 (이중 점프는 다시 처음부터)
@@ -78,6 +81,13 @@ export default function IntroStageGame({ config, onClear, onSkip, onSelectStage,
     const poseFrames = sprites[`${spritePose}Frames`]
     const poseDuration = { jump: jumpDuration, jump2: jumpDuration, land: LAND_TIME }[pose]
     const poseFrameTime = poseFrames && poseDuration ? poseDuration / poseFrames.length : RUN_FRAME_TIME
+
+    const hasCollected = collectedCount > 0
+    useEffect(() => {
+        if (!hint || !hasCollected) return undefined
+        const timer = setTimeout(() => setHintDone(true), HINT_LINGER)
+        return () => clearTimeout(timer)
+    }, [hint, hasCollected])
 
     useEffect(() => {
         onClearRef.current = onClear
@@ -375,7 +385,7 @@ export default function IntroStageGame({ config, onClear, onSkip, onSelectStage,
     }))
 
     const clearing = phase === 'enter' || phase === 'done'
-    const rootClass = [styles.scope, 'sg', paused && 'is-paused', collectedCount > 0 && 'is-playing', clearing && 'is-clearing', arriving && 'is-arriving', door.portal && 'is-portal', config.smoothSprites && 'is-smooth'].filter(Boolean).join(' ')
+    const rootClass = [styles.scope, 'sg', paused && 'is-paused', hintDone && 'is-hint-done', clearing && 'is-clearing', arriving && 'is-arriving', door.portal && 'is-portal', config.smoothSprites && 'is-smooth'].filter(Boolean).join(' ')
     const rootStyle = { '--stage-bg': `url(${background})`, '--bg-size': bgScale * 100, '--bg-y': bgOffset, '--ground': `${ground}%`, '--door-size': door.size, '--door-sink': door.sink }
 
     return (
@@ -383,11 +393,12 @@ export default function IntroStageGame({ config, onClear, onSkip, onSelectStage,
             <div className="sg-bg" ref={bgRef} />
 
             <h1 className="sg-title"><small>STAGE {number} :</small> {name}</h1>
-            {/* 위쪽 가운데: 왼쪽 제목과 오른쪽 SKIP INTRO 사이에 재생/멈춤 (아이콘 + STOP/PLAY), 그 바로 밑에 조작 안내 */}
+            {/* 위쪽 가운데: 왼쪽 제목과 오른쪽 SKIP INTRO 사이에 재생/멈춤 (아이콘 + STOP/PLAY) */}
             <div className="sg-top-center">
                 <IntroPauseButton paused={paused} onToggle={togglePause} />
-                {hint && <p className="sg-hint" aria-hidden="true">TAP : JUMP (x2 DOUBLE) / SPACE : PAUSE</p>}
             </div>
+            {/* 조작 안내: 캐릭터 머리 위 (모바일에서는 숨김) */}
+            {hint && <p className="sg-hint" aria-hidden="true">TAP : JUMP (x2 DOUBLE) / SPACE : PAUSE</p>}
             <button className="intro-skip" type="button" onClick={onSkip}>
                 SKIP INTRO <span aria-hidden="true">▶</span>
             </button>

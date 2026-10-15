@@ -1,13 +1,17 @@
-import kakaoBankThumbnail from '../assets/image/project/Forentend/kakaoBankThumnail.png'
-import woodinThumbnail from '../assets/image/project/Forentend/WoodinThumnail.png'
-import souvenirThumbnail from '../assets/image/project/Forentend/SouvenirThumnail.png'
-import damumThumbnail from '../assets/image/project/Forentend/DamumThumnail.png'
-import aevoraThumbnail from '../assets/image/project/Forentend/AevoraThumnail.png'
-import dashboardThumbnail from '../assets/image/project/Forentend/DashBoardThumnail.png'
-import guestBookThumbnail from '../assets/image/project/Forentend/GuestBookThumnail.png'
-import nodeThumbnail from '../assets/image/project/Forentend/NodeThumnail.png'
-import chemverseThumbnail from '../assets/image/project/Forentend/ChemverseThumnail.png'
-import lcodeThumbnail from '../assets/image/project/Forentend/LcodeThumnail.png'
+import kakaoBankThumbnail from '../assets/image/project/Frontend/kakaoBankThumnail.png'
+import woodinThumbnail from '../assets/image/project/Frontend/WoodinThumnail.png'
+import souvenirThumbnail from '../assets/image/project/Frontend/SouvenirThumnail.png'
+import damumThumbnail from '../assets/image/project/Frontend/DamumThumnail.png'
+import aevoraThumbnail from '../assets/image/project/Frontend/AevoraThumnail.png'
+import dashboardThumbnail from '../assets/image/project/Frontend/DashBoardThumnail.png'
+import guestBookThumbnail from '../assets/image/project/Frontend/GuestBookThumnail.png'
+import nodeThumbnail from '../assets/image/project/Frontend/NodeThumnail.png'
+import chemverseThumbnail from '../assets/image/project/Frontend/ChemverseThumnail.png'
+import lcodeThumbnail from '../assets/image/project/Frontend/LcodeThumnail.png'
+// 팀 프로젝트 와이어프레임 ([미리보기] 팝업에 보여준다)
+import nodeWireframe from '../assets/image/project/Frontend/Nodewireframe.PNG'
+import chemverseWireframe from '../assets/image/project/Frontend/Chemversewireframe.PNG'
+import lcodeWireframe from '../assets/image/project/Frontend/Lcodewireframe.PNG'
 // 팀 프로젝트 발표 자료 (세부정보 팝업에서 PDF로 보여준다, 팝업을 열 때만 받는다)
 import nodePdf from '../assets/image/project/NODE/NODE.pdf'
 import chemversePdf from '../assets/image/project/CHEMVERSE/CHAMBERS.pdf'
@@ -15,6 +19,9 @@ import lcodePdf from '../assets/image/project/LCODE/LcodePPT.pdf'
 
 /*
  * pdf  세부정보 팝업에 보여줄 PDF (import한 주소). 있으면 images · 상세페이지 대신 PDF 뷰어로 연다.
+ * toolCols  도구 아이콘을 한 줄에 놓을 개수 (생략하면 4개 이하 한 줄, 5개 이상 두 줄)
+ * account  카드 정보(역할 아래)에 보여줄 체험 계정 { label, email, password } — 이메일 · 비밀번호마다 복사 버튼
+ * pdfPreview  [미리보기] 버튼 → 팝업에 이미지 한 장 (import한 이미지, 아직 없으면 true → 썸네일을 대신 보여준다)
  */
 
 export const frontendProjects = [
@@ -83,6 +90,7 @@ export const frontendProjects = [
     thumbnail: damumThumbnail,
     tools: ['VS Code', 'GitHub', 'Vercel', 'React', 'Firebase', 'Codex'],
     link: 'https://damum-mqk1.vercel.app/',
+    account: { label: '관리자 로그인', email: 'sales@a.com', password: '123456789' },
     github: '',
     images: [],
   },
@@ -158,6 +166,7 @@ export const frontendProjects = [
     link: 'https://kimhyeonso.github.io/NODE/',
     github: '',
     pdf: nodePdf,
+    pdfPreview: nodeWireframe, // [미리보기] 팝업에 보일 와이어프레임
     images: [],
   },
   {
@@ -181,6 +190,7 @@ export const frontendProjects = [
     link: 'https://kimhyeonso.github.io/CHAMVERSE/html/intro.html',
     github: '',
     pdf: chemversePdf,
+    pdfPreview: chemverseWireframe, // [미리보기] 팝업에 보일 와이어프레임
     images: [],
   },
   {
@@ -200,10 +210,13 @@ export const frontendProjects = [
     role: '팀장',
     description: "계획은 틀어져도 여행은 계속된다 라는 주제로 '돌발상황'에 대비하는 여행 플랜 어플리케이션을 제작하였습니다",
     thumbnail: lcodeThumbnail,
-    tools: ['Photoshop', 'Figma', 'VS Code', 'GitHub', 'Vercel', 'React', 'Firebase', 'OpenAI', 'Codex'],
+    tools: ['Photoshop', 'Figma', 'VS Code', 'GitHub', 'Vercel', 'React', 'Firebase', 'OpenAI', 'Codex', 'Claude', 'ChatGPT'],
+    toolCols: 4, // 도구 아이콘을 한 줄에 4개씩 (4 · 4 · 3)
     link: 'https://lcode-2.vercel.app/',
+    account: { label: '관리자 로그인', email: 'admin@admin.com', password: '12345678' },
     github: '',
     pdf: lcodePdf,
+    pdfPreview: lcodeWireframe, // [미리보기] 팝업에 보일 와이어프레임
     images: [],
   },
 ]

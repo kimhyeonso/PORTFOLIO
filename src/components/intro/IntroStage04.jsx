@@ -20,8 +20,9 @@ const config = {
     number: '04',
     name: 'FRONTEND',
     background,
-    bgScale: 1.09,
-    bgOffset: 0.7,
+    // 배경 위쪽을 화면 맨 위에 붙여 빈 띠가 생기지 않게 하고(bgOffset 0), 대신 조금 키워 잔디 높이는 ground에 그대로 맞춘다
+    bgScale: 1.1,
+    bgOffset: 0,
     // 배경(5637×1188, 가로 ÷ 세로 4.745)이 다른 스테이지(2.32)보다 두 배 넘게 길어 그대로면 빨리 지나간다.
     // 다른 스테이지와 같은 너비까지만 훑어 같은 속도로 보이게 한다 (오른쪽 나머지 부분은 보이지 않는다)
     bgPanAspect: 2.32,
