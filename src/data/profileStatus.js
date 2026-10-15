@@ -54,10 +54,10 @@ export const profile = {
 
 // color는 3D 스킬 오브 색과 같다
 export const skills = [
-  { no: '01', title: 'UI DESIGN', color: '#6CC285', tools: ['Figma', 'Photoshop', 'Illustrator'], uses: 'Web UI / Detail Page / Advertising Design' },
-  { no: '02', title: 'FRONTEND', color: '#5FB4EA', tools: ['HTML', 'CSS', 'JavaScript', 'React', 'SCSS'], uses: 'Responsive Web / Component Development' },
-  { no: '03', title: 'INTERACTION', color: '#EE9A4E', tools: ['GSAP', 'ScrollTrigger', 'Three.js'], uses: 'Scroll Animation / Interactive Web / 3D Visual' },
-  { no: '04', title: 'VISUAL COMMUNICATION', color: '#D9AE3E', tools: ['Proposal Design', 'Information Design', 'Campaign Visual'], uses: 'Presentation / Advertising / SNS Content' },
+  { no: '01', title: 'UI/UX DESIGN', color: '#6CC285', tools: ['Figma', 'Adobe XD', 'Photoshop', 'Illustrator', 'InDesign'], uses: 'UI·UX Design / Prototyping / Online·Offline Design' },
+  { no: '02', title: 'FRONTEND', color: '#5FB4EA', tools: ['HTML', 'CSS', 'JavaScript', 'TypeScript', 'React', 'Next.js', 'SCSS', 'Tailwind CSS'], uses: 'Responsive Web / API Integration / Firebase Auth·Data' },
+  { no: '03', title: 'INTERACTION', color: '#EE9A4E', tools: ['GSAP', 'Three.js', 'Canvas', 'Chart.js', 'jQuery'], uses: 'Scroll Animation / Interactive Web / Data-driven Content' },
+  { no: '04', title: 'MOTION & 3D', color: '#D9AE3E', tools: ['Premiere Pro', 'After Effects', 'Cinema 4D', 'Octane Render'], uses: 'Video Editing / Motion Graphics / 3D Modeling·Rendering' },
 ]
 
 /*

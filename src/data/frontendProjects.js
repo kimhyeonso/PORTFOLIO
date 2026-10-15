@@ -1,13 +1,14 @@
-import kakaoBankThumbnail from '../assets/image/project/Frontend/kakaoBankThumnail.png'
-import woodinThumbnail from '../assets/image/project/Frontend/WoodinThumnail.png'
-import souvenirThumbnail from '../assets/image/project/Frontend/SouvenirThumnail.png'
-import damumThumbnail from '../assets/image/project/Frontend/DamumThumnail.png'
-import aevoraThumbnail from '../assets/image/project/Frontend/AevoraThumnail.png'
-import dashboardThumbnail from '../assets/image/project/Frontend/DashBoardThumnail.png'
-import guestBookThumbnail from '../assets/image/project/Frontend/GuestBookThumnail.png'
-import nodeThumbnail from '../assets/image/project/Frontend/NodeThumnail.png'
-import chemverseThumbnail from '../assets/image/project/Frontend/ChemverseThumnail.png'
-import lcodeThumbnail from '../assets/image/project/Frontend/LcodeThumnail.png'
+import kakaoBankThumbnail from '../assets/image/project/Frontend/kakaoBankThumnail.webp'
+import woodinThumbnail from '../assets/image/project/Frontend/WoodinThumnail.webp'
+import souvenirThumbnail from '../assets/image/project/Frontend/SouvenirThumnail.webp'
+import damumThumbnail from '../assets/image/project/Frontend/DamumThumnail.webp'
+import aevoraThumbnail from '../assets/image/project/Frontend/AevoraThumnail.webp'
+import dashboardThumbnail from '../assets/image/project/Frontend/DashBoardThumnail.webp'
+import guestBookThumbnail from '../assets/image/project/Frontend/GuestBookThumnail.webp'
+import aiChatbotThumbnail from '../assets/image/project/Frontend/AIChatbot.webp'
+import nodeThumbnail from '../assets/image/project/Frontend/NodeThumnail.webp'
+import chemverseThumbnail from '../assets/image/project/Frontend/ChemverseThumnail.webp'
+import lcodeThumbnail from '../assets/image/project/Frontend/LcodeThumnail.webp'
 // 팀 프로젝트 와이어프레임 ([미리보기] 팝업에 보여준다)
 import nodeWireframe from '../assets/image/project/Frontend/Nodewireframe.PNG'
 import chemverseWireframe from '../assets/image/project/Frontend/Chemversewireframe.PNG'
@@ -145,8 +146,25 @@ export const frontendProjects = [
     github: '',
     images: [],
   },
-  {
+    {
     id: '08',
+    slug: 'ai-chatbot',
+    detail: false,
+    category: 'personal',
+    title: 'AI CHATBOT',
+    type: 'AI Chatbot',
+    year: 2026,
+    period: { start: '2025.09', end: '2025.10', duration: '1개월' },
+    description: 'OpenAI API를 연동해 질문에 대한 답변과 API 날씨 정보를 제공하고, RAG 기반 챗봇을 구현해 맞춤형 답변을 제공했습니다.',
+    contribution: 100,
+    thumbnail: aiChatbotThumbnail,
+    tools: ['VS Code', 'GitHub', 'Vercel'],
+    link: 'https://chatbot-sage-six-15.vercel.app/',
+    github: '',
+    images: [],
+  },
+  {
+    id: '09',
     slug: 'node',
     category: 'team',
     work: 'team', // 썸네일 왼쪽 위 TEAM PROJECT 뱃지
@@ -170,7 +188,7 @@ export const frontendProjects = [
     images: [],
   },
   {
-    id: '09',
+    id: '10',
     slug: 'chemverse',
     category: 'team',
     work: 'team',
@@ -194,7 +212,7 @@ export const frontendProjects = [
     images: [],
   },
   {
-    id: '10',
+    id: '11',
     slug: 'lcode',
     category: 'team',
     work: 'team',
@@ -219,4 +237,5 @@ export const frontendProjects = [
     pdfPreview: lcodeWireframe, // [미리보기] 팝업에 보일 와이어프레임
     images: [],
   },
+
 ]

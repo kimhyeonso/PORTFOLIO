@@ -133,7 +133,7 @@ export default function ProjectCard({ project, isActive, onOpen, onPreview, onSe
         <article className={`${styles.scope} project-card is-text-${side} ${isActive ? 'is-active' : ''}`} aria-hidden={!isActive} onClick={isActive ? undefined : onSelect}>
             <div className="project-card-media">
                 <WorkBadge work={work} />
-                {thumbnail ? <img className="project-card-thumb" src={thumbnail} alt={`${title} 미리보기`} /> : <div className="project-card-thumb is-empty" />}
+                {thumbnail ? <img className="project-card-thumb" src={thumbnail} alt={`${title} 미리보기`} loading="lazy" /> : <div className="project-card-thumb is-empty" />}
                 <div className="project-card-overlay">{actions}</div>
                 {/* 아이콘이 TOOLS_TWO_ROWS개 이상이면 적힌 순서대로 두 줄 (한 줄 최대 --tool-cols개, 오른쪽 정렬).
                     데이터에 toolCols가 있으면 한 줄에 그 개수씩 (예: 4 → 10개가 4 · 4 · 2 세 줄) */}

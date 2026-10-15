@@ -30,32 +30,21 @@ function useMedia(query) {
   )
 }
 
-// 패널 퇴장 방향 (지금 보이는 패널 기준)
-const EXIT = {
-  profile: { x: -50 },
-  skill: { y: 40 },
-  equipment: { scaleY: 0.04 },
-  stats: { y: -40 },
-  contact: { y: -30 },
+// 패널이 가운데로 모였을 때의 크기 (가로 · 세로 배율)
+const FOLDED = { scaleX: 0.08, scaleY: 0.03 }
+
+// 패널 퇴장 (모든 메뉴 공통): 세로로 접혀 가운데 가로선이 된 뒤 → 가로도 줄어 가운데 점으로 모인다
+function leavePanel(el, onComplete) {
+  const tl = gsap.timeline({ onComplete })
+  tl.to(el, { scaleY: FOLDED.scaleY, duration: 0.22, ease: 'power2.in' })
+  tl.to(el, { scaleX: FOLDED.scaleX, opacity: 0, duration: 0.16, ease: 'power2.in' })
+  return tl
 }
 
-// 패널 진입: 메뉴마다 다른 방향으로 들어온다 (m: 이동 거리 배율, blur: 블러 사용 여부)
-function enterPanel(tl, el, key, m, blur) {
-  const b = (px) => (blur ? `blur(${px}px)` : 'blur(0px)')
-  if (key === 'skill') {
-    tl.fromTo(el, { x: 0, y: 70 * m, rotateX: 14, transformPerspective: 900, scale: 1, opacity: 0, filter: b(8) }, { y: 0, rotateX: 0, opacity: 1, filter: b(0), duration: 1, ease: 'power3.out' })
-  } else if (key === 'equipment') {
-    // 인벤토리 창처럼 가로로 먼저 열리고 세로로 펼쳐진다
-    tl.fromTo(el, { x: 0, y: 0, scaleX: 0.08, scaleY: 0.03, opacity: 0, filter: b(0) }, { scaleX: 1, opacity: 1, duration: 0.42, ease: 'power3.out' })
-    tl.to(el, { scaleY: 1, duration: 0.6, ease: 'back.out(1.5)' })
-  } else if (key === 'stats') {
-    tl.fromTo(el, { x: 0, y: -60 * m, scale: 0.96, opacity: 0, filter: b(8) }, { y: 0, scale: 1, opacity: 1, filter: b(0), duration: 0.95, ease: 'power3.out' })
-  } else if (key === 'contact') {
-    // 편지를 펼치듯 위에서 아래로 열린다
-    tl.fromTo(el, { x: 0, y: -24 * m, scale: 1, opacity: 0, clipPath: 'inset(0% 0% 100% 0%)', filter: b(0) }, { y: 0, opacity: 1, clipPath: 'inset(0% 0% 0% 0%)', duration: 0.9, ease: 'power3.inOut', clearProps: 'clipPath' })
-  } else {
-    tl.fromTo(el, { x: 70 * m, y: 0, scale: 1, opacity: 0, filter: b(10) }, { x: 0, opacity: 1, filter: b(0), duration: 0.9, ease: 'power3.out' })
-  }
+// 패널 진입 (모든 메뉴 공통): 가운데 점에서 가로로 먼저 열리고 → 세로로 펼쳐진다
+function enterPanel(tl, el) {
+  tl.fromTo(el, { ...FOLDED, opacity: 0 }, { scaleX: 1, opacity: 1, duration: 0.42, ease: 'power3.out' })
+  tl.to(el, { scaleY: 1, duration: 0.6, ease: 'back.out(1.5)' })
 }
 
 // 금색 장식 띠 (인트로 이름 아래 · 메뉴 위)
@@ -105,23 +94,14 @@ export default function ProfilePage({ onNavigate, onMenuToggle }) {
     setHoverSkill(null)
     // 퇴장 중에 또 누르면 새로 시작하지 않고, 퇴장이 끝날 때 최신 탭을 보여준다
     if (leaving.current) return
-    const el = windowRef.current
-    const m = mobile ? 0.5 : 1
-    const exit = EXIT[el.dataset.panel]
-    leaving.current = gsap.to(el, {
-      x: (exit.x ?? 0) * m,
-      y: (exit.y ?? 0) * m,
-      scaleY: exit.scaleY ?? 1,
-      opacity: 0,
-      filter: mobile ? 'blur(0px)' : 'blur(8px)',
-      duration: reduced ? 0.01 : 0.36,
-      ease: 'power2.in',
-      onComplete: () => {
-        leaving.current = null
-        setShown((prev) => ({ key: tabRef.current, n: prev.n + 1 }))
-      },
-    })
-  }, [mobile, reduced])
+    const done = () => {
+      leaving.current = null
+      setShown((prev) => ({ key: tabRef.current, n: prev.n + 1 }))
+    }
+    leaving.current = reduced
+      ? gsap.to(windowRef.current, { opacity: 0, duration: 0.01, onComplete: done })
+      : leavePanel(windowRef.current, done)
+  }, [reduced])
 
   useEffect(() => () => leaving.current?.kill(), [])
 
@@ -182,17 +162,18 @@ export default function ProfilePage({ onNavigate, onMenuToggle }) {
       gsap.set(el, { opacity: 0 })
       return undefined
     }
-    const tl = gsap.timeline({ delay: revealDelay.current, onComplete: () => gsap.set(el, { clearProps: 'filter' }) })
+    const tl = gsap.timeline({ delay: revealDelay.current })
     revealDelay.current = 0
     if (reduced) {
-      tl.set(el, { x: 0, y: 0, scale: 1, rotateX: 0, opacity: 1, filter: 'blur(0px)' })
+      tl.set(el, { scale: 1, opacity: 1 })
       return () => tl.kill()
     }
-    enterPanel(tl, el, shown.key, mobile ? 0.5 : 1, !mobile)
+    enterPanel(tl, el)
+    // 안쪽 내용은 가로로 열린 뒤 세로로 펼쳐지는 동안 차례로 떠오른다
     const reveals = el.querySelectorAll('.reveal')
-    if (reveals.length) tl.fromTo(reveals, { y: 14, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5, stagger: 0.06, ease: 'power2.out' }, shown.key === 'equipment' ? 0.5 : 0.15)
+    if (reveals.length) tl.fromTo(reveals, { y: 14, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5, stagger: 0.06, ease: 'power2.out' }, 0.5)
     return () => tl.kill()
-  }, [shown, intro, mobile, reduced])
+  }, [shown, intro, reduced])
 
   // 키보드: 1–5로 메뉴 선택, ← →로 순환
   useEffect(() => {

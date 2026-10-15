@@ -62,17 +62,31 @@
     .main-character:not(.is-walking) img.is-active {
         animation: main-idle 2.4s ease-in-out infinite;
     }
-    .main-character.is-walking img.is-active {
-        animation: main-walk .34s steps(2) infinite;
+    /* 문을 향할 때는 좌·우 대각선용 5프레임을 순서대로 반복해 실제 보폭을 보여준다. */
+    .main-character-walk-frames {
+        --frame-time: .15s;
+        position: absolute;
+        inset: 0;
+        display: block;
+    }
+    .main-character-walk-frame {
+        animation: main-character-walk-frame calc(var(--frame-time) * var(--frames)) step-end infinite;
+        animation-delay: calc(var(--frame-time) * (var(--i) - var(--frames)));
+    }
+    .main-character-walk-frame:first-child {
+        opacity: 1;
     }
     @keyframes :global(main-idle) {
         50% {
             transform: translateX(-50%) translateY(-.6%);
         }
     }
-    @keyframes :global(main-walk) {
-        50% {
-            transform: translateX(-50%) translateY(-3%) rotate(-1.5deg);
+    @keyframes :global(main-character-walk-frame) {
+        0% {
+            opacity: 1;
+        }
+        20%, 100% {
+            opacity: 0;
         }
     }
 }

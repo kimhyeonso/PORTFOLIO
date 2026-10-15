@@ -21,7 +21,7 @@ function RingFace({ project, imageOnly }) {
             </div>}
             <div className="project-ring-media">
                 <WorkBadge work={project.work} />
-                {project.thumbnail ? <img src={project.thumbnail} alt="" draggable="false" /> : <span className="project-ring-empty" />}
+                {project.thumbnail ? <img src={project.thumbnail} alt="" loading="lazy" draggable="false" /> : <span className="project-ring-empty" />}
             </div>
         </div>
     )
