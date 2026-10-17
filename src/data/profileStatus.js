@@ -9,8 +9,8 @@ export const hero = {
   title: 'Designer × Frontend Developer',
   // 인트로에서는 두 줄 인용문, 이후 왼쪽 위에서는 한 줄로 이어진다
   copyLines: ['디자인만 하려고 했습니다,', '근데 제가 팀장이고 코딩까지 하고 있죠?'],
-  // 처음 진입 인트로(가운데 정렬)가 자동으로 넘어가기까지 시간(ms). 클릭 · 키 · 휠로 바로 넘길 수 있다
-  introHold: 3600,
+  // 인트로 대화창에서 금색 형광펜을 긋는 단어 (copyLines 안에 그대로 있는 글자)
+  copyHighlights: ['팀장', '코딩까지'],
 }
 
 // key는 STAGING · 패널 · 3D 이펙트 key와 같다
@@ -23,14 +23,33 @@ export const menus = [
   { key: 'contact', label: 'Record', ko: '기록' },
 ]
 
+/*
+ * 5가지 포즈 3D 캐릭터 (key는 menus와 같고, 포즈를 클릭하면 그 메뉴 패널이 열린다).
+ * description: 캐릭터에 마우스를 올리면 머리 위 말풍선에 보이는 설명
+ * model: GLB 경로. public/models/에 파일을 넣고 '/models/파일명.glb'처럼 적는다.
+ *        비워 두면(null) 임시 마네킹이 보인다. 모델은 높이 · 발 위치를 자동으로 맞추고, 애니메이션이 있으면 첫 클립을 재생한다.
+ */
+export const poses = {
+  profile: { model: `${import.meta.env.BASE_URL}models/profile-anime-girl.glb`, description: '나를 소개하는 기본 정보' },
+  skill: { model: `${import.meta.env.BASE_URL}models/skill-anime-girl.glb`, description: '다룰 수 있는 기술 스택' },
+  equipment: { model: `${import.meta.env.BASE_URL}models/equipment-cute-girl.glb`, description: '작업에 쓰는 장비 · 툴' },
+  stats: { model: `${import.meta.env.BASE_URL}models/stats-chibi-girl.glb`, description: '나의 능력치' },
+  contact: { model: `${import.meta.env.BASE_URL}models/record-anime-girl.glb`, description: '대외활동 · 연락처 기록' },
+}
+
 export const ui = {
   windowLabel: 'STATUS',
   menuLabel: '상태창 메뉴',
   keyHint: { keys: ['←', '→'], or: 'OR', range: '1–5', label: 'KEY TO MOVE' },
+  // 포즈 갤러리 (처음 진입 화면): 캐릭터 hover 말풍선 · 아래 안내 · 패널에서 돌아가기
+  gallery: { hint: '◀ DRAG · SCROLL ▶', hintMobile: '◀ DRAG ▶', pick: 'CLICK TO OPEN ▶', pickMobile: 'TAP TO OPEN ▶', current: '지금 포즈', back: 'POSES', backLabel: '포즈 선택으로 돌아가기' },
   equippedLabel: 'EQUIPPED',
   levelLabel: 'LV',
   photoAlt: '김현수 프로필 사진',
   equipNav: { label: '장비 카테고리', prev: '이전 장비 카테고리', next: '다음 장비 카테고리' },
+  // 연락처: 전화 · 이메일 복사
+  // (버튼 모양 · 글은 FRONTEND 카드의 체험 계정 [복사] 버튼과 같다)
+  contactAction: { call: '전화', callLabel: '전화 걸기', copy: '복사', copied: '복사됨', copyLabel: '이메일 주소 복사', copiedLabel: '이메일 주소를 복사했습니다' },
 }
 
 /*
@@ -111,7 +130,8 @@ export const contact = {
     },
     {
       key: 'Contact', ko: '연락처',
-      lines: [{ label: 'Email', value: 'as889977@naver.com' }, { label: 'Phone', value: '010-9525-8350' }],
+      // copy: 누르면 값을 클립보드에 복사 / tel: 누르면 그 번호로 전화 (tel: 링크)
+      lines: [{ label: 'Email', value: 'as889977@naver.com', copy: true }, { label: 'Phone', value: '010-9525-8350', tel: '01095258350' }],
     },
   ],
 }
@@ -121,17 +141,20 @@ export const contact = {
  * 모바일은 cam z +0.6, rot · cam x 50%.
  */
 export const STAGING = {
-  profile: { pos: [0, 0, 0.3], rot: 0, cam: [0, 1.9, 8.0], look: [0, 1.45, 0.2], accent: '#F6C964' },
-  skill: { pos: [-0.5, 0, 0], rot: -0.25, spin: true, cam: [-1.0, 2.0, 9.2], look: [-0.4, 1.45, 0], accent: '#7FD3A6' },
-  equipment: { pos: [0.15, 0, 0], rot: 0.85, cam: [2.0, 2.3, 8.8], look: [0.1, 1.4, 0], accent: '#7CC4F2' },
-  stats: { pos: [0, 0, 0], rot: 0, cam: [0, 4.6, 8.6], look: [0, 1.0, 0], accent: '#F2AE5E' },
-  contact: { pos: [0.1, 0, -0.6], rot: 0.6, cam: [1.0, 2.1, 9.6], look: [0.2, 1.35, -0.3], accent: '#EE9F86' },
+  // 캐릭터는 모두 받침대 가운데(pos 0)에 서고, 카메라는 같은 점(look)에서 같은 거리(약 8.8)에 두어
+  // 메뉴가 바뀌어도 캐릭터 크기가 같다. 메뉴마다 각도(좌우 · 높이)만 다르다
+  profile: { pos: [0, 0, 0], rot: 0, cam: [0, 2.0, 8.8], look: [0, 1.25, 0], accent: '#F6C964' },
+  skill: { pos: [0, 0, 0], rot: -0.25, spin: true, cam: [-0.48, 2.0, 8.79], look: [0, 1.25, 0], accent: '#7FD3A6' },
+  equipment: { pos: [0, 0, 0], rot: 0.85, cam: [1.81, 2.0, 8.61], look: [0, 1.25, 0], accent: '#7CC4F2' },
+  stats: { pos: [0, 0, 0], rot: 0, cam: [0, 3.4, 8.56], look: [0, 1.25, 0], accent: '#F2AE5E' },
+  contact: { pos: [0, 0, 0], rot: 0.6, cam: [0.77, 2.0, 8.77], look: [0, 1.25, 0], accent: '#EE9F86' },
 }
 
-// 처음 진입 인트로: 캐릭터를 화면 가운데(이름과 인용문 사이)에 두는 카메라
-export const INTRO_STAGE = { pos: [0, 0, 0], rot: 0, cam: [0, 2.0, 11.5], look: [0, 1.25, 0], accent: '#F6C964' }
+// 처음 진입 = 원형 전시대. 캐릭터 얼굴 높이에 가까운 정면 카메라.
+// 받침대 테두리가 배경 바닥의 금색 원(1440×860 기준 가로 약 265–1180px, 세로 630–835px)에 겹치도록 맞춘 값
+export const INTRO_STAGE = { pos: [0, 0, 0], rot: 0, cam: [0, 2.5, 11.7], look: [0, 2.15, 0], accent: '#F6C964' }
 
 export const CAMERA = {
   fov: 32,
-  intro: [0, 2.8, 12.5],
+  intro: [0, 2.5, 11.7],
 }

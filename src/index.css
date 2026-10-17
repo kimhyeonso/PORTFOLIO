@@ -58,6 +58,13 @@ html {
 
     /* 탭했을 때 회색 하이라이트 제거 */
     -webkit-tap-highlight-color: transparent;
+
+    /*
+     * 모바일에서 화면 밖으로 나간 요소(3D 링 카드 등) 때문에 페이지가 옆으로 밀리거나,
+     * 끝에서 드래그할 때 페이지 전체가 튕기지 않게 한다 (clip은 sticky를 깨지 않는다)
+     */
+    overflow-x: clip;
+    overscroll-behavior: none;
 }
 
 /* body 기본 설정 (색 · 배경 · 글꼴은 사이트 공통 값) */
@@ -88,6 +95,10 @@ body {
     /* 긴 단어가 화면을 벗어나지 않도록 처리 */
     overflow-wrap: break-word;
     word-break: keep-all;
+
+    /* html과 같이: 가로 밀림 · 끝 튕김 방지 */
+    overflow-x: clip;
+    overscroll-behavior: none;
 }
 
 /* React의 루트 영역 */

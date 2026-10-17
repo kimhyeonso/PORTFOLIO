@@ -7,7 +7,7 @@ import { equipment, skills, stats } from '../../../data/profileStatus.js'
 import { HUD_NODE_RADIUS } from './textures.js'
 
 /*
- * 메뉴별 3D 이펙트 5종. 각자 active일 때 0..1 visibility를 GSAP(back.out)으로 올리고,
+ * 메뉴별 3D 이펙트 4종 (RECORD는 이펙트 없음 — 머리 위 마커가 캐릭터와 겹쳐 뺐다). 각자 active일 때 0..1 visibility를 GSAP(back.out)으로 올리고,
  * 비활성이 되면 0.45초에 사라진다. visibility가 0이면 visible = false로 그리지 않는다.
  * 이펙트 묶음 전체는 캐릭터 위치를 lerp로 따라간다.
  */
@@ -224,36 +224,6 @@ function StatsHud({ active, reduced, textures }) {
     )
 }
 
-/* CONTACT: 캐릭터 머리 위에 회전하는 금색 마커 (팔면체 + 점, "!" 느낌) */
-function ContactMarker({ active, reduced }) {
-    const vis = useVisibility(active, reduced)
-    const root = useRef(null)
-    const spin = useRef(null)
-    const mat = useMemo(() => new MeshStandardMaterial({ color: '#F2C86A', emissive: '#D9A23A', emissiveIntensity: 0.6, metalness: 0.3, roughness: 0.35, flatShading: true }), [])
-
-    useFrame(({ clock }, delta) => {
-        const v = visAt(vis)
-        root.current.visible = v > 0.002
-        if (!root.current.visible) return
-        root.current.scale.setScalar(Math.max(v, 0.001))
-        root.current.position.y = 2.6 + Math.sin(clock.elapsedTime * 2.2) * (reduced ? 0.02 : 0.08)
-        spin.current.rotation.y += delta * (reduced ? 0.3 : 1.5)
-    })
-
-    return (
-        <group ref={root} visible={false} position={[0, 2.6, 0]}>
-            <group ref={spin}>
-                <mesh material={mat} scale={[0.75, 1.7, 0.75]} position={[0, 0.12, 0]} castShadow>
-                    <octahedronGeometry args={[0.15, 0]} />
-                </mesh>
-                <mesh material={mat} position={[0, -0.3, 0]} castShadow>
-                    <boxGeometry args={[0.1, 0.1, 0.1]} />
-                </mesh>
-            </group>
-        </group>
-    )
-}
-
 export default function Effects({ tab, store, hoverSkill, reduced, textures }) {
     const group = useRef(null)
 
@@ -269,7 +239,6 @@ export default function Effects({ tab, store, hoverSkill, reduced, textures }) {
             <SkillOrbs active={tab === 'skill'} reduced={reduced} hoverSkill={hoverSkill} textures={textures} />
             <EquipSlots active={tab === 'equipment'} reduced={reduced} />
             <StatsHud active={tab === 'stats'} reduced={reduced} textures={textures} />
-            <ContactMarker active={tab === 'contact'} reduced={reduced} />
         </group>
     )
 }

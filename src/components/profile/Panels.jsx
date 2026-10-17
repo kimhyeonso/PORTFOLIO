@@ -1,5 +1,5 @@
 import gsap from 'gsap'
-import { useLayoutEffect, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import photo from '../../assets/image/profile/photo.png'
 import { contact, equipment, hero, profile, skills, stats, ui } from '../../data/profileStatus.js'
 import { skillIcons } from '../../data/skillIcons.js'
@@ -19,8 +19,54 @@ function formatBirth(birth) {
     return `${y}년 ${m}월 ${d}일(만${age}세)`
 }
 
+// 클립보드에 복사 (https · localhost는 Clipboard API, 안 되면 숨긴 textarea로)
+async function copyText(text) {
+    try {
+        await navigator.clipboard.writeText(text)
+        return true
+    } catch {
+        const area = document.createElement('textarea')
+        area.value = text
+        area.setAttribute('readonly', '')
+        area.style.cssText = 'position:fixed;top:0;left:0;opacity:0'
+        document.body.appendChild(area)
+        area.select()
+        const ok = document.execCommand('copy')
+        area.remove()
+        return ok
+    }
+}
+
+// 연락처 값: 값(진하게) 옆에 [전화](tel: 링크) · [복사](누르면 잠깐 '복사됨') 버튼 — FRONTEND 체험 계정 복사 버튼과 같은 모양
+function ContactValue({ line }) {
+    const [copied, setCopied] = useState(false)
+    const timer = useRef(0)
+    useEffect(() => () => clearTimeout(timer.current), [])
+    const t = ui.contactAction
+
+    const onCopy = async () => {
+        if (!(await copyText(line.value))) return
+        setCopied(true)
+        clearTimeout(timer.current)
+        timer.current = setTimeout(() => setCopied(false), 1500)
+    }
+    return (
+        <span className="st-line-contact">
+            <b className="st-line-main">{line.value}</b>
+            {line.tel
+                ? <a className="st-line-btn" href={`tel:${line.tel}`} aria-label={`${t.callLabel} ${line.value}`}>{t.call}</a>
+                : (
+                    <button className="st-line-btn" type="button" onClick={onCopy} aria-label={t.copyLabel}>
+                        {copied ? t.copied : t.copy}
+                    </button>
+                )}
+            {line.copy && <span className="st-sr-only" aria-live="polite">{copied ? t.copiedLabel : ''}</span>}
+        </span>
+    )
+}
+
 /*
- * 한 줄: { label, value } → 항목(흐리게) · 값(진하게)
+ * 한 줄: { label, value } → 항목(흐리게) · 값(진하게) (tel · copy가 있으면 누를 수 있는 값)
  *        'A · B' 문자열 → A(진하게) + B(금빛 태그, 기간 · 연도 등)
  */
 function ProfileLine({ line }) {
@@ -28,7 +74,9 @@ function ProfileLine({ line }) {
         return (
             <li>
                 <span className="st-line-key">{line.label}</span>
-                <span className="st-line-main">{line.birth ? formatBirth(line.birth) : line.value}</span>
+                {line.tel || line.copy
+                    ? <ContactValue line={line} />
+                    : <span className="st-line-main">{line.birth ? formatBirth(line.birth) : line.value}</span>}
             </li>
         )
     }

@@ -189,8 +189,17 @@
          * 카드 보기: 페이지는 스크롤하지 않고, 카드 영역(stage)이 탭과 조작 바 사이 남는 높이를 채운다.
          * 카드는 모두 그 높이로 같고, 넘치는 글은 카드 안에서 스크롤된다 (ProjectCard.module.scss 모바일)
          */
+        /*
+         * 카드 보기는 화면에 고정한다: 카드 위에서 아래로 끌어도(iOS 끝 튕김 등) 페이지가 밀려
+         * 카드가 위쪽 고정 탭과 겹치지 않게. 카드 안 글 스크롤은 카드(.project-card-info)에서만
+         */
         .project-gallery.is-card {
+            position: fixed;
+            inset: 0;
+            height: auto;
+            min-height: 0;
             overflow-y: hidden;
+            overscroll-behavior: none;
         }
         .project-gallery.is-card .project-gallery-stage {
             flex: 1 1 auto;
