@@ -1,5 +1,16 @@
 # React + Vite
 
+## Vercel deployment
+
+- Deploy the directory containing this `package.json` and `vercel.json`. This directory is the Git repository root; when importing a parent repository, select `PORTFOLIO` as Root Directory.
+- Use Node.js 22.x (declared in `package.json`). Vercel configuration selects Vite, `npm run build`, and the `dist` output directory.
+- Set `OPENAI_API_KEY` in the Vercel Production and Preview environments for `/api/guide`, then redeploy. Keep this server-only: do not use a `VITE_` prefix. `.env.example` documents local setup.
+- `api/guide.js` runs as a Vercel Function; its guide text is included through `functions.includeFiles`. Vite preview serves static output only and does not run this API.
+- SPA page URLs fall back to `index.html`; API URLs, model URLs, asset URLs, and file requests keep their normal responses, including 404 for missing files.
+- Prefer Git integration for the current large asset set. The October 2026 audit measured approximately 675 MB of build output, including 313 MB of GLB files. No individual output file exceeded 100 MB, but Hobby CLI source uploads are limited to 100 MB total. See [Vercel limits](https://vercel.com/docs/limits). Optimize or externally host large media before using a deployment method with a smaller upload allowance.
+
+Deployment verification: open a page directly and refresh it, check `/models/profile-anime-girl.glb` returns binary data, and check `/api/guide` returns JSON (GET should return 405). Ask the chatbot a question after configuring the API key.
+
 This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
 
 Currently, two official plugins are available:
