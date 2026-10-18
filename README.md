@@ -7,9 +7,21 @@
 - Set `OPENAI_API_KEY` in the Vercel Production and Preview environments for `/api/guide`, then redeploy. Keep this server-only: do not use a `VITE_` prefix. `.env.example` documents local setup.
 - `api/guide.js` runs as a Vercel Function; its guide text is included through `functions.includeFiles`. Vite preview serves static output only and does not run this API.
 - SPA page URLs fall back to `index.html`; API URLs, model URLs, asset URLs, and file requests keep their normal responses, including 404 for missing files.
-- Prefer Git integration for the current large asset set. The October 2026 audit measured approximately 675 MB of build output, including 313 MB of GLB files. No individual output file exceeded 100 MB, but Hobby CLI source uploads are limited to 100 MB total. See [Vercel limits](https://vercel.com/docs/limits). Optimize or externally host large media before using a deployment method with a smaller upload allowance.
+- Prefer Git integration for the current large asset set. The five profile GLBs have been reduced from approximately 313 MB to 46 MB, but other media still contributes to the deployment size. Check the current output against [Vercel limits](https://vercel.com/docs/limits) before using CLI uploads.
 
 Deployment verification: open a page directly and refresh it, check `/models/profile-anime-girl.glb` returns binary data, and check `/api/guide` returns JSON (GET should return 405). Ask the chatbot a question after configuring the API key.
+
+## Profile 3D models
+
+`public/models/` contains web-optimized models. The original five models totaled approximately 313 MB and used large textures and dense meshes, creating substantial download and GPU memory pressure when loaded together. The optimized copies total approximately 46 MB and use textures up to 1024 pixels and simplified geometry. No external geometry decoder is required.
+
+Keep high-resolution originals outside `public/` and `dist/`. To regenerate the deployable copies with [glTF Transform](https://gltf-transform.dev/):
+
+```sh
+npm run models:optimize -- /path/to/original-models
+```
+
+The source directory must contain the same five filenames as `public/models/`. Check the characters visually after optimization: fine geometry and texture details are reduced. Run `npm run build` and redeploy to publish the optimized files. If the browser still reports repeated page failures, capture the deployed URL, device/browser, and console error to distinguish memory pressure from failed asset requests.
 
 This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
 
