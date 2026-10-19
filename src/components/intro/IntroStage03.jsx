@@ -1,4 +1,4 @@
-import background from '../../assets/image/intro/background/stage03-background.png'
+import background from '../../assets/image/intro/background/stage03-background.webp'
 // 달리기 5장 · 점프 5장 모두 STAGE 01과 같은 356×348 캔버스에 발 위치도 같다
 import run01 from '../../assets/image/intro/character/stage03_run01.png'
 import run02 from '../../assets/image/intro/character/stage03_run02.png'
@@ -11,7 +11,7 @@ import jump02 from '../../assets/image/intro/character/stage03_jump02.png'
 import jump03 from '../../assets/image/intro/character/stage03_jump03.png'
 import jump04 from '../../assets/image/intro/character/stage03_jump04.png'
 import jump05 from '../../assets/image/intro/character/stage03_jump05.png'
-import door from '../../assets/image/intro/item/stage03_door.png'
+import door from '../../assets/image/intro/item/stage03_door.webp'
 import { introItems } from '../../data/introItems.js'
 import IntroStageGame from './IntroStageGame.jsx'
 

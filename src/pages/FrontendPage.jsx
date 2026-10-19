@@ -1,4 +1,4 @@
-import background from '../assets/image/Menu_Desgin/frontend.png'
+import background from '../assets/image/Menu_Desgin/frontend.webp'
 import ProjectGallery from '../components/design/ProjectGallery.jsx'
 import { frontendProjects } from '../data/frontendProjects.js'
 

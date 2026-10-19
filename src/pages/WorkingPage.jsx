@@ -1,5 +1,5 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
-import background from '../assets/image/Menu_Desgin/working.png'
+import background from '../assets/image/Menu_Desgin/working.webp'
 import HallPage from '../components/common/HallPage.jsx'
 import PageBar from '../components/common/PageBar.jsx'
 import SparkleField from '../components/common/SparkleField.jsx'
@@ -8,7 +8,7 @@ import WorkCursor from '../components/work/WorkCursor.jsx'
 import WorkHero from '../components/work/WorkHero.jsx'
 import WorkShowcase from '../components/work/WorkShowcase.jsx'
 import { workProjects } from '../data/workProjects.js'
-import './WorkingPage.module.scss'
+import styles from './WorkingPage.module.scss'
 
 // Working(실무) 페이지 (주소 /working, 예전 주소 /archive로 들어와도 이리로 온다)
 // 회사 key는 workProjects.js의 category 값과 같아야 한다
@@ -75,7 +75,7 @@ export default function WorkingPage({ onNavigate, onMenuToggle, initialSlug }) {
   }
 
   return (
-    <HallPage className={`work-page ${scrolled ? 'is-scrolled' : ''}`} background={background} label="Working projects">
+    <HallPage className={`${styles.scope} work-page ${scrolled ? 'is-scrolled' : ''}`} background={background} label="Working projects">
       <PageBar label="회사별로 보기" tabs={companies} active={activeCompany} onSelect={selectCompany} onExit={() => onNavigate('/')} onMenuToggle={onMenuToggle} />
       {/* 배경 반짝이 (PROFILE 파티클과 같은 모양 · 색) — 첫 화면에서만 (스크롤하면 옅어진다) */}
       <SparkleField className="work-page-sparkles" />

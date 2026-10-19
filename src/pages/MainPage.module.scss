@@ -28,7 +28,7 @@
         left: 50%;
         width: max(100%, 100dvh * 2074 / 1167);
         aspect-ratio: 2074 / 1167;
-        background: url('../assets/image/home/background.png') center / 100% 100% no-repeat;
+        background: url('../assets/image/home/background.webp') center / 100% 100% no-repeat;
         transform: translate(-50%, -50%);
     }
     .main-hall.is-leaving::after {
@@ -64,7 +64,7 @@
         .main-stage {
             width: max(127%, 100dvh * 941 / 1672);
             aspect-ratio: 941 / 1672;
-            background-image: url('../assets/image/home/background-mo.png');
+            background-image: url('../assets/image/home/background-mo.webp');
         }
     }
 }

@@ -1,4 +1,4 @@
-import background from '../assets/image/Menu_Desgin/desgin.png'
+import background from '../assets/image/Menu_Desgin/desgin.webp'
 import ProjectGallery from '../components/design/ProjectGallery.jsx'
 import { designProjects } from '../data/designProjects.js'
 

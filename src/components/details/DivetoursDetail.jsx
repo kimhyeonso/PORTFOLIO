@@ -3,7 +3,7 @@ import { byName } from './byName.js'
 import styles from './DivetoursDetail.module.scss'
 
 // DIVETOURS 폴더의 이미지 (예: img.diveTours01)
-const img = byName(import.meta.glob('../../assets/image/project/DIVETOURS/*.{png,jpg}', { eager: true, import: 'default' }))
+const img = byName(import.meta.glob('../../assets/image/project/DIVETOURS/*.{png,jpg,webp}', { eager: true, import: 'default' }))
 
 // 무한 슬라이드로 흐르는 투어 썸네일 (productThumnail01, 02, … 이름 순)
 const products = Object.keys(img).filter((name) => name.startsWith('productThumnail')).sort().map((name) => img[name])

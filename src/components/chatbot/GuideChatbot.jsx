@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
 import Icon from '../common/Icon.jsx'
 import styles from './GuideChatbot.module.scss'
-import launcherIcon from '../../assets/image/home/cat01.png'
-import launcherHoverIcon from '../../assets/image/home/cat02.png'
-import bubbleIcon from '../../assets/image/home/speak.png'
+import launcherIcon from '../../assets/image/home/cat01.webp'
+import launcherHoverIcon from '../../assets/image/home/cat02.webp'
+import bubbleIcon from '../../assets/image/home/speak.webp'
 
 const INITIAL_MESSAGE = {
   role: 'assistant',

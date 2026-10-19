@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { gsap } from 'gsap'
-import burst from '../../assets/image/intro/item/item_light.png'
+import burst from '../../assets/image/intro/item/item_light.webp'
 import sparkle from '../../assets/image/intro/item/character_light.png'
 import dust from '../../assets/image/intro/item/jump.png'
 import exclamation from '../../assets/image/intro/item/exclamation.png'

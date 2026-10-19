@@ -1,6 +1,6 @@
 import gsap from 'gsap'
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
-import photo from '../../assets/image/profile/photo.png'
+import photo from '../../assets/image/profile/photo.webp'
 import { contact, equipment, hero, profile, skills, stats, ui } from '../../data/profileStatus.js'
 import { skillIcons } from '../../data/skillIcons.js'
 

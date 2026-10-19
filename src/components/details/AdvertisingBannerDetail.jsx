@@ -2,7 +2,7 @@ import DetailCanvas, { GAP, Label, Pic, Video, fitHeight, stack } from './Detail
 import { byName } from './byName.js'
 
 // ADVERTISING BANNER 폴더의 이미지 · 영상 (예: img.online01, video.riverlake_15)
-const img = byName(import.meta.glob('../../assets/image/project/ADVERTISING BANNER/*.png', { eager: true, import: 'default' }))
+const img = byName(import.meta.glob('../../assets/image/project/ADVERTISING BANNER/*.{png,webp}', { eager: true, import: 'default' }))
 const video = byName(import.meta.glob('../../assets/image/project/ADVERTISING BANNER/*.mp4', { eager: true, import: 'default' }))
 
 const LABEL = 26

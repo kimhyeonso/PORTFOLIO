@@ -1,4 +1,9 @@
 /* Working 페이지 전용 (배경은 HallPage, 위쪽 막대는 PageBar, 첫 화면 · 스크롤 화면은 components/work가 맡는다) */
+/* .scope를 JSX에서 써야 배포 빌드에서 이 CSS가 빠지지 않는다 (값 없이 import하면 통째로 사라진다) */
+.scope {
+    position: relative;
+}
+
 :global {
     .work-page {
         --work-accent: #9d8fe3;

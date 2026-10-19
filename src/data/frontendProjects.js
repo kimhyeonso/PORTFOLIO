@@ -11,8 +11,8 @@ import chemverseThumbnail from '../assets/image/project/Frontend/ChemverseThumna
 import lcodeThumbnail from '../assets/image/project/Frontend/LcodeThumnail.webp'
 // 팀 프로젝트 와이어프레임 ([미리보기] 팝업에 보여준다)
 import nodeWireframe from '../assets/image/project/Frontend/Nodewireframe.PNG'
-import chemverseWireframe from '../assets/image/project/Frontend/Chemversewireframe.PNG'
-import lcodeWireframe from '../assets/image/project/Frontend/Lcodewireframe.PNG'
+import chemverseWireframe from '../assets/image/project/Frontend/Chemversewireframe.webp'
+import lcodeWireframe from '../assets/image/project/Frontend/Lcodewireframe.webp'
 // 팀 프로젝트 발표 자료 (세부정보 팝업에서 PDF로 보여준다, 팝업을 열 때만 받는다)
 import nodePdf from '../assets/image/project/NODE/NODE.pdf'
 import chemversePdf from '../assets/image/project/CHEMVERSE/CHAMBERS.pdf'

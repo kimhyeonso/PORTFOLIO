@@ -4,7 +4,7 @@ import { byName } from './byName.js'
 import styles from './KwangwoonDetail.module.scss'
 
 // UNIVERSE 폴더의 이미지 (예: img.A, img.mainBackground)
-const img = byName(import.meta.glob('../../assets/image/project/UNIVERSE/*.png', { eager: true, import: 'default' }))
+const img = byName(import.meta.glob('../../assets/image/project/UNIVERSE/*.{png,webp}', { eager: true, import: 'default' }))
 
 // 이미지 원본 크기 [너비, 높이] (높이 계산용)
 const size = { mainBackground: [1920, 1209], A: [706, 998], B: [569, 805], C: [1140, 806], sns: [1746, 930] }

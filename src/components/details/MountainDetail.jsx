@@ -4,7 +4,7 @@ import { byName } from './byName.js'
 import styles from './MountainDetail.module.scss'
 
 // MOUNTAIN EQUIMENT 폴더의 이미지 (예: img.page01, img.hero)
-const img = byName(import.meta.glob('../../assets/image/project/MOUNTAIN EQUIMENT/*.{png,jpg}', { eager: true, import: 'default' }))
+const img = byName(import.meta.glob('../../assets/image/project/MOUNTAIN EQUIMENT/*.{png,jpg,webp}', { eager: true, import: 'default' }))
 
 // 소개 카드 3장 (x · w: 카드 왼쪽 · 너비, icon: 아이콘 이미지와 그 왼쪽 · 카드 위 끝 기준 위치 · 너비)
 const cards = [

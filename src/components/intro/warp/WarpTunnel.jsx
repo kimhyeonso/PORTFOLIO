@@ -2,7 +2,7 @@ import { Suspense, useEffect, useMemo, useRef } from 'react'
 import { Canvas, useFrame, useLoader, useThree } from '@react-three/fiber'
 import { gsap } from 'gsap'
 import { TextureLoader, Vector2 } from 'three'
-import referenceImage from '../../../assets/image/intro/background/warp-reference.jpg'
+import referenceImage from '../../../assets/image/intro/background/warp-reference.webp'
 import { warpFragmentShader, warpVertexShader } from './warpShader.js'
 import styles from './WarpTunnel.module.scss'
 

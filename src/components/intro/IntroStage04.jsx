@@ -1,4 +1,4 @@
-import background from '../../assets/image/intro/background/stage04-background.png'
+import background from '../../assets/image/intro/background/stage04-background.webp'
 // 달리기 5장 · 점프 5장 모두 STAGE 01과 같은 356×348 캔버스에 발 위치도 같다
 import run01 from '../../assets/image/intro/character/stage04_run01.png'
 import run02 from '../../assets/image/intro/character/stage04_run02.png'

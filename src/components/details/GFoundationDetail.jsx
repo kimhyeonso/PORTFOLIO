@@ -4,7 +4,7 @@ import { byName } from './byName.js'
 import styles from './GFoundationDetail.module.scss'
 
 // G-FOUNDATION 폴더의 이미지 (예: img.page01, img['background01 (2)'])
-const img = byName(import.meta.glob('../../assets/image/project/G-FOUNDATION/*.png', { eager: true, import: 'default' }))
+const img = byName(import.meta.glob('../../assets/image/project/G-FOUNDATION/*.{png,webp}', { eager: true, import: 'default' }))
 
 // y는 글줄의 세로 가운데. align: left(x가 왼쪽) | center(x가 가운데)
 function Text({ x = 960, y, size = 28, align = 'center', className = '', children }) {

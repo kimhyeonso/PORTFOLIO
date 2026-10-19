@@ -1,5 +1,5 @@
-import amorepacificThumbnail from '../assets/image/project/AMOREPACIFIC/Thumnail.png'
-import amorepacificPreview from '../assets/image/project/AMOREPACIFIC/preview.png'
+import amorepacificThumbnail from '../assets/image/project/AMOREPACIFIC/Thumnail.webp'
+import amorepacificPreview from '../assets/image/project/AMOREPACIFIC/preview.webp'
 import { allDesignProjects } from './designProjects.js'
 
 /**

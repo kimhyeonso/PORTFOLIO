@@ -2,7 +2,7 @@ import { GAP, fitHeight, stack } from './DetailCanvas.jsx'
 import styles from './WildfixDetail.module.scss'
 
 // WILDFIX 폴더의 이미지를 파일 이름으로 꺼내 쓴다 (예: img['logo01'])
-const files = import.meta.glob('../../assets/image/project/WILDFIX/*.png', { eager: true, import: 'default' })
+const files = import.meta.glob('../../assets/image/project/WILDFIX/*.{png,webp}', { eager: true, import: 'default' })
 const img = Object.fromEntries(Object.entries(files).map(([path, url]) => [path.split('/').pop().replace('.png', ''), url]))
 
 /*

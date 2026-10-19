@@ -4,7 +4,7 @@ import { byName } from './byName.js'
 import styles from './HanwooDetail.module.scss'
 
 // HANWOO 폴더의 이미지 (예: img.mainKey01, img.subKey01)
-const img = byName(import.meta.glob('../../assets/image/project/HANWOO/*.png', { eager: true, import: 'default' }))
+const img = byName(import.meta.glob('../../assets/image/project/HANWOO/*.{png,webp}', { eager: true, import: 'default' }))
 
 // 이미지 원본 크기 [너비, 높이] (높이 계산용)
 const size = {
