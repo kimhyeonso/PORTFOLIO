@@ -11,11 +11,12 @@ import styles from './MainPage.module.scss'
 // pose: 이 문을 볼 때 캐릭터 방향, target: 문 앞까지 걸어갈 위치/크기(%)
 // tilt: 문 위 글씨가 둥근 벽을 따라 꺾인 각도(deg). y는 벽이 돌아간 정도, z는 글줄 기울기
 // featured: true면 문 위 글씨 위에 노란 별 3개로 중요 표시
+// mobileDescription: 세로 화면(문 사이가 좁다) 명패에 두 줄로 나눠 보여줄 설명 (\n에서 줄바꿈)
 const rooms = [
-  { label: 'ABOUT ME', description: '나를 소개하는 공간', path: '/profile', color: '#ffd9a0', pose: 'side-left', tilt: { y: 34, z: 3 }, area: { left: 19.5, top: 18, width: 12.8, height: 55.5 }, mobileArea: { left: 12.8, top: 37.6, width: 17, height: 27.3 } },
-  { label: 'DESIGN', description: '디자인 포트폴리오', path: '/design', color: '#8fe3a0', pose: 'back-left', tilt: { y: 14, z: 1 }, area: { left: 35.8, top: 19.5, width: 12.2, height: 52.5 }, mobileArea: { left: 33.2, top: 38.5, width: 15.4, height: 26.1 } },
-  { label: 'FRONTEND', description: '프론트엔드 포트폴리오', path: '/frontend', color: '#8fc4ff', pose: 'back-right', tilt: { y: -14, z: -1 }, area: { left: 51.8, top: 19.5, width: 12.4, height: 52.5 }, mobileArea: { left: 51.9, top: 38.5, width: 15.4, height: 26.1 } },
-  { label: 'EXPERIENCE', description: '실무 경험 포트폴리오', path: '/working', color: '#ffc08a', pose: 'side-right', tilt: { y: -34, z: -3 }, featured: true, area: { left: 67.8, top: 18, width: 13.2, height: 55.5 }, mobileArea: { left: 70.7, top: 37.6, width: 16.7, height: 27.3 } },
+  { label: 'ABOUT ME', description: '나를 소개하는 공간', mobileDescription: '나를 소개하는\n공간', path: '/profile', color: '#ffd9a0', pose: 'side-left', tilt: { y: 34, z: 3 }, area: { left: 19.5, top: 18, width: 12.8, height: 55.5 }, mobileArea: { left: 12.8, top: 37.6, width: 17, height: 27.3 } },
+  { label: 'DESIGN', description: '디자인 포트폴리오', mobileDescription: '디자인\n포트폴리오', path: '/design', color: '#8fe3a0', pose: 'back-left', tilt: { y: 14, z: 1 }, area: { left: 35.8, top: 19.5, width: 12.2, height: 52.5 }, mobileArea: { left: 33.2, top: 38.5, width: 15.4, height: 26.1 } },
+  { label: 'FRONTEND', description: '프론트엔드 포트폴리오', mobileDescription: '프론트엔드\n포트폴리오', path: '/frontend', color: '#8fc4ff', pose: 'back-right', tilt: { y: -14, z: -1 }, area: { left: 51.8, top: 19.5, width: 12.4, height: 52.5 }, mobileArea: { left: 51.9, top: 38.5, width: 15.4, height: 26.1 } },
+  { label: 'EXPERIENCE', description: '실무 경험 포트폴리오', mobileDescription: '실무 경험\n포트폴리오', path: '/working', color: '#ffc08a', pose: 'side-right', tilt: { y: -34, z: -3 }, featured: true, area: { left: 67.8, top: 18, width: 13.2, height: 55.5 }, mobileArea: { left: 70.7, top: 37.6, width: 16.7, height: 27.3 } },
 ]
 
 const WALK_TIME = 1100 // ms, 문까지 걸어가는 시간 → 페이지 이동

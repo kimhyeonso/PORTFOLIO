@@ -69,6 +69,10 @@
         font-size: clamp(.8rem, 2.1vh, 1.25rem);
         font-weight: 700;
     }
+    /* 두 줄 설명은 세로 화면에서만 (아래 미디어 쿼리) */
+    .main-door-sign .main-door-desc-mobile {
+        display: none;
+    }
     .main-door.is-active .main-door-sign {
         --lift: .6vh;
     }
@@ -98,15 +102,28 @@
         }
     }
 
-    /* 세로 화면: 문 사이가 좁아 설명은 빼고(말풍선으로 본다) 영어 이름만 작게 (위 규칙들을 덮도록 맨 끝에 둔다) */
+    /*
+     * 세로 화면: 문 사이가 좁고 마우스 올리기(말풍선)가 없어서, 영어 이름 아래에
+     * 문 폭에 맞춰 두 줄로 나눈 짧은 설명을 작게 붙인다 (위 규칙들을 덮도록 맨 끝에 둔다)
+     */
     @media (max-aspect-ratio: 1 / 1) {
+        .main-door-sign {
+            gap: .5vw;
+        }
         .main-door-sign strong {
             font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
             font-size: 2.6vw;
             font-weight: 800;
         }
-        .main-door-sign span:not(.main-door-stars) {
+        .main-door-sign .main-door-desc {
             display: none;
+        }
+        .main-door-sign .main-door-desc-mobile {
+            display: block;
+            font-size: 2.5vw;
+            font-weight: 700;
+            line-height: 1.25;
+            white-space: pre-line;
         }
         .main-door-sign .main-door-stars {
             font-size: 3vw;

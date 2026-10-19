@@ -1,50 +1,54 @@
-/* Working 페이지 전용 (배경 · 위 여백은 HallPage, 위쪽 막대는 PageBar가 맡는다) */
+/* Working 페이지 전용 (배경은 HallPage, 위쪽 막대는 PageBar, 첫 화면 · 스크롤 화면은 components/work가 맡는다) */
 :global {
     .work-page {
         --work-accent: #9d8fe3;
+        /*
+         * 첫 화면 높이. 화면 높이를 뺀 나머지(75vh)만큼 스크롤하는 동안 첫 화면은 줌인되고,
+         * 같은 자리에 겹쳐 있는 프로젝트 화면은 가운데에서 작게 나타나 꽉 차게 커진다
+         */
+        --hero-h: 175vh;
     }
-
-    .work-page-company {
-        margin: 0;
-        /* 탭으로 이동했을 때 위쪽 막대에 가리지 않게 */
-        scroll-margin-top: calc(var(--page-bar-height) - 40px);
+    @media (max-width: 900px) {
+        .work-page {
+            --hero-h: 160vh;
+        }
     }
-    /* 회사 이름은 탭이 대신 보여주므로 화면에서는 숨기고 스크린리더에만 읽힌다 */
-    .work-page-company-title {
-        position: absolute;
-        width: 1px;
-        height: 1px;
-        overflow: hidden;
-        clip-path: inset(50%);
-        white-space: nowrap;
+    /*
+     * 위 탭(CONCENTRIX · RICOTA): 처음엔 숨겨 두고(첫 화면 WORKS 글자와 겹치지 않게),
+     * 스크롤을 시작하면(.is-scrolled, WorkingPage.jsx) 위에서 내려온다. 홈 · 메뉴 버튼은 그대로
+     */
+    .work-page .page-bar-tabs {
+        transition: opacity .5s ease, transform .6s cubic-bezier(.2, .75, .25, 1), visibility 0s linear .6s;
     }
-    /* 회사 묶음 사이 구분선 */
-    .work-page-company + .work-page-company {
-        margin-top: clamp(30px, 4vw, 80px);
-        border-top: 1px solid rgba(80, 60, 45, .16);
-    }
-
-    /* 화면에 들어오면 이미지 → 정보 카드 → 설명 순서로 아래에서 위로 올라온다 */
-    .work-page-reveal :is(.work-row-media, .work-row-card, .work-row-detail) {
+    .work-page:not(.is-scrolled) .page-bar-tabs {
+        visibility: hidden;
         opacity: 0;
-        transform: translateY(90px);
-        transition: opacity .8s ease, transform 1s cubic-bezier(.2, .75, .25, 1);
+        transform: translate(-50%, -24px);
+        pointer-events: none;
     }
-    .work-page-reveal .work-row-card {
-        transition-delay: .12s;
-    }
-    .work-page-reveal .work-row-detail {
-        transition-delay: .24s;
-    }
-    .work-page-reveal.is-visible :is(.work-row-media, .work-row-card, .work-row-detail) {
-        opacity: 1;
-        transform: none;
+    .work-page.is-scrolled .page-bar-tabs {
+        transition: opacity .5s ease, transform .6s cubic-bezier(.2, .75, .25, 1), visibility 0s;
     }
     @media (prefers-reduced-motion: reduce) {
-        .work-page-reveal :is(.work-row-media, .work-row-card, .work-row-detail) {
-            opacity: 1;
-            transform: none;
+        .work-page .page-bar-tabs {
             transition: none;
         }
+    }
+
+    /* 첫 화면 · 스크롤 화면이 화면 전체를 쓰도록 HallPage의 여백을 푼다 */
+    .hall-page.work-page {
+        padding: 0;
+    }
+    /* 배경(::before) · 크림 덮개(::after)를 한 칸 뒤로 보내, 반짝이가 덮개 위 · 내용 아래에 오게 한다 */
+    .hall-page.work-page::before, .hall-page.work-page::after {
+        z-index: -2;
+    }
+    .work-page-sparkles {
+        position: fixed;
+        z-index: -1;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
     }
 }

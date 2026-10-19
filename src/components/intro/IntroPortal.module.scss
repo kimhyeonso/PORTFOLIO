@@ -60,6 +60,8 @@
     /* 링: 화면 가운데에 겹쳐 두고 gsap이 크기·회전·투명도를 바꾼다 */
     .intro-portal-rings {
         position: relative;
+        /* 떠날 때 터지는 링은 배경이 부서진 뒤 드러난 빛(GommageText 캔버스) 위에 보이게 */
+        z-index: 1;
         width: 40vmin;
         height: 40vmin;
         pointer-events: none;
@@ -80,6 +82,10 @@
         opacity: 0;
     }
     /* 질문 화면 뒤에서 천천히 도는 큰 링은 은은하게 */
+    /* 뒤에서 도는 링은 배경의 일부라 캔버스 아래 (배경과 함께 부서져 사라진다) */
+    .intro-portal-rings.is-idle {
+        z-index: 0;
+    }
     .intro-portal-rings.is-idle .intro-portal-ring {
         border-width: 1px;
         box-shadow: 0 0 18px color-mix(in srgb, var(--ring-color) 45%, transparent);
@@ -120,5 +126,10 @@
         font-size: .82em;
         font-weight: 400;
         letter-spacing: 0;
+    }
+    /* 글자 지우기 효과(GommageText)가 같은 자리에 MSDF 글자를 그리는 동안: 자리 · 화면 읽기용으로만 남긴다 */
+    .intro-portal-question h2.is-gommage, .intro-portal-question h2.is-gommage .is-pixel {
+        color: transparent;
+        text-shadow: none;
     }
 }

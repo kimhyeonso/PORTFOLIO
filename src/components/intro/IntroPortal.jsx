@@ -1,7 +1,10 @@
-import { useEffect, useRef, useState } from 'react'
+import { lazy, Suspense, useEffect, useRef, useState } from 'react'
 import { gsap } from 'gsap'
 import WarpTunnel from './warp/WarpTunnel.jsx'
 import styles from './IntroPortal.module.scss'
+
+// 질문 글자가 지워지는 효과 (three/webgpu는 이 화면에서만 쓰므로 따로 불러온다)
+const GommageText = lazy(() => import('./gommage/GommageText.jsx'))
 
 const RING_COUNT = 14 // 소용돌이 링 수 (많을수록 촘촘하다)
 const RING_DURATION = 1.6 // s, 링 하나가 중앙의 점에서 화면 밖까지 커지는 시간
@@ -21,7 +24,8 @@ function addVortex(timeline, rings, position, { duration = RING_DURATION, stagge
 /**
  * 인트로 → 메인 사이의 전환 화면.
  *  1. 인트로가 가운데로 확대·흐려지며 빨려 들고, 워프 터널과 같은 화이트블루 빛이 차오르며 링 소용돌이가 퍼져 나온다
- *  2. "다음 STAGE는 어딜까?" 질문이 떠오르고 QUESTION_TIME 동안 보여준다
+ *  2. "다음 STAGE는 어딜까?" 질문이 떠오르고 QUESTION_TIME 동안 보여준 뒤, 글자가 noise로 지워지며
+ *     픽셀 · 빛 입자로 흩어져 위로 떠오른다 (GommageText, 2.5초). 효과를 못 쓰는 환경이면 바로 3
  *  3. 자동으로 소용돌이가 한 번 더 터지고 화이트블루 빛이 화면을 채운 뒤 옅은 크림빛으로 넘어가며 onEnter(메인으로 이동) →
  *     메인 홀은 제자리에서 흐림만 걷히고, 이 화면이 사라지면 onDone을 부른다
  * 메인이 나오기 전까지 오른쪽 위 SKIP INTRO로 언제든(소용돌이 · 터널 중에도) 바로 3으로 넘어갈 수 있다.
@@ -35,7 +39,7 @@ function addVortex(timeline, rings, position, { duration = RING_DURATION, stagge
 export default function IntroPortal({ warp: warpRequested = false, skip: skipRequested = false, onEnter, onDone }) {
     // 움직임 줄이기 설정이면 소용돌이 없이 바로 질문 화면부터
     const [reduced] = useState(() => window.matchMedia('(prefers-reduced-motion: reduce)').matches)
-    // vortex → question → leaving. 질문이 뜨기 전(소용돌이 · 터널 중)에 SKIP하면 vortex → skipping (질문 없이 바로 떠난다)
+    // vortex → question → dissolving → leaving. 질문이 뜨기 전(소용돌이 · 터널 중)에 SKIP하면 vortex → skipping (질문 없이 바로 떠난다)
     // 인트로의 SKIP INTRO로 들어오면 처음부터 skipping
     const [phase, setPhase] = useState(() => {
         if (skipRequested) return 'skipping'
@@ -52,6 +56,12 @@ export default function IntroPortal({ warp: warpRequested = false, skip: skipReq
     const ringsRef = useRef(null)
     const idleRef = useRef(null)
     const questionRef = useRef(null)
+    const titleRef = useRef(null)
+    // 글자 지우기 효과가 준비됐는지 (준비되면 HTML 글자는 투명하게 두고 캔버스가 같은 자리에 그린다)
+    const [gommageReady, setGommageReady] = useState(false)
+    const gommageReadyRef = useRef(false)
+    // 글자 · 배경 픽셀 효과가 끝까지 재생됐는지 (그러면 떠날 때 링 소용돌이를 생략한다)
+    const dissolvedRef = useRef(false)
     // 부모가 다시 그려져 콜백이 바뀌어도 애니메이션을 다시 시작하지 않도록 ref로 들고 있는다
     const callbacksRef = useRef({ onEnter, onDone })
     useEffect(() => {
@@ -82,10 +92,13 @@ export default function IntroPortal({ warp: warpRequested = false, skip: skipReq
         return () => clearTimeout(timer)
     }, [warp])
 
-    // 2. 질문 화면이 떠오르고, 뒤에서 링 몇 개가 천천히 돈다. QUESTION_TIME 뒤 자동으로 3
+    // 2. 질문 화면이 떠오르고, 뒤에서 링 몇 개가 천천히 돈다. QUESTION_TIME 뒤 글자가 지워지고(효과가 준비됐을 때) 3
+    // 글자가 지워지는 동안에도 링은 계속 돌아야 하므로 question · dissolving을 한 묶음으로 본다
+    const questionShown = phase === 'question' || phase === 'dissolving'
     useEffect(() => {
-        if (phase !== 'question') return undefined
-        const timer = setTimeout(() => setPhase((current) => (current === 'question' ? 'leaving' : current)), QUESTION_TIME * 1000)
+        if (!questionShown) return undefined
+        const next = () => (gommageReadyRef.current ? 'dissolving' : 'leaving')
+        const timer = setTimeout(() => setPhase((current) => (current === 'question' ? next() : current)), QUESTION_TIME * 1000)
         if (reduced) return () => clearTimeout(timer)
         const rings = idleRef.current.children
         const tweens = [
@@ -97,7 +110,14 @@ export default function IntroPortal({ warp: warpRequested = false, skip: skipReq
             clearTimeout(timer)
             tweens.forEach((tween) => tween.kill())
         }
-    }, [phase, reduced])
+    }, [questionShown, reduced])
+
+    // 글자가 지워지기 시작하면 위의 NEXT STAGE 라벨은 먼저 옅어진다
+    useEffect(() => {
+        if (phase !== 'dissolving') return undefined
+        const tween = gsap.to(questionRef.current.firstElementChild, { opacity: 0, y: -10, duration: 0.6, ease: 'power2.in' })
+        return () => tween.kill()
+    }, [phase])
 
     // 3. 포트폴리오로 이동 (자동 또는 SKIP INTRO)
     const isLeaving = phase === 'leaving' || phase === 'skipping'
@@ -114,9 +134,11 @@ export default function IntroPortal({ warp: warpRequested = false, skip: skipReq
         const timeline = gsap.timeline()
         if (questionRef.current) timeline.to(questionRef.current.children, { opacity: 0, y: -16, duration: 0.4, ease: 'power2.in', stagger: 0.06 }, 0)
         timeline.to(idleRef.current, { opacity: 0, duration: 0.5 }, 0)
-        addVortex(timeline, rings, 0.1, { duration: 1.3, stagger: 0.06 })
+        // 배경이 픽셀로 부서져 이미 빛이 드러났으면 링 소용돌이 없이 바로 빛으로 이어진다
+        const dissolved = dissolvedRef.current
+        if (!dissolved) addVortex(timeline, rings, 0.1, { duration: 1.3, stagger: 0.06 })
         timeline
-            .fromTo(glowRef.current, { opacity: 0 }, { opacity: 1, duration: 0.8, ease: 'power2.in' }, 0.6)
+            .fromTo(glowRef.current, { opacity: 0 }, { opacity: 1, duration: dissolved ? 0.5 : 0.8, ease: 'power2.in' }, dissolved ? 0 : 0.6)
             // 화이트블루가 다 찬 뒤 크림빛으로 옅게 넘어가 메인 홀 색으로 이어진다
             .fromTo(warmRef.current, { opacity: 0 }, { opacity: 1, duration: 0.5, ease: 'sine.inOut' })
             .add(() => callbacksRef.current.onEnter())
@@ -126,7 +148,7 @@ export default function IntroPortal({ warp: warpRequested = false, skip: skipReq
     }, [isLeaving, reduced])
 
     const skip = () => setPhase((current) => {
-        if (current === 'question') return 'leaving'
+        if (current === 'question' || current === 'dissolving') return 'leaving'
         return current === 'vortex' ? 'skipping' : current
     })
 
@@ -142,6 +164,27 @@ export default function IntroPortal({ warp: warpRequested = false, skip: skipReq
                     }}
                 />
             )}
+            {/*
+              * 글자 지우기 + 배경이 픽셀로 부서지는 캔버스 (z-index 1). 처음부터 띄워 두어 소용돌이 · 터널 동안 미리 준비한다
+              * (움직임 줄이기 · SKIP으로 들어오면 쓰지 않는다). 뒤에서 도는 링은 배경과 함께 덮여 사라지고,
+              * 떠날 때 터지는 링 · 질문 라벨은 DOM 순서상 이 캔버스 위에 온다
+              */}
+            {!reduced && !startsWithSkip && (
+                <Suspense fallback={null}>
+                    <GommageText
+                        targetRef={titleRef}
+                        dissolve={phase === 'dissolving'}
+                        onReady={() => {
+                            gommageReadyRef.current = true
+                            setGommageReady(true)
+                        }}
+                        onComplete={() => {
+                            dissolvedRef.current = true
+                            setPhase((current) => (current === 'dissolving' ? 'leaving' : current))
+                        }}
+                    />
+                </Suspense>
+            )}
             <div className="intro-portal-rings is-idle" ref={idleRef} aria-hidden="true">
                 {Array.from({ length: IDLE_RINGS }, (_, index) => <span className="intro-portal-ring" key={index} style={{ '--ring-color': RING_COLORS[index % RING_COLORS.length], '--ring-size': `${70 + index * 32}vmin` }} />)}
             </div>
@@ -149,10 +192,11 @@ export default function IntroPortal({ warp: warpRequested = false, skip: skipReq
                 {Array.from({ length: RING_COUNT }, (_, index) => <span className="intro-portal-ring" key={index} style={{ '--ring-color': RING_COLORS[index % RING_COLORS.length] }} />)}
             </div>
 
-            {(phase === 'question' || phase === 'leaving') && (
+            {(questionShown || phase === 'leaving') && (
                 <div className="intro-portal-question" ref={questionRef}>
                     <p className="intro-portal-label">NEXT STAGE</p>
-                    <h2 id="intro-portal-question">다음 <span className="is-pixel">STAGE</span>는 어딜까?</h2>
+                    {/* 효과가 준비되면 글자는 투명하게(자리 · 화면 읽기용으로만) 두고 GommageText가 같은 자리에 그린다 */}
+                    <h2 id="intro-portal-question" className={gommageReady ? 'is-gommage' : ''} ref={titleRef}>다음 <span className="is-pixel">STAGE</span>는 어딜까?</h2>
                 </div>
             )}
 

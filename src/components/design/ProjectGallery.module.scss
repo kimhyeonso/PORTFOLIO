@@ -25,11 +25,26 @@
         /* 위쪽 고정 막대(PageBar: 홈 · 탭 · 메뉴) 아래 공간에서 가운데 정렬 */
         padding: var(--page-bar-height) 0 0;
         overflow: hidden;
-        /* 홀 배경 위에 크림빛을 옅게 덮는다 (Working 페이지와 같은 값) */
+        animation: project-gallery-in .7s ease-out both;
+    }
+    /*
+     * 홀 배경 + 옅은 크림 덮개 (Working 페이지와 같은 값).
+     * 페이지 상자가 아닌 화면에 고정된 층에 깔고, 휴대폰 주소창이 접힌 큰 화면 높이(100lvh)까지 덮어
+     * 주소창이 접히거나 · 위아래로 튕기거나 · 화면이 짧아 스크롤될 때도 위아래가 비지 않게 한다
+     */
+    .project-gallery::before {
+        position: fixed;
+        z-index: -1;
+        top: 0;
+        right: 0;
+        left: 0;
+        height: 100vh;
+        height: 100lvh;
+        content: '';
         background:
             linear-gradient(rgba(246, 239, 229, .62), rgba(246, 239, 229, .72)),
             #efe3d3 var(--gallery-bg) center / cover no-repeat;
-        animation: project-gallery-in .7s ease-out both;
+        pointer-events: none;
     }
 
     /* 카드 한 장 너비 + 간격만큼 트랙을 밀어 현재 카드를 왼쪽 기준 위치에 둔다 */

@@ -1,0 +1,10 @@
+/* 질문 화면 전체를 덮는 투명 캔버스: 글자 위로 떠오르는 입자가 잘리지 않게 화면 크기로 둔다 */
+.scope {
+    position: absolute;
+    /* 질문 글자(.intro-portal-question)와 같은 층, 떠날 때의 빛(.intro-portal-glow)보다 아래 */
+    z-index: 1;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}

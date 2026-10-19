@@ -75,10 +75,15 @@ $octagon: polygon(30% 0, 70% 0, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0 70%, 0
         }
 
         /* ───────── 배경: 예전 프로필 페이지의 홀 이미지 (캔버스 뒤에 고정) ───────── */
+        /* 휴대폰 주소창이 접힌 큰 화면 높이(100lvh)까지 덮어 위아래가 비지 않게 */
         .st-sky {
             position: fixed;
             z-index: 0;
-            inset: 0;
+            top: 0;
+            right: 0;
+            left: 0;
+            height: 100vh;
+            height: 100lvh;
             background: #efe3d3 var(--st-bg) center / cover no-repeat;
             pointer-events: none;
         }
@@ -1701,8 +1706,9 @@ $octagon: polygon(30% 0, 70% 0, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0 70%, 0
                     font-size: 12px;
                     letter-spacing: .14em;
                 }
+                /* 모바일 조작 안내: PC보다 2px 작게 (Working 모바일 스크롤 안내와 같은 크기) */
                 .st-gallery-hint {
-                    font-size: 12px;
+                    font-size: 10px;
                 }
                 .st-hero-quote {
                     padding: .75em 1em .7em;

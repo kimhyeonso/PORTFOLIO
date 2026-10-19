@@ -1,0 +1,65 @@
+.scope {
+    isolation: isolate;
+}
+
+:global {
+    /* OPEN 커서가 나타나는 요소 위에서만 원래 커서를 숨긴다 (그 밖은 원래 커서) */
+    .has-work-cursor [data-cursor] {
+        cursor: none;
+    }
+
+    .work-cursor {
+        position: fixed;
+        z-index: 100000;
+        inset: 0;
+        pointer-events: none;
+    }
+    .work-cursor-ring {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 0;
+        height: 0;
+        will-change: transform;
+    }
+    /* 라벤더빛 진한 원 + 가운데 글자. 나타날 때 커지며, 누르면 살짝 줄어든다 */
+    .work-cursor-ring::before {
+        position: absolute;
+        top: -47px;
+        left: -47px;
+        width: 94px;
+        height: 94px;
+        content: '';
+        border-radius: 50%;
+        background: rgba(42, 36, 64, .82);
+        transform: scale(.2);
+        opacity: 0;
+        transition: transform .35s cubic-bezier(.2, .75, .25, 1), opacity .25s ease;
+    }
+    .work-cursor-ring em {
+        position: absolute;
+        top: 0;
+        left: 0;
+        color: #fff;
+        font-family: 'Inter', sans-serif;
+        font-size: .62rem;
+        font-style: normal;
+        font-weight: 700;
+        letter-spacing: .2em;
+        white-space: nowrap;
+        opacity: 0;
+        transform: translate(-50%, -50%) translateX(.1em) scale(.6);
+        transition: opacity .25s ease, transform .35s cubic-bezier(.2, .75, .25, 1);
+    }
+    .work-cursor.is-visible .work-cursor-ring::before {
+        opacity: 1;
+        transform: none;
+    }
+    .work-cursor.is-visible .work-cursor-ring em {
+        opacity: 1;
+        transform: translate(-50%, -50%) translateX(.1em);
+    }
+    .work-cursor.is-visible.is-down .work-cursor-ring::before {
+        transform: scale(.88);
+    }
+}

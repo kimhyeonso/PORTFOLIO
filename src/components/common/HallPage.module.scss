@@ -18,11 +18,16 @@
         color: #1d1b19;
         font-family: 'Noto Sans KR', 'Inter', sans-serif;
     }
+    /* 휴대폰 주소창이 접힌 큰 화면 높이(100lvh)까지 덮어 위아래가 비지 않게 */
     .hall-page::before, .hall-page::after {
         content: '';
         position: fixed;
         z-index: -1;
-        inset: 0;
+        top: 0;
+        right: 0;
+        left: 0;
+        height: 100vh;
+        height: 100lvh;
         pointer-events: none;
     }
     .hall-page::before {

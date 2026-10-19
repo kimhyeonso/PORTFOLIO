@@ -6,7 +6,7 @@ import styles from './Door.module.scss'
  */
 // area: 지금 화면(가로/세로 배경)에 맞는 문 위치 — MainPage가 room.area · room.mobileArea 중에서 골라 준다
 export default function Door({ room, area, isActive, onFocus, onBlur, onOpen }) {
-    const { label, description, color, tilt, featured } = room
+    const { label, description, mobileDescription = description, color, tilt, featured } = room
     const style = {
         left: `${area.left}%`, top: `${area.top}%`, width: `${area.width}%`, height: `${area.height}%`,
         '--glow': color, '--tilt-y': `${tilt.y}deg`, '--tilt-z': `${tilt.z}deg`,
@@ -27,7 +27,9 @@ export default function Door({ room, area, isActive, onFocus, onBlur, onOpen }) 
             <span className="main-door-sign" aria-hidden="true">
                 {featured && <span className="main-door-stars">★★★</span>}
                 <strong>{label}</strong>
-                <span>{description}</span>
+                <span className="main-door-desc">{description}</span>
+                {/* 세로 화면(모바일): 문 폭에 맞춰 두 줄로 나눈 설명 */}
+                <span className="main-door-desc-mobile">{mobileDescription}</span>
             </span>
             <span className="main-door-glow" aria-hidden="true" />
         </button>

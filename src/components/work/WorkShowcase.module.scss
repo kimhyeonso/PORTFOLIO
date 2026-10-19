@@ -1,0 +1,519 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Noto+Sans+KR:wght@400;500;700&family=Noto+Serif+KR:wght@500&family=Playfair+Display:wght@400;500&display=swap');
+
+.scope {
+    position: relative;
+}
+
+:global {
+    /*
+     * 첫 화면(높이 --hero-h)과 같은 자리에서 겹쳐 시작한다: 첫 화면이 줌인되는 동안(--hero-h - 100vh)
+     * 이 화면은 가운데에서 작게 나타나 커진다 (아래에서 밀려 올라오지 않게).
+     * 그 뒤 프로젝트 한 칸 = 90vh 스크롤, (프로젝트 수 - 1 + 꼬리 1) 칸. 꼬리 한 칸은 "다시 01" 자리 (TAIL)
+     */
+    .work-show {
+        --skew: 0deg;
+        position: relative;
+        margin-top: calc(-1 * var(--hero-h, 175vh));
+        height: calc(var(--hero-h, 175vh) + var(--count) * 90vh);
+        /* 첫 화면 위에 겹쳐 있으므로 빈 곳은 첫 화면이 마우스를 받게 (무대만 받는다) */
+        pointer-events: none;
+        color: #1d1b19;
+    }
+    .work-show-stage {
+        position: sticky;
+        top: 0;
+        height: 100vh;
+        height: 100svh;
+        overflow: hidden;
+        /* 가로 드래그는 원 돌리기가, 세로 스크롤은 브라우저가 처리 */
+        touch-action: pan-y;
+        /* 첫 화면 위에 겹쳐 있는 동안 크기 · 투명도는 WorkShowcase.jsx가 정한다 (다 커지기 전엔 첫 화면을 누를 수 있게) */
+        transform-origin: 50% 50%;
+        will-change: transform, opacity;
+        pointer-events: auto;
+    }
+    /* 원을 끄는 동안: 손 모양 커서 · 글자 선택 막기 */
+    .work-show-stage.is-dragging, .work-show-stage.is-dragging * {
+        cursor: grabbing !important;
+        user-select: none;
+    }
+    .work-show-deck-area img {
+        -webkit-user-drag: none;
+    }
+
+    /* 왼쪽 위: 회사 —— Works 03 / 08 */
+    .work-show-crumb {
+        position: absolute;
+        z-index: 3;
+        top: calc(var(--page-bar-height) - 6px);
+        left: clamp(20px, 4vw, 80px);
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        margin: 0;
+        color: #4b4458;
+        font-family: 'Inter', 'Noto Sans KR', sans-serif;
+        font-size: clamp(.72rem, .85vw, .95rem);
+        letter-spacing: .1em;
+    }
+    .work-show-company {
+        color: var(--work-accent);
+        font-weight: 700;
+        letter-spacing: .18em;
+        animation: work-show-rise .6s ease both;
+    }
+    .work-show-crumb i {
+        width: clamp(32px, 3.6vw, 60px);
+        height: 1px;
+        background: rgba(75, 68, 88, .45);
+    }
+    .work-show-count {
+        font-variant-numeric: tabular-nums;
+    }
+
+    /* 기울어진 패널 묶음 (가운데 ~ 오른쪽) */
+    .work-show-deck-area {
+        position: absolute;
+        z-index: 1;
+        top: calc(var(--page-bar-height) * .55);
+        right: 14vw;
+        bottom: 5vh;
+        left: 30vw;
+        /* 원형 배치를 살짝 위에서 내려다보게 */
+        perspective: 1600px;
+        perspective-origin: 50% 28%;
+        /* 빠르게 스크롤하면 그 속도만큼 기운다 (--skew, WorkShowcase.jsx) */
+        transform: skewY(calc(var(--skew) * .5));
+    }
+    .work-show-deck {
+        --mx: 0;
+        --my: 0;
+        position: absolute;
+        inset: 0;
+        transform-style: preserve-3d;
+        transform: rotateY(calc(var(--mx) * 4deg)) rotateX(calc(var(--my) * -3deg));
+        transition: transform 1.2s cubic-bezier(.2, .75, .25, 1);
+    }
+    /* 패널은 모두 같은 가운데에 겹쳐 두고, 원형 위치 · 투명도는 스크롤에 따라 WorkShowcase.jsx(ringPose)가 정한다 */
+    .work-show-panel {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        /* 원형으로 둘러설 자리가 보이도록 정면 패널을 조금 줄인다 */
+        width: min(44vw, 96vh);
+        margin: 0;
+        border: 0;
+        padding: 0;
+        background: none;
+        cursor: pointer;
+        translate: -50% -50%;
+        will-change: transform, opacity;
+    }
+    .work-show-panel:hover, .work-show-panel:focus-visible {
+        background: none;
+    }
+    /* 뒤에서 기다리는 패널은 멀수록 배경(크림빛)에 묻힌다 */
+    .work-show-panel::after {
+        position: absolute;
+        inset: 0;
+        content: '';
+        border-radius: 6px;
+        background: rgba(246, 239, 229, var(--fade, 0));
+        pointer-events: none;
+    }
+    .work-show-panel .work-panel {
+        transition: box-shadow .4s ease;
+    }
+    .work-show-panel.is-active:hover .work-panel {
+        box-shadow:
+            0 0 0 1px rgba(157, 143, 227, .7),
+            0 0 44px rgba(157, 143, 227, .45),
+            0 40px 70px -22px rgba(52, 38, 84, .5);
+    }
+    /* 왼쪽 아래: 지금 프로젝트 정보 */
+    .work-show-info {
+        position: absolute;
+        z-index: 3;
+        bottom: clamp(28px, 7vh, 90px);
+        left: clamp(20px, 4vw, 80px);
+        width: min(31vw, 540px);
+        font-family: 'Noto Sans KR', 'Inter', sans-serif;
+        transform: skewY(var(--skew));
+        transform-origin: left center;
+    }
+    /*
+     * 바뀔 때 줄마다 아래에서 떠오른다 — Design/Frontend 카드(ProjectCard.module.scss .project-card-rise)와 같은
+     * 거리(24px) · 시간(.6s) · 곡선, .2s 뒤부터 줄마다 .09s씩 차례로 (--i: WorkShowcase.jsx에서 위에서부터 매긴다)
+     */
+    .work-show-rise {
+        animation: work-show-rise .6s cubic-bezier(.2, .75, .25, 1) calc(.2s + var(--i, 0) * .09s) both;
+    }
+    /* 제목 크기를 정보 칸의 너비(100cqi) 기준으로 계산하기 위해 */
+    .work-show-info {
+        container-type: inline-size;
+    }
+    /*
+     * Design/Frontend 카드 제목(ProjectCard.module.scss)과 같은 글꼴 · 굵기 · 크기 규칙:
+     * 기준 제목(ADVERTISING BANNER, --title-ref-em)이 칸 너비에 맞는 크기로 통일하고,
+     * 그보다 긴 제목만 칸 너비 ÷ 제목 너비(--title-em)로 더 줄여 한 줄에 맞춘다
+     */
+    .work-show-title {
+        margin: 0;
+        color: #1d1b19;
+        font-family: 'Inter', 'Noto Sans KR', sans-serif;
+        font-size: calc(min(calc(clamp(1.8rem, 2.9vw, 3.8rem) - 4px), 100cqi / var(--title-ref-em, 1), 100cqi / var(--title-em, 1)) - 4px);
+        font-weight: 700;
+        letter-spacing: -.01em;
+        line-height: 1.1;
+        white-space: nowrap;
+    }
+    .work-show-desc {
+        margin-top: clamp(16px, 1.8vw, 28px);
+    }
+    .work-show-desc p {
+        margin: 0;
+        color: #2a2724;
+        font-size: clamp(.88rem, .98vw, 1.08rem);
+        font-weight: 500;
+        line-height: 1.95;
+        word-break: keep-all;
+    }
+    .work-show-points {
+        display: grid;
+        gap: 2px;
+        margin: clamp(12px, 1.2vw, 20px) 0 0;
+        padding: 0;
+        list-style: none;
+        color: #5b5466;
+        font-size: clamp(.8rem, .86vw, .95rem);
+        line-height: 1.7;
+    }
+    .work-show-points li::before {
+        margin-right: 8px;
+        content: '-';
+    }
+    .work-show-period {
+        display: flex;
+        gap: 18px;
+        margin: clamp(12px, 1.2vw, 18px) 0 0;
+        color: #2a2440;
+        font-family: 'Inter', 'Noto Sans KR', sans-serif;
+        font-size: clamp(.74rem, .8vw, .9rem);
+        font-weight: 700;
+        letter-spacing: .06em;
+    }
+    .work-show-period span + span {
+        color: #7a7287;
+        font-weight: 400;
+    }
+    /* 사용 프로그램: 둥근 칩 */
+    .work-show-tools {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin: clamp(10px, 1vw, 16px) 0 0;
+        padding: 0;
+        list-style: none;
+    }
+    .work-show-tools li {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 5px 12px;
+        border: 1px solid rgba(42, 36, 64, .35);
+        border-radius: 999px;
+        color: #2a2440;
+        background: rgba(255, 255, 255, .45);
+        font-family: 'Inter', sans-serif;
+        font-size: clamp(.68rem, .72vw, .82rem);
+        font-weight: 700;
+        letter-spacing: .03em;
+    }
+    .work-show-tools img {
+        width: 16px;
+        height: 16px;
+        object-fit: contain;
+    }
+    /* 버튼: 세부정보는 진하게, 나머지는 테두리만 */
+    .work-show-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: clamp(16px, 1.6vw, 26px);
+    }
+    .work-show-action {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: clamp(96px, 7vw, 130px);
+        box-sizing: border-box;
+        padding: clamp(9px, .75vw, 12px) clamp(16px, 1.3vw, 22px);
+        border: 1px solid #2a2440;
+        border-radius: 999px;
+        color: #2a2440;
+        background: transparent;
+        font-family: 'Noto Sans KR', 'Inter', sans-serif;
+        font-size: clamp(.8rem, .86vw, .95rem);
+        font-weight: 700;
+        letter-spacing: .08em;
+        line-height: 1;
+        text-decoration: none;
+        white-space: nowrap;
+        cursor: pointer;
+        transition: color .2s ease, background .2s ease, border-color .2s ease;
+    }
+    .work-show-action:hover, .work-show-action:focus-visible {
+        color: #fff;
+        background: #2a2440;
+    }
+    .work-show-action.is-primary {
+        color: #fff;
+        background: #2a2440;
+    }
+    .work-show-action.is-primary:hover, .work-show-action.is-primary:focus-visible {
+        border-color: var(--work-accent);
+        background: var(--work-accent);
+    }
+
+    /* 오른쪽: 회사별 목록(유리 카드) + 타임라인 — 화면 오른쪽 끝에 붙인다 */
+    .work-show-index {
+        position: absolute;
+        z-index: 3;
+        top: 50%;
+        right: clamp(16px, 2.6vw, 56px);
+        transform: translateY(-50%);
+    }
+    .work-show-side {
+        display: grid;
+        gap: 12px;
+    }
+    /* 타임라인: 스크롤만큼 연 · 월이 굴러간다 */
+    .work-show-meter {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        margin: 0;
+        padding: 0 4px;
+        color: #2a2440;
+        font-family: 'Inter', sans-serif;
+    }
+    .work-show-meter span {
+        color: var(--work-accent);
+        font-size: .6rem;
+        font-weight: 700;
+        letter-spacing: .24em;
+    }
+    .work-show-meter strong {
+        font-size: clamp(1rem, 1.2vw, 1.35rem);
+        font-weight: 700;
+        font-variant-numeric: tabular-nums;
+        letter-spacing: .04em;
+    }
+    .work-show-list {
+        display: grid;
+        gap: 14px;
+        padding: clamp(16px, 1.4vw, 24px) clamp(14px, 1.3vw, 22px);
+        border: 1px solid rgba(255, 255, 255, .7);
+        border-radius: 14px;
+        background: rgba(255, 255, 255, .42);
+        box-shadow: 0 18px 40px -20px rgba(52, 38, 84, .35);
+        -webkit-backdrop-filter: blur(14px);
+        backdrop-filter: blur(14px);
+    }
+    .work-show-group-name {
+        margin: 0 0 6px;
+        color: var(--work-accent);
+        font-family: 'Inter', sans-serif;
+        font-size: .64rem;
+        font-weight: 700;
+        letter-spacing: .24em;
+    }
+    .work-show-group ul {
+        display: grid;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+    }
+    .work-show-group button {
+        position: relative;
+        display: flex;
+        gap: 14px;
+        width: 100%;
+        border: 0;
+        padding: 6px 0 6px 12px;
+        color: #8a8295;
+        background: none;
+        font-family: 'Inter', 'Noto Sans KR', sans-serif;
+        font-size: clamp(.68rem, .72vw, .82rem);
+        font-weight: 700;
+        letter-spacing: .1em;
+        text-align: left;
+        white-space: nowrap;
+        cursor: pointer;
+        transition: color .25s ease;
+    }
+    .work-show-group button span {
+        font-weight: 400;
+        font-variant-numeric: tabular-nums;
+    }
+    /* 지금 프로젝트: 왼쪽 라벤더 막대 */
+    .work-show-group button::before {
+        position: absolute;
+        top: 22%;
+        bottom: 22%;
+        left: 0;
+        width: 2px;
+        content: '';
+        background: var(--work-accent);
+        transform: scaleY(0);
+        transition: transform .3s ease;
+    }
+    .work-show-group button.is-active {
+        color: #1d1b19;
+    }
+    .work-show-group button.is-active span {
+        color: var(--work-accent);
+    }
+    .work-show-group button.is-active::before {
+        transform: none;
+    }
+    .work-show-group button:hover, .work-show-group button:focus-visible {
+        color: #1d1b19;
+        background: none;
+    }
+
+    @keyframes :global(work-show-rise) {
+        from {
+            opacity: 0;
+            transform: translateY(24px);
+        }
+        to {
+            opacity: 1;
+            transform: none;
+        }
+    }
+    .work-show.is-reduced :is(.work-show-rise, .work-show-company) {
+        animation: none;
+    }
+
+    /* 모바일: 위에 패널, 아래에 정보. 목록 대신 위쪽 Works 03 / 08로 위치를 알린다 */
+    @media (max-width: 900px) {
+        /* 패널 칸 높이 (키가 작은 폰은 줄여 아래 정보가 잘리지 않게) */
+        .work-show {
+            --deck-h: 36vh;
+        }
+        .work-show-crumb {
+            top: calc(var(--page-bar-height) + 4px);
+            left: 20px;
+        }
+        .work-show-deck-area {
+            top: calc(var(--page-bar-height) + 34px);
+            right: 0;
+            bottom: auto;
+            left: 0;
+            height: var(--deck-h);
+            perspective: 900px;
+            perspective-origin: 50% 40%;
+        }
+        .work-show-panel {
+            width: min(70vw, calc(var(--deck-h) * 1.17));
+        }
+        /*
+         * 아래 정보: Design/Frontend 모바일 카드(ProjectCard.module.scss)와 같은 배치 · 글자 크기.
+         * 제목 → 분야 / 기간 · 기여도 줄 → 설명 → 사용 프로그램 → 버튼 순서로, 패널 아래부터 화면 아래까지 채우고
+         * 넘치면 이 칸 안에서 세로 스크롤된다 (설명을 줄이거나 자르지 않는다)
+         */
+        .work-show-info {
+            top: calc(var(--page-bar-height) + 34px + var(--deck-h) + 16px);
+            right: 20px;
+            bottom: calc(16px + env(safe-area-inset-bottom));
+            left: 20px;
+            display: flex;
+            flex-direction: column;
+            width: auto;
+            overflow-y: auto;
+            overscroll-behavior: contain;
+            font-family: 'Inter', 'Noto Sans KR', sans-serif;
+            /* 스크롤 칸 안에서는 빠른 스크롤 기울임을 쓰지 않는다 */
+            transform: none;
+            scrollbar-width: none;
+        }
+        .work-show-info::-webkit-scrollbar {
+            display: none;
+        }
+        .work-show-title {
+            order: 1;
+            flex-shrink: 0;
+        }
+        /* 분야 · 작업 형태 · 기여도 + 기간: .project-card-type / .project-card-meta와 같은 크기 · 색 */
+        .work-show-points {
+            order: 2;
+            display: grid;
+            gap: 2px;
+            margin-top: 6px;
+            color: #666;
+            font-size: calc(.8rem - 1px);
+            line-height: 1.45;
+        }
+        .work-show-points li:first-child {
+            color: #555;
+            font-size: calc(1rem - 3px);
+        }
+        .work-show-points li::before {
+            content: none;
+        }
+        .work-show-period {
+            order: 3;
+            gap: 10px;
+            margin-top: 6px;
+            color: #666;
+            font-family: inherit;
+            font-size: calc(.8rem - 1px);
+            font-weight: 400;
+            letter-spacing: 0;
+        }
+        .work-show-period span + span {
+            color: #666;
+        }
+        /* 설명: .project-card-description과 같은 크기 · 줄 간격 */
+        .work-show-desc {
+            order: 4;
+            margin-top: 14px;
+        }
+        .work-show-desc p {
+            color: #222;
+            font-size: calc(.9rem - 3px);
+            font-weight: 400;
+            line-height: 1.35;
+        }
+        .work-show-tools {
+            order: 5;
+            margin-top: 14px;
+        }
+        .work-show-actions {
+            order: 6;
+            margin-top: 14px;
+        }
+        .work-show-action {
+            min-width: 84px;
+            padding: 9px 14px;
+            font-size: .78rem;
+        }
+        .work-show-index {
+            display: none;
+        }
+        /* 오른쪽 아래 챗봇 고양이 자리를 비운다 */
+        .work-show-actions {
+            padding-right: calc(clamp(18px, 3vw, 42px) + 64px - 20px);
+        }
+    }
+    /* 키가 작은 폰(SE 등): 패널 칸을 줄여 아래 정보 자리를 늘린다 */
+    @media (max-width: 900px) and (max-height: 720px) {
+        .work-show {
+            --deck-h: 26vh;
+        }
+        .work-show-tools li {
+            padding: 4px 10px;
+        }
+    }
+}

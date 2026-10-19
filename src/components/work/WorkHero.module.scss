@@ -1,0 +1,299 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800&family=Playfair+Display:wght@400&family=Silkscreen&display=swap');
+
+.scope {
+    position: relative;
+}
+
+:global {
+    /* 화면보다 길게 두어 지나가는 동안 카메라가 날아 들어간다 (--fly 0 → 1, WorkHero.jsx) */
+    .work-hero {
+        --fly: 0;
+        position: relative;
+        /* 높이는 페이지(WorkingPage.module.scss --hero-h)가 정한다 — 다음 화면이 이 높이만큼 겹쳐 시작한다 */
+        height: var(--hero-h, 175vh);
+    }
+    .work-hero-sticky {
+        position: sticky;
+        top: 0;
+        height: 100vh;
+        height: 100svh;
+        overflow: hidden;
+    }
+    .work-hero-stage {
+        position: absolute;
+        inset: 0;
+        perspective: 1100px;
+        perspective-origin: 50% 50%;
+        /* 투명도는 preserve-3d가 아닌 이 상자에 준다 (preserve-3d 요소에 주면 깊이 섞임이 평평해진다) */
+        opacity: calc(1 - var(--fly) * var(--fly) * 1.15);
+    }
+    /* 스크롤: 카메라가 앞으로 날아가며(장면이 다가온다) */
+    .work-hero-fly {
+        position: absolute;
+        inset: 0;
+        transform-style: preserve-3d;
+        transform: translateZ(calc(var(--fly) * 820px));
+    }
+    /* 마우스: 장면 전체가 살짝 기운다 (부드럽게 따라온다) */
+    .work-hero-scene {
+        --mx: 0;
+        --my: 0;
+        position: absolute;
+        inset: 0;
+        transform-style: preserve-3d;
+        transform: rotateY(calc(var(--mx) * 5deg)) rotateX(calc(var(--my) * -3.5deg));
+        transition: transform 1.2s cubic-bezier(.2, .75, .25, 1);
+    }
+
+    /* 가운데 세로 글자 (깊이 0 — 패널이 앞뒤로 섞여 지나간다) */
+    .work-hero-word {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        display: grid;
+        justify-items: center;
+        margin: 0;
+        font-family: 'Inter', sans-serif;
+        /* 다섯 글자가 위 탭 아래부터 화면 아래 끝까지 */
+        font-size: min(17.5vh, 26vw);
+        font-weight: 800;
+        line-height: .86;
+        letter-spacing: 0;
+        transform: translate(-50%, -50%);
+        pointer-events: none;
+    }
+    /* 바깥: 등장 애니메이션 */
+    .work-hero-letter {
+        display: block;
+        animation: work-hero-letter 1s cubic-bezier(.2, .75, .25, 1) both;
+        animation-delay: calc(.15s + var(--i) * .08s);
+    }
+    /* 안쪽: 라벤더 → 금빛 글자 + 은은한 빛. 커서에 밀려나 비틀렸다가(--lx · --ly · --lr) 천천히 돌아온다 */
+    .work-hero-letter > span {
+        --lx: 0;
+        --ly: 0;
+        --lr: 0;
+        --ls: 1;
+        display: block;
+        background: linear-gradient(172deg, #fff 0%, #a493ee 28%, #7563d4 62%, #c98f45 100%);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        filter: drop-shadow(0 0 16px rgba(157, 143, 227, .65)) drop-shadow(0 8px 14px rgba(52, 38, 84, .28));
+        transform: translate(var(--lx), var(--ly)) rotateY(var(--lr)) skewX(calc(var(--lr) * -.4)) scale(var(--ls));
+        transition: transform .9s cubic-bezier(.2, .9, .3, 1.2);
+    }
+
+    /* 패널 자리 (가운데 기준) */
+    .work-hero-slot {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: var(--w);
+        transform-style: preserve-3d;
+        transform: translate(-50%, -50%) translate3d(var(--x), var(--y), var(--z)) rotateX(var(--rx)) rotateY(var(--ry)) rotateZ(var(--rz));
+    }
+    /* 처음 들어올 때 멀리서 날아와 제자리에 */
+    .work-hero-enter {
+        transform-style: preserve-3d;
+        animation: work-hero-enter 1.6s cubic-bezier(.16, .8, .24, 1) both;
+        animation-delay: calc(.25s + var(--i) * .09s);
+    }
+    /* 제자리에서 천천히 둥둥 */
+    .work-hero-float {
+        transform-style: preserve-3d;
+        animation: work-hero-float 7s ease-in-out infinite alternate;
+        animation-delay: calc(var(--i) * -1.3s);
+    }
+    .work-hero-panel {
+        position: relative;
+        display: block;
+        width: 100%;
+        border: 0;
+        padding: 0;
+        background: none;
+        cursor: pointer;
+        transition: transform .5s cubic-bezier(.2, .75, .25, 1);
+    }
+    .work-hero-panel:hover, .work-hero-panel:focus-visible {
+        background: none;
+        transform: translateZ(40px) scale(1.03);
+    }
+    .work-hero-panel:focus-visible {
+        outline: 2px solid var(--work-accent);
+        outline-offset: 6px;
+    }
+    /* 마우스를 올리면 패널 아래 번호 · 제목 */
+    .work-hero-label {
+        position: absolute;
+        top: calc(100% + 10px);
+        left: 0;
+        display: flex;
+        gap: 10px;
+        color: #2a2440;
+        font-family: 'Inter', 'Noto Sans KR', sans-serif;
+        font-size: clamp(.7rem, .8vw, .95rem);
+        font-weight: 700;
+        letter-spacing: .14em;
+        white-space: nowrap;
+        opacity: 0;
+        transform: translateY(-6px);
+        transition: opacity .3s ease, transform .3s ease;
+    }
+    .work-hero-label em {
+        color: var(--work-accent);
+        font-style: normal;
+    }
+    .work-hero-panel:hover .work-hero-label, .work-hero-panel:focus-visible .work-hero-label {
+        opacity: 1;
+        transform: none;
+    }
+
+    /* 왼쪽 아래 소개 */
+    .work-hero-caption {
+        position: absolute;
+        bottom: clamp(28px, 6vh, 72px);
+        left: clamp(20px, 4vw, 80px);
+        color: #2a2440;
+        font-family: 'Inter', 'Noto Sans KR', sans-serif;
+        opacity: calc(1 - var(--fly) * 3);
+        animation: work-hero-fade 1s ease 1s both;
+    }
+    .work-hero-caption p {
+        margin: 0;
+    }
+    .work-hero-kicker {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        color: var(--work-accent);
+        font-size: clamp(.7rem, .8vw, .9rem);
+        font-weight: 700;
+        letter-spacing: .24em;
+    }
+    .work-hero-kicker::after {
+        width: 48px;
+        height: 1px;
+        content: '';
+        background: currentColor;
+    }
+    /* 스크롤 화면의 프로젝트 큰 제목(.work-show-title)과 같은 글꼴 · 굵기 · 크기 */
+    .work-hero-companies {
+        margin-top: 10px !important;
+        color: #1d1b19;
+        font-family: 'Inter', 'Noto Sans KR', sans-serif;
+        font-size: calc(clamp(1.8rem, 2.9vw, 3.8rem) - 8px);
+        font-weight: 700;
+        letter-spacing: -.01em;
+        line-height: 1.1;
+        white-space: nowrap;
+    }
+    .work-hero-count {
+        display: flex;
+        align-items: baseline;
+        gap: 8px;
+        margin-top: 6px !important;
+        color: #5e566f;
+        font-size: clamp(.75rem, .85vw, .95rem);
+        letter-spacing: .12em;
+    }
+    .work-hero-count strong {
+        color: #2a2440;
+        font-size: 1.3em;
+    }
+    .work-hero-count span {
+        margin-left: 10px;
+        padding-left: 12px;
+        border-left: 1px solid rgba(42, 36, 64, .25);
+    }
+
+    /*
+     * 가운데 아래 스크롤 안내: Profile 갤러리 조작 안내(ProfilePage.module.scss .st-gallery-hint)와 같은 모양 —
+     * Silkscreen 픽셀 글꼴 12px · 넓은 자간 · 옅은 크림 바탕 칩 · 늦게 페이드인
+     */
+    .work-hero-scroll {
+        position: absolute;
+        bottom: clamp(18px, 3vh, 36px);
+        left: 50%;
+        margin: 0;
+        padding: 5px 12px;
+        color: #5d6a84;
+        background: rgba(251, 247, 236, .7);
+        font-family: 'Silkscreen', monospace;
+        font-size: 12px;
+        letter-spacing: .18em;
+        white-space: nowrap;
+        transform: translateX(-50%);
+        opacity: calc(1 - var(--fly) * 4);
+        pointer-events: none;
+        animation: work-hero-fade .8s ease .8s both;
+    }
+
+    @keyframes :global(work-hero-enter) {
+        from {
+            opacity: 0;
+            transform: translateZ(-1400px) rotateY(30deg);
+        }
+    }
+    @keyframes :global(work-hero-float) {
+        from {
+            transform: translate3d(0, -1.2vh, 0) rotateZ(-.6deg);
+        }
+        to {
+            transform: translate3d(0, 1.2vh, 0) rotateZ(.6deg);
+        }
+    }
+    @keyframes :global(work-hero-letter) {
+        from {
+            opacity: 0;
+            transform: translateY(30%);
+        }
+    }
+    @keyframes :global(work-hero-fade) {
+        from {
+            opacity: 0;
+        }
+    }
+
+    /* 움직임 줄이기: 날아오기 · 둥둥 · 카메라 이동 없이 옅어지기만 */
+    .work-hero.is-reduced :is(.work-hero-enter, .work-hero-float, .work-hero-letter, .work-hero-caption, .work-hero-scroll) {
+        animation: none;
+    }
+    .work-hero.is-reduced .work-hero-fly {
+        transform: none;
+    }
+
+    @media (max-width: 900px) {
+        /*
+         * 모바일은 화면을 위아래로 나눈다: 아래는 소개 글(챗봇 고양이 바로 위), 위는 WORKS 글자 · 패널 장면.
+         * 장면 칸을 소개 글 위에서 끝나게 해, 글자 · 패널이 소개 글과 겹치지 않는다
+         * (패널 자리 · 크기는 WorkHero.jsx MOBILE_SLOTS가 이 칸 안에 들어가게 잡는다)
+         */
+        .work-hero-stage {
+            top: 56px;
+            bottom: calc(var(--caption-bottom) + var(--caption-h) + 12px);
+            perspective: 800px;
+        }
+        .work-hero {
+            /* 소개 글: 챗봇 고양이(GuideChatbot 모바일: 아래 18px · 높이 약 72px) 바로 위 */
+            --caption-bottom: calc(18px + 72px + 8px + env(safe-area-inset-bottom));
+            --caption-h: 78px;
+        }
+        /* WORKS 다섯 글자가 장면 칸 높이 안에 들어오는 크기 (한 글자 ≈ .86em, 다섯 글자 + 빛 ≈ 4.6em) */
+        .work-hero-word {
+            font-size: min(11vh, 20vw, calc((100svh - 56px - 18px - 72px - 8px - 78px - 12px) / 4.6));
+        }
+        .work-hero-caption {
+            right: 20px;
+            bottom: var(--caption-bottom);
+        }
+        /*
+         * 스크롤 안내: 챗봇 고양이(GuideChatbot 모바일: 오른쪽 · 아래 18px, 64 × 약 72px)와 같은 줄,
+         * 고양이 세로 가운데 높이에서 가로 가운데 정렬 (소개 글 아래 줄이라 겹치지 않는다). 글자는 PC보다 2px 작게
+         */
+        .work-hero-scroll {
+            bottom: calc(18px + 36px - 11px + env(safe-area-inset-bottom));
+            font-size: 10px;
+        }
+    }
+}

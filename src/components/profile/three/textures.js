@@ -1,4 +1,5 @@
 import { CanvasTexture, SRGBColorSpace } from 'three'
+import { drawSparkle } from '../../common/sparkle.js'
 
 /*
  * PROFILE 3D 장면에서 쓰는 텍스처를 전부 캔버스로 그려 만든다 (이미지 파일 없음).
@@ -23,32 +24,7 @@ function toTexture(canvas) {
 export function createSparkleTexture() {
     const size = 128
     const [canvas, ctx] = makeCanvas(size)
-    const c = size / 2
-    const glow = ctx.createRadialGradient(c, c, 0, c, c, c)
-    glow.addColorStop(0, 'rgba(255,255,255,1)')
-    glow.addColorStop(0.18, 'rgba(255,255,255,.55)')
-    glow.addColorStop(0.5, 'rgba(255,255,255,.1)')
-    glow.addColorStop(1, 'rgba(255,255,255,0)')
-    ctx.fillStyle = glow
-    ctx.fillRect(0, 0, size, size)
-    // 4방향 별: 가늘고 긴 마름모 두 개
-    ctx.fillStyle = 'rgba(255,255,255,.95)'
-    const ray = (w, h) => {
-        ctx.beginPath()
-        ctx.moveTo(c, c - h)
-        ctx.lineTo(c + w, c)
-        ctx.lineTo(c, c + h)
-        ctx.lineTo(c - w, c)
-        ctx.closePath()
-        ctx.fill()
-    }
-    ray(5, c * 0.92)
-    ctx.save()
-    ctx.translate(c, c)
-    ctx.rotate(Math.PI / 2)
-    ctx.translate(-c, -c)
-    ray(5, c * 0.92)
-    ctx.restore()
+    drawSparkle(ctx, size)
     return toTexture(canvas)
 }
 

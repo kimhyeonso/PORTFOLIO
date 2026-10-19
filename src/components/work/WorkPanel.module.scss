@@ -1,0 +1,85 @@
+.scope {
+    isolation: isolate;
+}
+
+:global {
+    /* 썸네일 비율(885 × 606)의 패널. 크기는 부모가 정한다 */
+    .work-panel {
+        position: relative;
+        display: block;
+        width: 100%;
+        aspect-ratio: 885 / 606;
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, .75);
+        border-radius: 6px;
+        background: #f3ece2;
+        /* 라벤더 테두리 빛 + 아래로 떨어지는 그림자 */
+        box-shadow:
+            0 0 0 1px rgba(157, 143, 227, .45),
+            0 0 28px rgba(157, 143, 227, .28),
+            0 34px 60px -22px rgba(52, 38, 84, .45);
+    }
+    .work-panel img {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        user-select: none;
+    }
+    .work-panel-empty {
+        display: grid;
+        place-items: center;
+        height: 100%;
+        color: rgba(80, 60, 45, .5);
+        font-family: 'Inter', 'Noto Sans KR', sans-serif;
+        font-weight: 700;
+        letter-spacing: .08em;
+    }
+    /* 안쪽 프레임 선 */
+    .work-panel::after {
+        position: absolute;
+        inset: 4.5%;
+        content: '';
+        border: 1px solid rgba(255, 255, 255, .55);
+        border-radius: 3px;
+        pointer-events: none;
+    }
+    /* 마우스 쪽으로 기운다 (손을 떼면 천천히 제자리) */
+    .work-panel.is-interactive {
+        --px: 0;
+        --py: 0;
+        transform: rotateX(calc(var(--py) * -9deg)) rotateY(calc(var(--px) * 11deg));
+        transition: transform .7s cubic-bezier(.2, .75, .25, 1), box-shadow .4s ease;
+    }
+    .work-panel.is-interactive:hover {
+        transition: transform .18s ease-out, box-shadow .4s ease;
+    }
+    /* 마우스를 따라가는 반사광 */
+    .work-panel-glare {
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(circle at calc(50% + var(--px) * 50%) calc(50% + var(--py) * 50%), rgba(255, 255, 255, .5), rgba(255, 255, 255, 0) 45%);
+        mix-blend-mode: soft-light;
+        opacity: 0;
+        transition: opacity .4s ease;
+        pointer-events: none;
+    }
+    .work-panel.is-interactive:hover .work-panel-glare {
+        opacity: 1;
+    }
+    @media (prefers-reduced-motion: reduce) {
+        .work-panel.is-interactive {
+            transform: none;
+        }
+    }
+
+    /* 비스듬한 빛 반사 + 아래쪽 라벤더 · 금색 물듦 */
+    .work-panel-sheen {
+        position: absolute;
+        inset: 0;
+        background:
+            linear-gradient(115deg, rgba(255, 255, 255, .38), rgba(255, 255, 255, 0) 38%),
+            linear-gradient(to top, rgba(157, 143, 227, .22), rgba(224, 168, 90, 0) 45%);
+        pointer-events: none;
+    }
+}
