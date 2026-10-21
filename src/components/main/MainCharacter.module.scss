@@ -7,12 +7,15 @@
         --x: 50%;
         --y: 10.5%;
         --h: 44%;
+        --stage-ratio: 1167 / 2074; /* 스테이지 세로 ÷ 가로 (MainPage.module.scss의 배경 비율) */
         position: absolute;
         z-index: 4;
         bottom: var(--y);
         left: var(--x);
+        /* 폭을 aspect-ratio에 맡기면 iOS Safari에서 절대배치 박스 폭이 어긋나 캐릭터가 옆으로 밀린다.
+           키(스테이지 높이 %)를 스테이지 폭 %로 바꿔 338:508 폭을 직접 준다 */
+        width: calc(var(--h) * var(--stage-ratio) * 338 / 508);
         height: var(--h);
-        aspect-ratio: 338 / 508;
         transform: translateX(-50%);
         transition: left 1s ease-in-out, bottom 1s ease-in, height 1s ease-in;
         pointer-events: none;
@@ -23,32 +26,37 @@
         .main-character {
             --y: 21.5%;
             --h: 24%;
+            --stage-ratio: 1672 / 941;
         }
         .main-character::after {
             position: absolute;
             z-index: -1;
             bottom: -1.5%;
-            left: 50%;
+            left: 2.5%;
             width: 95%;
             height: 9%;
             content: '';
             border-radius: 50%;
             background: radial-gradient(closest-side, rgba(90, 60, 30, .35), transparent);
-            transform: translateX(-50%);
             transition: opacity .3s ease;
         }
         .main-character.is-walking::after {
             opacity: 0;
         }
     }
-    /* 네 방향 이미지를 겹쳐 두고 opacity로 바꿔 전환 깜빡임을 없앤다 */
+    /* 네 방향 이미지를 겹쳐 두고 opacity로 바꿔 전환 깜빡임을 없앤다.
+       이미지 폭(auto)에 기대 translateX(-50%)로 맞추면 Safari가 폭을 늦게 잡을 때 오른쪽으로 밀리므로,
+       캐릭터 박스 양옆으로 반씩 넓힌 칸(200%)에 contain으로 그려 가로 중앙을 고정한다 */
     .main-character img {
         position: absolute;
         bottom: 0;
-        left: 50%;
+        left: -50%;
+        width: 200%;
+        max-width: none;
         height: 100%;
+        object-fit: contain;
+        object-position: center bottom;
         opacity: 0;
-        transform: translateX(-50%);
         filter: drop-shadow(0 1.2vh 1.2vh rgba(90, 60, 30, .25));
         transition: opacity .18s ease;
     }
@@ -78,7 +86,7 @@
     }
     @keyframes :global(main-idle) {
         50% {
-            transform: translateX(-50%) translateY(-.6%);
+            transform: translateY(-.6%);
         }
     }
     @keyframes :global(main-character-walk-frame) {

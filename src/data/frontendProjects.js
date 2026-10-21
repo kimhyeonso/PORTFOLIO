@@ -1,4 +1,3 @@
-import kakaoBankThumbnail from '../assets/image/project/Frontend/kakaoBankThumnail.webp'
 import woodinThumbnail from '../assets/image/project/Frontend/WoodinThumnail.webp'
 import souvenirThumbnail from '../assets/image/project/Frontend/SouvenirThumnail.webp'
 import damumThumbnail from '../assets/image/project/Frontend/DamumThumnail.webp'
@@ -22,27 +21,11 @@ import lcodePdf from '../assets/image/project/LCODE/LcodePPT.pdf'
  * pdf  세부정보 팝업에 보여줄 PDF (import한 주소). 있으면 images · 상세페이지 대신 PDF 뷰어로 연다.
  * toolCols  도구 아이콘을 한 줄에 놓을 개수 (생략하면 4개 이하 한 줄, 5개 이상 두 줄)
  * account  카드 정보(역할 아래)에 보여줄 체험 계정 { label, email, password } — 이메일 · 비밀번호마다 복사 버튼
+ * github  깃허브 레포 주소. 있으면 [홈페이지] 옆에 [GitHub] 버튼 (빈 문자열이면 버튼 없음)
  * pdfPreview  [미리보기] 버튼 → 팝업에 이미지 한 장 (import한 이미지, 아직 없으면 true → 썸네일을 대신 보여준다)
  */
 
 export const frontendProjects = [
-  {
-    id: '01',
-    slug: 'kakaobank',
-    detail: false, // 세부정보 버튼 없음
-    category: 'copy-site',
-    title: 'KAKAOBANK',
-    type: 'Copy Site',
-    year: 2024,
-    period: { start: '2024.07', end: '2024.07', duration: '2주' },
-    contribution: 100,
-    description: '카카오뱅크 main 페이지 카피 사이트 입니다 주로 이미지 슬라이드를 기능을 공부하였습니다',
-    thumbnail: kakaoBankThumbnail,
-    tools: ['VS Code', 'GitHub'],
-    link: 'https://kimhyeonso.github.io/kakao-bank_popol/',
-    github: '',
-    images: [],
-  },
   {
     id: '02',
     slug: 'woodin',
@@ -57,7 +40,7 @@ export const frontendProjects = [
     thumbnail: woodinThumbnail,
     tools: ['VS Code', 'GitHub'],
     link: 'https://kimhyeonso.github.io/WOODIN_COPYSITE/',
-    github: '',
+    github: 'https://github.com/kimhyeonso/WOODIN_COPYSITE.git',
     images: [],
   },
   {
@@ -126,7 +109,7 @@ export const frontendProjects = [
     thumbnail: dashboardThumbnail,
     tools: ['VS Code', 'GitHub', 'Vercel', 'React'],
     link: 'https://dash-board-um12.vercel.app/',
-    github: '',
+    github: 'https://github.com/kimhyeonso/DashBoard.git',
     images: [],
   },
   {
@@ -160,7 +143,7 @@ export const frontendProjects = [
     thumbnail: aiChatbotThumbnail,
     tools: ['VS Code', 'GitHub', 'Vercel'],
     link: 'https://chatbot-sage-six-15.vercel.app/',
-    github: '',
+    github: 'https://github.com/kimhyeonso/chatbot.git',
     images: [],
   },
   {

@@ -138,9 +138,8 @@ Q. 프로젝트의 상세 설명은 어떻게 보나요?
 [10. FRONTEND - 카피·개인 프로젝트]
 ==================================================
 대표 명칭: 카피 사이트와 개인 프로젝트
-관련 표현: kakaobank, 카카오뱅크, woodin, 우딘, souvenir, 수베니어, damum, 담음, aevora, 대시보드, dashboard, guest book, 방명록
+관련 표현: woodin, 우딘, souvenir, 수베니어, damum, 담음, aevora, 대시보드, dashboard, guest book, 방명록
 기능 설명:
-- KAKAOBANK (2024): 카카오뱅크 메인 페이지 카피 사이트이며 이미지 슬라이드 기능을 학습했습니다. 기여도는 100%입니다.
 - WOODIN (2026): AI나 기존 코드 도움 없이 직접 작성한 우딘 카피 사이트입니다. 기여도는 80%입니다.
 - SOUVENIR (2026): README.md를 활용한 바이브 코딩 웹사이트입니다. 기념일 선물을 주제로 한 액세서리 브랜드입니다.
 - DAMUM (2026): 도자기 그릇에 마음을 담는다는 의미의 쇼핑몰 사이트입니다. Firebase Authentication을 사용했습니다.

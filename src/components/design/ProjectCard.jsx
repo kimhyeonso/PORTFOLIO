@@ -96,7 +96,8 @@ function AccountLine({ account, isActive }) {
 export default function ProjectCard({ project, isActive, onOpen, onPreview, onSelect }) {
     const { title, type, year, period, contribution, role, description, thumbnail, tools = [], link, work } = project
     const contributionText = formatContribution(contribution)
-    const links = toLinks(link)
+    // github 주소가 있으면 링크 버튼 끝에 [GitHub]를 붙인다
+    const links = [...toLinks(link), project.github && { label: 'GitHub', url: project.github }].filter(Boolean)
     // 아이콘 이미지가 있는 도구만 보여준다
     const iconTools = tools.filter((tool) => skillIcons[tool])
     // 한 줄에 놓을 아이콘 수 (없으면 한 줄 그대로)
